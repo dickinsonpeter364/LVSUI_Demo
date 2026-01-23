@@ -40,9 +40,8 @@ namespace WpfMvvmApp.ViewModels
 
         private void OnOk(object parameter)
         {
-            // Proceed to Inspection Page
-            // In a real scenario, we might pass the LpnNumber to the InspectionViewModel
-            _navigationService.Navigate(new InspectionView(new InspectionViewModel(_navigationService)));
+            // Proceed to LafLoader Page as requested
+            _navigationService.Navigate(new LafLoaderView(new LafLoaderViewModel(_navigationService)));
         }
 
         private void OnCancel(object parameter)
