@@ -24,6 +24,7 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Content="OK" 
+                            IsDefault="True"
                             Command="{Binding OkCommand}" 
                             Width="150" Height="50" FontSize="18" FontWeight="SemiBold"
                             Background="#007ACC" Foreground="White" BorderThickness="0"

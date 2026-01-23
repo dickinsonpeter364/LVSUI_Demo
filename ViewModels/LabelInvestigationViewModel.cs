@@ -57,11 +57,20 @@ namespace WpfMvvmApp.ViewModels
                 _navigationService.GoBack();
         }
 
+
         private void OnReject(object parameter)
         {
-            // Here you would handle the rejection logic (e.g. logging the reason)
-            if (_navigationService.CanGoBack)
-                _navigationService.GoBack();
+            // Navigate to Authorise page
+            _navigationService.Navigate(new Views.AuthoriseView(
+                new AuthoriseViewModel(_navigationService, () => 
+                {
+                    if (_navigationService.CanGoBack)
+                        _navigationService.GoBack(); // Closes Authorise
+                        
+                    if (_navigationService.CanGoBack)
+                         _navigationService.GoBack(); // Closes LabelInvestigation, returning to Inspection
+                })
+            ));
         }
 
         private bool CanReject(object parameter)

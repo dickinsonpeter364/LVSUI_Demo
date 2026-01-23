@@ -19,9 +19,12 @@ namespace WpfMvvmApp.ViewModels
         public ICommand OkCommand { get; }
         public ICommand CancelCommand { get; }
 
-        public AuthoriseViewModel(INavigationService navigationService)
+        private readonly Action _onSuccessNavigation;
+
+        public AuthoriseViewModel(INavigationService navigationService, Action onSuccessNavigation = null)
         {
             _navigationService = navigationService;
+            _onSuccessNavigation = onSuccessNavigation;
             OkCommand = new RelayCommand(OnOk);
             CancelCommand = new RelayCommand(OnCancel);
         }
@@ -34,13 +37,25 @@ namespace WpfMvvmApp.ViewModels
 
             if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(password))
             {
-               MessageBox.Show($"Authorising user: {Username}", "Authorisation", MessageBoxButton.OK, MessageBoxImage.Information);
-               // Navigate back or to home after successful auth
-               // if (_navigationService.CanGoBack)
-               //     _navigationService.GoBack();
+               // Removed message box as requested
+               // MessageBox.Show($"Authorising user: {Username}", "Authorisation", MessageBoxButton.OK, MessageBoxImage.Information);
                
-               // Navigate to LpnEntryView as requested
-               _navigationService.Navigate(new Views.LpnEntryView(new LpnEntryViewModel(_navigationService)));
+               if (_onSuccessNavigation != null)
+               {
+                   _onSuccessNavigation();
+               }
+               else
+               {
+                   // Default behavior if no specific callback provided (legacy support for simple login)
+                   // _navigationService.Navigate(new Views.LpnEntryView(new LpnEntryViewModel(_navigationService)));
+                   // But wait, the previous logic was specific to startup. 
+                   // Let's assume if no callback, we do default startup flow or simple GoBack?
+                   // The user didn't specify what to do for standard login, but "Change LabelInvestigationView...".
+                   // Let's keep the old default for now if it's not the LabelInvestigation case, OR
+                   // better yet, we can pass the specific startup flow in MainWindow.
+                   
+                   _navigationService.Navigate(new Views.LpnEntryView(new LpnEntryViewModel(_navigationService)));
+               }
             }
             else
             {
