@@ -15,7 +15,10 @@
     <Grid Background="White">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Text="{Binding WelcomeMessage}" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
-            <Button Content="Go to Settings" Command="{Binding NavigateToSettingsCommand}" Width="150" Height="40"/>
+            <Button Content="Go to Settings" Command="{Binding NavigateToSettingsCommand}" Width="150" Height="40" Margin="0,0,0,10"/>
+            <Button Content="Go to Authorise" Command="{Binding NavigateToAuthoriseCommand}" Width="150" Height="40" Margin="0,0,0,10"/>
+            <Button Content="Device Control" Command="{Binding NavigateToDeviceControlCommand}" Width="150" Height="40" Margin="0,0,0,10"/>
+            <Button Content="Start Inspection" Command="{Binding NavigateToInspectionCommand}" Width="150" Height="40"/>
         </StackPanel>
     </Grid>
 </Page>

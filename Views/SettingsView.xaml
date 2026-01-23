@@ -10,9 +10,25 @@
       Title="SettingsView">
     
     <Grid Background="#F0F0F0">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Background="White" Padding="20" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
+            <Grid>
+                <Button Command="{Binding GoBackCommand}" HorizontalAlignment="Left" Width="50" Height="50" Background="Transparent" BorderThickness="0" Content="&lt;" FontSize="24" Foreground="#333"/>
+                <TextBlock Text="Settings" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#333"/>
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Text="{Binding SettingsMessage}" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
-            <Button Content="Back to Home" Command="{Binding GoBackCommand}" Width="150" Height="40"/>
+            <TextBlock Text="App Version: 1.0.0" FontSize="16" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+            <!-- Simulating some setting options -->
+            <CheckBox Content="Enable Advanced Mode" FontSize="16" Margin="0,0,0,10"/>
+            <CheckBox Content="Show Developer Tools" FontSize="16" Margin="0,0,0,10"/>
         </StackPanel>
     </Grid>
 </Page>

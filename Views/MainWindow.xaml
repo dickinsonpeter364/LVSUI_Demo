@@ -4,15 +4,22 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfMvvmApp.Views"
+        xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
         mc:Ignorable="d"
-        Title="MVVM Navigation" Height="600" Width="900">
+        Title="Label Verification System" WindowState="Maximized" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
              <RowDefinition Height="Auto"/>
              <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <TextBlock Text="WPF MVVM Application" Background="#333" Foreground="White" Padding="10" FontWeight="Bold"/>
+        <Grid Background="#333" Grid.Row="0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                 <!-- Using SharpVectors to display SVG -->
+                <svgc:SvgViewbox Source="/Images/logo-core.svg" Width="32" Height="32" Margin="10,5"/>
+                <TextBlock Text="Label Verification System" Foreground="White" VerticalAlignment="Center" FontWeight="Bold" FontSize="16"/>
+            </StackPanel>
+        </Grid>
 
         <Frame x:Name="MainFrame" Grid.Row="1" NavigationUIVisibility="Hidden"/>
     </Grid>

@@ -11,7 +11,9 @@ namespace WpfMvvmApp.ViewModels
         public SettingsViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
-            GoBackCommand = new RelayCommand(o => _navigationService.GoBack());
+            GoBackCommand = new RelayCommand(o => {
+                if (_navigationService.CanGoBack) _navigationService.GoBack();
+            });
         }
 
         public string SettingsMessage => "This is the Settings Page.";

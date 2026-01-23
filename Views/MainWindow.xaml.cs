@@ -15,8 +15,8 @@ namespace WpfMvvmApp.Views
             MainViewModel mainViewModel = new MainViewModel(navigationService);
             DataContext = mainViewModel;
 
-            // Navigate to Home
-            navigationService.Navigate(new HomeView(new HomeViewModel(navigationService)));
+            // Navigate to Login/Authorise
+            navigationService.Navigate(new AuthoriseView(new AuthoriseViewModel(navigationService)));
         }
     }
 }

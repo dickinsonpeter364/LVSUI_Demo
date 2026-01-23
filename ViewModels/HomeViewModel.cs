@@ -13,10 +13,22 @@ namespace WpfMvvmApp.ViewModels
         {
             _navigationService = navigationService;
             NavigateToSettingsCommand = new RelayCommand(o => _navigationService.Navigate(new SettingsView(new SettingsViewModel(navigationService))));
+            NavigateToAuthoriseCommand = new RelayCommand(o => _navigationService.Navigate(new AuthoriseView(new AuthoriseViewModel(navigationService))));
+            NavigateToDeviceControlCommand = new RelayCommand(o => _navigationService.Navigate(new DeviceControlView(new DeviceControlViewModel(navigationService))));
+            NavigateToInspectionCommand = new RelayCommand(o => _navigationService.Navigate(new LpnEntryView(new LpnEntryViewModel(navigationService))));
         }
 
-        public string WelcomeMessage => "Welcome to the Home Page!";
+        // Add a public parameterless constructor
+        public HomeViewModel()
+        {
+            // Initialization code if needed
+        }
+
+        public string WelcomeMessage => "UI Demo for Label Verification System";
 
         public ICommand NavigateToSettingsCommand { get; }
+        public ICommand NavigateToAuthoriseCommand { get; }
+        public ICommand NavigateToDeviceControlCommand { get; }
+        public ICommand NavigateToInspectionCommand { get; }
     }
 }
