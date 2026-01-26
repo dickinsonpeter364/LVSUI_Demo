@@ -5,110 +5,180 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:WpfMvvmApp.Views"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="800"
+      d:DesignHeight="800" d:DesignWidth="1200"
       Title="Label Investigation">
 
     <Grid Background="#F0F0F0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/> <!-- Title/Header -->
-            <RowDefinition Height="*"/>    <!-- Image -->
-            <RowDefinition Height="Auto"/> <!-- Buttons -->
-            <RowDefinition Height="Auto"/> <!-- Checkboxes -->
-            <RowDefinition Height="50"/>   <!-- Bottom Spacing -->
+            <RowDefinition Height="*"/>    <!-- Main Content Area -->
+            <RowDefinition Height="20"/>   <!-- Bottom Spacing -->
         </Grid.RowDefinitions>
 
         <!-- Header -->
         <TextBlock Text="Label Investigation" FontSize="28" FontWeight="Bold" Foreground="#333" 
-                   HorizontalAlignment="Center" Margin="0,20,0,10"/>
+                   HorizontalAlignment="Center" Margin="0,10,0,5"/>
 
-        <!-- Picture Box Area -->
+        <!-- Main Content Area -->
         <Grid Grid.Row="1" Margin="20">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <TextBlock Text="Current Label" FontSize="20" FontWeight="SemiBold" Foreground="#444" 
-                       HorizontalAlignment="Center" Margin="0,0,0,10"/>
-            
-            <Border Grid.Row="1" BorderBrush="#999" BorderThickness="1" Background="White">
-                <Viewbox Stretch="Uniform">
-                    <Grid Width="640" Height="360" Background="White">
-                         <!-- Placeholder Label Image -->
-                         <Rectangle Stroke="#CCC" StrokeThickness="4" RadiusX="10" RadiusY="10" Margin="10"/>
-                         <Path Data="M50,180 L150,80 L250,180 M200,140 L300,40 L400,140" Stroke="#EEE" StrokeThickness="5" Margin="20"/>
-                         <TextBlock Text="SUSPICIOUS LABEL" FontSize="40" FontWeight="Bold" Foreground="#D32F2F" 
-                                    HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5" RenderTransformOrigin="0.5,0.5">
-                             <TextBlock.RenderTransform>
-                                 <RotateTransform Angle="-10"/>
-                             </TextBlock.RenderTransform>
-                         </TextBlock>
-                    </Grid>
-                </Viewbox>
-            </Border>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/> <!-- Left Side: Camera & Variables (30%) -->
+                <ColumnDefinition Width="7*"/> <!-- Right Side: Label, Buttons, Inputs (70%) -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Left column: Backing Camera and Variable View (stacked 50/50 vertically) -->
+            <Grid Grid.Column="0" Margin="0,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/> <!-- Camera Section -->
+                    <RowDefinition Height="*"/> <!-- Variable Values Section -->
+                </Grid.RowDefinitions>
+
+                <!-- Camera Section -->
+                <Grid Grid.Row="0" Margin="0,0,0,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Backing Camera" FontSize="18" FontWeight="SemiBold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
+                    <Border Grid.Row="1" BorderBrush="#999" BorderThickness="1" Background="Black">
+                        <Viewbox Stretch="Fill" x:Name="CameraViewBox">
+                            <Grid Width="400" Height="300" Background="Black">
+                                <TextBlock Text="[LIVE FEED]" Foreground="#333" FontSize="40" FontWeight="Bold" 
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5">
+                                    <TextBlock.LayoutTransform>
+                                        <RotateTransform Angle="-15"/>
+                                    </TextBlock.LayoutTransform>
+                                </TextBlock>
+                                <Border BorderBrush="#33FF00" BorderThickness="2" CornerRadius="4" Margin="10"/>
+                                <Ellipse Width="20" Height="20" Fill="Red" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20">
+                                    <Ellipse.Effect>
+                                        <BlurEffect Radius="5"/>
+                                    </Ellipse.Effect>
+                                </Ellipse>
+                            </Grid>
+                        </Viewbox>
+                    </Border>
+                </Grid>
+
+                <!-- Variable Values Section -->
+                <Grid Grid.Row="1" Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Variable Values" FontSize="18" FontWeight="SemiBold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
+                    <TextBox Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                             Padding="10" FontSize="14" BorderBrush="#999" Background="White"/>
+                </Grid>
+            </Grid>
+
+            <!-- Right Column: Label Image, Buttons, Checkboxes, Inputs -->
+            <Grid Grid.Column="1" Margin="10,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!-- Label Image Area -->
+                <StackPanel Grid.Row="0" Margin="0,0,0,5" HorizontalAlignment="Center">
+                    <TextBlock Text="Current Label" FontSize="16" FontWeight="SemiBold" Foreground="#444" 
+                               HorizontalAlignment="Center" Margin="0,0,0,3"/>
+                    <Border BorderBrush="#999" BorderThickness="1" Background="White" HorizontalAlignment="Center">
+                        <Viewbox Stretch="Uniform">
+                            <Grid  Background="White">
+                                 <Rectangle Stroke="#CCC" StrokeThickness="4" RadiusX="10" RadiusY="10" Margin="10"/>
+                                 <Path Data="M50,180 L150,80 L250,180 M200,140 L300,40 L400,140" Stroke="#EEE" StrokeThickness="5" Margin="20"/>
+                                 <TextBlock Text="SUSPICIOUS LABEL" FontSize="16" FontWeight="Bold" Foreground="#D32F2F" 
+                                            HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5" RenderTransformOrigin="0.5,0.5">
+                                     <TextBlock.RenderTransform>
+                                         <RotateTransform Angle="-10"/>
+                                     </TextBlock.RenderTransform>
+                                 </TextBlock>
+                            </Grid>
+                        </Viewbox>
+                    </Border>
+                </StackPanel>
+
+                <!-- Buttons -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                    <Button Content="Accept" Command="{Binding AcceptCommand}"
+                            Width="140" Height="45" FontSize="18" FontWeight="Bold"
+                            Background="#2E7D32" Foreground="White" Margin="0,0,10,0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+
+                    <Button Content="Missing" Command="{Binding MissingCommand}"
+                            Width="140" Height="45" FontSize="18" FontWeight="Bold"
+                            Background="#FF9800" Foreground="White" Margin="0,0,10,0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+
+                    <Button Content="Reject" Command="{Binding RejectCommand}"
+                            Width="140" Height="45" FontSize="18" FontWeight="Bold"
+                            Foreground="White" Margin="0,0,0,0">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#D32F2F"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Background" Value="#FFA0A0A0"/>
+                                        <Setter Property="Foreground" Value="#FFE0E0E0"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+
+                <!-- Checkboxes Area -->
+                <WrapPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" MaxWidth="700" Margin="0,0,0,5">
+                    <CheckBox Content="Patchy Print" IsChecked="{Binding IsPatchyPrint}" Margin="8,4" VerticalContentAlignment="Center"/>
+                    <CheckBox Content="Mark on Label" IsChecked="{Binding IsMarkOnLabel}" Margin="8,4" VerticalContentAlignment="Center"/>
+                    <CheckBox Content="Ribbon Wrinkle" IsChecked="{Binding IsRibbonWrinkle}" Margin="8,4" VerticalContentAlignment="Center"/>
+                    <CheckBox Content="Barcode Scanned Manually" IsChecked="{Binding IsBarcodeScannedManually}" Margin="8,4" VerticalContentAlignment="Center"/>
+                    <CheckBox Content="Text Movement" IsChecked="{Binding IsTextMovement}" Margin="8,4" VerticalContentAlignment="Center"/>
+                    <CheckBox Content="Other" IsChecked="{Binding IsOther}" Margin="8,4" VerticalContentAlignment="Center"/>
+                </WrapPanel>
+
+                <!-- Two columns for textboxes - Takes remaining height -->
+                <Grid Grid.Row="3" Width="700" HorizontalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Label Backing No. -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Label Backing No." FontWeight="SemiBold" Margin="0,0,0,3" Foreground="#333"/>
+                    <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding LabelBackingNo, UpdateSourceTrigger=PropertyChanged}" Height="35" Padding="5" VerticalContentAlignment="Center" VerticalAlignment="Top" Margin="0,0,10,0"/>
+
+                    <!-- Description -->
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DescriptionLabel}" FontWeight="SemiBold" Margin="10,0,0,3" Foreground="#333"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Padding="5" VerticalContentAlignment="Top" VerticalAlignment="Stretch" Margin="10,0,0,0"/>
+                </Grid>
+            </Grid>
         </Grid>
-
-        <!-- Buttons -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,20">
-            <Button Content="Accept" Command="{Binding AcceptCommand}"
-                    Width="160" Height="60" FontSize="20" FontWeight="Bold"
-                    Background="#2E7D32" Foreground="White" Margin="0,0,30,0">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="8"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
-
-            <Button Content="Reject" Command="{Binding RejectCommand}"
-                    Width="160" Height="60" FontSize="20" FontWeight="Bold"
-                    Foreground="White" Margin="0,0,0,0">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="Background" Value="#D32F2F"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" CornerRadius="8" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#FFA0A0A0"/>
-                                <Setter Property="Foreground" Value="#FFE0E0E0"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-        </StackPanel>
-
-        <!-- Checkboxes -->
-        <!-- Checkboxes and Description -->
-        <StackPanel Grid.Row="3" Margin="0,10,0,0" HorizontalAlignment="Center">
-            <StackPanel.LayoutTransform>
-                <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
-            </StackPanel.LayoutTransform>
-
-            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" MaxWidth="700" Margin="0,0,0,15">
-                <CheckBox Content="Patchy Print" IsChecked="{Binding IsPatchyPrint}" Margin="10,5" VerticalContentAlignment="Center"/>
-                <CheckBox Content="Mark on Label" IsChecked="{Binding IsMarkOnLabel}" Margin="10,5" VerticalContentAlignment="Center"/>
-                <CheckBox Content="Ribbon Wrinkle" IsChecked="{Binding IsRibbonWrinkle}" Margin="10,5" VerticalContentAlignment="Center"/>
-                <CheckBox Content="Barcode Scanned Manually" IsChecked="{Binding IsBarcodeScannedManually}" Margin="10,5" VerticalContentAlignment="Center"/>
-                <CheckBox Content="Text Movement" IsChecked="{Binding IsTextMovement}" Margin="10,5" VerticalContentAlignment="Center"/>
-                <CheckBox Content="Other" IsChecked="{Binding IsOther}" Margin="10,5" VerticalContentAlignment="Center"/>
-            </WrapPanel>
-
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Width="400">
-                <TextBlock Text="Label Backing No." FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#333"/>
-                <TextBox Text="{Binding LabelBackingNo, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="5" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
-
-                <TextBlock Text="{Binding DescriptionLabel}" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#333"/>
-                <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Height="80" TextWrapping="Wrap" Padding="5" VerticalContentAlignment="Top"/>
-            </StackPanel>
-        </StackPanel>
-
     </Grid>
 </Page>

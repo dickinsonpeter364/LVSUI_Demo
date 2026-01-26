@@ -103,14 +103,30 @@ namespace WpfMvvmApp.ViewModels
 
         public ICommand AcceptCommand { get; }
         public ICommand RejectCommand { get; }
+        public ICommand MissingCommand { get; }
 
         public LabelInvestigationViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
             _description = string.Empty;
             _labelBackingNo = string.Empty;
-            AcceptCommand = new RelayCommand(OnAccept);
+            AcceptCommand = new RelayCommand(OnAccept, CanAccept);
             RejectCommand = new RelayCommand(OnReject, CanReject);
+            MissingCommand = new RelayCommand(OnMissing);
+        }
+
+        private bool IsLabelBackingNoValid()
+        {
+            if (string.IsNullOrWhiteSpace(LabelBackingNo))
+                return false;
+            
+            // Check if all characters are digits
+            return LabelBackingNo.All(char.IsDigit);
+        }
+
+        private bool CanAccept(object parameter)
+        {
+            return IsLabelBackingNoValid();
         }
 
         private void OnAccept(object parameter)
@@ -119,24 +135,25 @@ namespace WpfMvvmApp.ViewModels
                 _navigationService.GoBack();
         }
 
+        private void OnMissing(object parameter)
+        {
+            if (_navigationService.CanGoBack)
+                _navigationService.GoBack();
+        }
+
 
         private void OnReject(object parameter)
         {
-            // Navigate to Authorise page
-            _navigationService.Navigate(new Views.AuthoriseView(
-                new AuthoriseViewModel(_navigationService, () => 
-                {
-                    if (_navigationService.CanGoBack)
-                        _navigationService.GoBack(); // Closes Authorise
-                        
-                    if (_navigationService.CanGoBack)
-                         _navigationService.GoBack(); // Closes LabelInvestigation, returning to Inspection
-                })
-            ));
+            if (_navigationService.CanGoBack)
+                _navigationService.GoBack();
         }
 
         private bool CanReject(object parameter)
         {
+            // Check Label Backing No is valid
+            if (!IsLabelBackingNoValid())
+                return false;
+
             bool anyChecked = IsPatchyPrint || IsMarkOnLabel || IsRibbonWrinkle || 
                               IsBarcodeScannedManually || IsTextMovement || IsOther;
 

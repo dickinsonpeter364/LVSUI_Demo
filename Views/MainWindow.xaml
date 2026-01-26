@@ -6,20 +6,25 @@
         xmlns:local="clr-namespace:WpfMvvmApp.Views"
         mc:Ignorable="d"
         Title="Label Verification System" WindowState="Maximized" ResizeMode="NoResize">
-    <Grid>
-        <Grid.RowDefinitions>
-             <RowDefinition Height="60"/>
-             <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        
-        <Grid Background="#333" Grid.Row="0">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
-                 <!-- Logo fills the height of the row -->
-                <Image Source="/Images/logo.png" Stretch="Uniform" VerticalAlignment="Stretch" Margin="10,5"/>
-                <TextBlock Text="Label Verification System" Foreground="White" VerticalAlignment="Center" FontWeight="Bold" FontSize="16"/>
+    <DockPanel LastChildFill="True">
+        <!-- Top Header Area (Shared across all pages) -->
+        <Border DockPanel.Dock="Top" Background="#333" Height="60" Padding="10,0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <!-- Use pack URI for reliability -->
+                <Image Source="pack://application:,,,/Images/logo.png" 
+                       Stretch="Uniform" 
+                       Width="40" Height="40" 
+                       Margin="0,0,15,0"
+                       VerticalAlignment="Center"/>
+                <TextBlock Text="Label Verification System" 
+                           Foreground="White" 
+                           VerticalAlignment="Center" 
+                           FontWeight="Bold" 
+                           FontSize="20"/>
             </StackPanel>
-        </Grid>
+        </Border>
 
-        <Frame x:Name="MainFrame" Grid.Row="1" NavigationUIVisibility="Hidden"/>
-    </Grid>
+        <!-- Page Navigator -->
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+    </DockPanel>
 </Window>

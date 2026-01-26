@@ -6,7 +6,8 @@
       xmlns:local="clr-namespace:WpfMvvmApp.Views"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="800"
-      Title="LPN Entry">
+      Title="LPN Entry"
+      FocusManager.FocusedElement="{Binding ElementName=LpnTextBox}">
 
     <Grid Background="#F0F0F0">
         <Border Background="White" CornerRadius="10" Padding="40" VerticalAlignment="Center" HorizontalAlignment="Center" Width="500">
@@ -18,7 +19,7 @@
                 <TextBlock Text="Enter LPN Number" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,30" Foreground="#333"/>
 
                 <TextBlock Text="LPN Number" FontSize="16" Foreground="#666" Margin="0,0,0,5"/>
-                <TextBox Text="{Binding LpnNumber, UpdateSourceTrigger=PropertyChanged}" 
+                <TextBox x:Name="LpnTextBox" Text="{Binding LpnNumber, UpdateSourceTrigger=PropertyChanged}" 
                          FontSize="20" Padding="10" Height="50" Margin="0,0,0,40" 
                          VerticalContentAlignment="Center"/>
 
