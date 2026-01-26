@@ -20,6 +20,15 @@
             <Grid>
                 <Button Command="{Binding GoBackCommand}" HorizontalAlignment="Left" Width="50" Height="50" Background="Transparent" BorderThickness="0" Content="&lt;" FontSize="24" Foreground="#333"/>
                 <TextBlock Text="Inspection" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#333"/>
+                <Button Command="{Binding NavigateToLabelInvestigationCommand}" Content="Check Label" 
+                        Width="140" Height="40" FontSize="16" FontWeight="SemiBold"
+                        Background="#FFA000" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
             </Grid>
         </Border>
 
@@ -31,18 +40,19 @@
                 <ColumnDefinition Width="7*"/> <!-- 70% approx -->
             </Grid.ColumnDefinitions>
 
-            <!-- Video Box Area -->
-            <!-- Using Grid instead of StackPanel to allow filling the space -->
+            <!-- Video Box and Alarms Area -->
             <Grid Grid.Column="0" Margin="10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/> <!-- Label -->
-                    <RowDefinition Height="*"/>    <!-- Content (Fills space) -->
+                    <RowDefinition Height="5*"/>   <!-- Video -->
+                    <RowDefinition Height="Auto"/> <!-- Alarms Label -->
+                    <RowDefinition Height="3*"/>   <!-- Alarms Text -->
                 </Grid.RowDefinitions>
                 
                 <TextBlock Grid.Row="0" Text="Backing Camera" FontSize="18" FontWeight="SemiBold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
                 
-                <!-- ViewBox set to Stretch="Fill" to use maximum space as requested/edited by user -->
-                <Border Grid.Row="1" BorderBrush="#999" BorderThickness="1" Background="Black">
+                <!-- ViewBox set to Stretch="Fill" -->
+                <Border Grid.Row="1" BorderBrush="#999" BorderThickness="1" Background="Black" Margin="0,0,0,20">
                     <Viewbox Stretch="Fill" x:Name="CameraViewBox">
                         <Grid Width="400" Height="300" Background="Black">
                             <!-- Simulate Camera Feed -->
@@ -61,6 +71,12 @@
                         </Grid>
                     </Viewbox>
                 </Border>
+
+                <!-- Alarms Section -->
+                <TextBlock Grid.Row="2" Text="Alarms" FontSize="18" FontWeight="SemiBold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
+                <TextBox Grid.Row="3" Text="{Binding AlarmsText, Mode=OneWay}" IsReadOnly="True" 
+                         VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" 
+                         Padding="10" FontSize="14" BorderBrush="#999" Background="White"/>
             </Grid>
 
             <!-- Picture Box Area -->
@@ -100,8 +116,8 @@
                     </Button.Resources>
                 </Button>
 
-                <Button Command="{Binding StopCommand}" Content="STOP" 
-                        Width="140" Height="60" FontSize="18" FontWeight="Bold"
+                <Button Command="{Binding StopCommand}" Content="Cancel Inspection" 
+                        Width="200" Height="60" FontSize="18" FontWeight="Bold"
                         Background="#D32F2F" Foreground="White" Margin="0,0,20,0">
                     <Button.Resources>
                         <Style TargetType="Border">
@@ -122,7 +138,27 @@
 
                 <Button Command="{Binding NavigateToSettingsCommand}" Content="Settings" 
                          Width="140" Height="60" FontSize="18" FontWeight="SemiBold"
-                         Background="#555" Foreground="White">
+                         Background="#555" Foreground="White" Margin="0,0,20,0">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <Button Command="{Binding ViewAuditTrailCommand}" Content="View Audit Trail" 
+                         Width="180" Height="60" FontSize="18" FontWeight="SemiBold"
+                         Background="#795548" Foreground="White" Margin="0,0,20,0">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <Button Command="{Binding ResetAlarmsCommand}" Content="Reset Alarms" 
+                         Width="160" Height="60" FontSize="18" FontWeight="SemiBold"
+                         Background="#FF9800" Foreground="White">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="8"/>
@@ -131,17 +167,6 @@
                 </Button>
 
             </StackPanel>
-
-            <!-- Bottom Right Button -->
-            <Button Command="{Binding NavigateToLabelInvestigationCommand}" Content="Check Label" 
-                    Width="160" Height="60" FontSize="18" FontWeight="SemiBold"
-                    Background="#FFA000" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,40,0">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="8"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
         </Grid>
     </Grid>
 </Page>

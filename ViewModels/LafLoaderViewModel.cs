@@ -15,7 +15,13 @@ namespace WpfMvvmApp.ViewModels
         public string Laf1Path
         {
             get => _laf1Path;
-            set => SetProperty(ref _laf1Path, value);
+            set
+            {
+                if (SetProperty(ref _laf1Path, value))
+                {
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
         }
 
         public string Laf2Path
@@ -32,9 +38,11 @@ namespace WpfMvvmApp.ViewModels
         public LafLoaderViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
+            _laf1Path = string.Empty;
+            _laf2Path = string.Empty;
             SelectLaf1Command = new RelayCommand(o => SelectLaf(1));
             SelectLaf2Command = new RelayCommand(o => SelectLaf(2));
-            OkCommand = new RelayCommand(OnOk);
+            OkCommand = new RelayCommand(OnOk, CanExecuteOk);
             CancelCommand = new RelayCommand(OnCancel);
         }
 
@@ -53,6 +61,11 @@ namespace WpfMvvmApp.ViewModels
                 else
                     Laf2Path = openFileDialog.FileName;
             }
+        }
+
+        private bool CanExecuteOk(object parameter)
+        {
+            return !string.IsNullOrWhiteSpace(Laf1Path);
         }
 
         private void OnOk(object parameter)

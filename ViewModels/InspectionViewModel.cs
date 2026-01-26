@@ -16,10 +16,20 @@ namespace WpfMvvmApp.ViewModels
         public ICommand NavigateToSettingsCommand { get; }
         public ICommand NavigateToLabelInvestigationCommand { get; }
         public ICommand GoBackCommand { get; }
+        public ICommand ViewAuditTrailCommand { get; }
+        public ICommand ResetAlarmsCommand { get; }
+
+        private string _alarmsText;
+        public string AlarmsText
+        {
+            get => _alarmsText;
+            set => SetProperty(ref _alarmsText, value);
+        }
 
         public InspectionViewModel(INavigationService navigationService)
         {
             _navigationService = navigationService;
+            _alarmsText = "System initialized.\nReady for inspection...";
 
             StartCommand = new RelayCommand(OnStart);
             StopCommand = new RelayCommand(OnStop);
@@ -30,16 +40,27 @@ namespace WpfMvvmApp.ViewModels
             GoBackCommand = new RelayCommand(o => {
                 if (_navigationService.CanGoBack) _navigationService.GoBack();
             });
+
+            ViewAuditTrailCommand = new RelayCommand(o => _navigationService.Navigate(new AuditView(new AuditViewModel(navigationService))));
+            ResetAlarmsCommand = new RelayCommand(o => AlarmsText = string.Empty);
         }
 
         private void OnStart(object parameter)
         {
             MessageBox.Show("Inspection Started", "Inspection", MessageBoxButton.OK, MessageBoxImage.Information);
+            AlarmsText += "\nInspection Started.";
         }
 
         private void OnStop(object parameter)
         {
-            MessageBox.Show("Inspection Stopped", "Inspection", MessageBoxButton.OK, MessageBoxImage.Information);
+             // Navigate to Authorise View (Cancel Inspection)
+             _navigationService.Navigate(new AuthoriseView(
+                 new AuthoriseViewModel(_navigationService, () => 
+                 {
+                     // On successful authorisation, navigate to LpnEntryView
+                     _navigationService.Navigate(new LpnEntryView(new LpnEntryViewModel(_navigationService)));
+                 })
+             ));
         }
     }
 }

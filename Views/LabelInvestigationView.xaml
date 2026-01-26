@@ -86,15 +86,28 @@
         </StackPanel>
 
         <!-- Checkboxes -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-            <!-- Transform scale used to make checkboxes larger for touch -->
+        <!-- Checkboxes and Description -->
+        <StackPanel Grid.Row="3" Margin="0,10,0,0" HorizontalAlignment="Center">
             <StackPanel.LayoutTransform>
-                <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
             </StackPanel.LayoutTransform>
-            
-            <CheckBox Content="Patch Print" IsChecked="{Binding IsPatchPrint}" Margin="0,0,20,0" VerticalContentAlignment="Center"/>
-            <CheckBox Content="Invalid Data" IsChecked="{Binding IsInvalidData}" Margin="0,0,20,0" VerticalContentAlignment="Center"/>
-            <CheckBox Content="Other" IsChecked="{Binding IsOther}" VerticalContentAlignment="Center"/>
+
+            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" MaxWidth="700" Margin="0,0,0,15">
+                <CheckBox Content="Patchy Print" IsChecked="{Binding IsPatchyPrint}" Margin="10,5" VerticalContentAlignment="Center"/>
+                <CheckBox Content="Mark on Label" IsChecked="{Binding IsMarkOnLabel}" Margin="10,5" VerticalContentAlignment="Center"/>
+                <CheckBox Content="Ribbon Wrinkle" IsChecked="{Binding IsRibbonWrinkle}" Margin="10,5" VerticalContentAlignment="Center"/>
+                <CheckBox Content="Barcode Scanned Manually" IsChecked="{Binding IsBarcodeScannedManually}" Margin="10,5" VerticalContentAlignment="Center"/>
+                <CheckBox Content="Text Movement" IsChecked="{Binding IsTextMovement}" Margin="10,5" VerticalContentAlignment="Center"/>
+                <CheckBox Content="Other" IsChecked="{Binding IsOther}" Margin="10,5" VerticalContentAlignment="Center"/>
+            </WrapPanel>
+
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Width="400">
+                <TextBlock Text="Label Backing No." FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#333"/>
+                <TextBox Text="{Binding LabelBackingNo, UpdateSourceTrigger=PropertyChanged}" Height="40" Padding="5" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
+
+                <TextBlock Text="{Binding DescriptionLabel}" FontWeight="SemiBold" Margin="0,0,0,5" Foreground="#333"/>
+                <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Height="80" TextWrapping="Wrap" Padding="5" VerticalContentAlignment="Top"/>
+            </StackPanel>
         </StackPanel>
 
     </Grid>
