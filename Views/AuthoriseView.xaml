@@ -16,7 +16,7 @@
             </Border.Effect>
             
             <StackPanel>
-                <TextBlock Text="Authorise" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,30" Foreground="#333"/>
+                <TextBlock Text="{Binding Title}" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,30" Foreground="#333"/>
                 
                 <TextBlock Text="Username" FontSize="16" FontWeight="Bold" Foreground="#666" Margin="0,0,0,5"/>
                 <TextBox x:Name="UsernameTextBox" Text="{Binding Username}" IsReadOnly="True" IsTabStop="False" Background="#F9F9F9" FontSize="18" Padding="10" Height="50" Margin="0,0,0,20" VerticalContentAlignment="Center"/>

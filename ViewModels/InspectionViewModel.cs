@@ -19,11 +19,18 @@ namespace WpfMvvmApp.ViewModels
         public ICommand ViewAuditTrailCommand { get; }
         public ICommand ResetAlarmsCommand { get; }
 
-        private string _alarmsText;
+        private string _alarmsText = string.Empty;
         public string AlarmsText
         {
             get => _alarmsText;
             set => SetProperty(ref _alarmsText, value);
+        }
+
+        private bool _isInspecting;
+        public bool IsInspecting
+        {
+            get => _isInspecting;
+            set => SetProperty(ref _isInspecting, value);
         }
 
         public InspectionViewModel(INavigationService navigationService)
@@ -45,13 +52,17 @@ namespace WpfMvvmApp.ViewModels
             ResetAlarmsCommand = new RelayCommand(o => AlarmsText = string.Empty);
         }
 
-        private void OnStart(object parameter)
+        private void OnStart(object? parameter)
         {
+            IsInspecting = true;
+            App.IsInspecting = true;
             AlarmsText += "\nInspection Started.";
         }
 
-        private void OnStop(object parameter)
+        private void OnStop(object? parameter)
         {
+             IsInspecting = false;
+             App.IsInspecting = false;
              // Navigate to Authorise View (Cancel Inspection)
              _navigationService.Navigate(new AuthoriseView(
                  new AuthoriseViewModel(_navigationService, () => 

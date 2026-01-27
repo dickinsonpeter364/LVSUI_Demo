@@ -11,5 +11,12 @@ namespace WpfMvvmApp.ViewModels
         {
             _navigationService = navigationService;
         }
+
+        private bool _isInspecting;
+        public bool IsInspecting
+        {
+            get => _isInspecting;
+            set => SetProperty(ref _isInspecting, value);
+        }
     }
 }

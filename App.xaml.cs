@@ -9,5 +9,6 @@ namespace WpfMvvmApp;
 /// </summary>
 public partial class App : Application
 {
+    public static bool IsInspecting { get; set; }
 }
 

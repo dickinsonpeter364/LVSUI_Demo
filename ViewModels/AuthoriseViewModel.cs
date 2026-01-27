@@ -9,6 +9,13 @@ namespace WpfMvvmApp.ViewModels
     {
         private readonly INavigationService _navigationService;
         private string _username = string.Empty;
+        private string _title = "Authorise";
+
+        public string Title
+        {
+            get => _title;
+            set => SetProperty(ref _title, value);
+        }
 
         public string Username
         {
@@ -21,10 +28,11 @@ namespace WpfMvvmApp.ViewModels
 
         private readonly Action? _onSuccessNavigation;
 
-        public AuthoriseViewModel(INavigationService navigationService, Action? onSuccessNavigation = null)
+        public AuthoriseViewModel(INavigationService navigationService, Action? onSuccessNavigation = null, string title = "Authorise")
         {
             _navigationService = navigationService;
             _onSuccessNavigation = onSuccessNavigation;
+            Title = title;
             
             // Set current domain and username
             Username = $"{Environment.UserDomainName}\\{Environment.UserName}";
