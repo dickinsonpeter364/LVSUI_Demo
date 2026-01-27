@@ -7,8 +7,8 @@ namespace WpfMvvmApp.ViewModels
 {
     public class LpnEntryViewModel : ViewModelBase
     {
-        private readonly INavigationService _navigationService;
-        private string _lpnNumber;
+        private readonly INavigationService? _navigationService;
+        private string _lpnNumber = string.Empty;
 
         public string LpnNumber
         {
@@ -33,20 +33,20 @@ namespace WpfMvvmApp.ViewModels
             CancelCommand = new RelayCommand(OnCancel);
         }
 
-        private bool CanExecuteOk(object parameter)
+        private bool CanExecuteOk(object? parameter)
         {
             return !string.IsNullOrWhiteSpace(LpnNumber);
         }
 
-        private void OnOk(object parameter)
+        private void OnOk(object? parameter)
         {
             // Proceed to LafLoader Page as requested
-            _navigationService.Navigate(new LafLoaderView(new LafLoaderViewModel(_navigationService)));
+            _navigationService?.Navigate(new LafLoaderView(new LafLoaderViewModel(_navigationService!)));
         }
 
-        private void OnCancel(object parameter)
+        private void OnCancel(object? parameter)
         {
-            if (_navigationService.CanGoBack)
+            if (_navigationService != null && _navigationService.CanGoBack)
             {
                 _navigationService.GoBack();
             }

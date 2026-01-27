@@ -29,27 +29,88 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
+            <!-- Resources for selection buttons -->
+            <Grid.Resources>
+                <Style x:Key="SelectionButtonStyle" TargetType="Button">
+                    <Setter Property="Height" Value="50"/>
+                    <Setter Property="Width" Value="80"/>
+                    <Setter Property="FontSize" Value="14"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="Background" Value="White"/>
+                    <Setter Property="Foreground" Value="#333"/>
+                    <Setter Property="BorderBrush" Value="#CCC"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" 
+                                        BorderBrush="{TemplateBinding BorderBrush}" 
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="5">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Grid.Resources>
+
             <!-- Top Row: Rewind - Speed - Wind -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,50">
                 
-                <!-- Rewind -->
-                <Button Command="{Binding RewindCommand}"
-                        Width="100" Height="100"
-                        Background="#007ACC" Foreground="White"
-                        FontSize="16" FontWeight="Bold"
-                        Content="Rewind">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="100"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
+                <!-- Rewind Section -->
+                <StackPanel VerticalAlignment="Center">
+                    <Button Command="{Binding RewindCommand}"
+                            Width="100" Height="100"
+                            Background="#007ACC" Foreground="White"
+                            FontSize="16" FontWeight="Bold"
+                            Content="Rewind">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="100"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    
+                    <TextBlock Text="Rewind Reel" HorizontalAlignment="Center" Margin="0,20,0,5" Foreground="#666" FontWeight="Bold"/>
+                    <UniformGrid Columns="2" Width="170">
+                        <Button Content="Small"  
+                                Command="{Binding SetRewindSizeCommand}" CommandParameter="Small">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource SelectionButtonStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RewindReelSize}" Value="Small">
+                                            <Setter Property="Background" Value="#007ACC"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="BorderBrush" Value="#005A9E"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Content="Large" 
+                                Command="{Binding SetRewindSizeCommand}" CommandParameter="Large"
+                                Margin="10,0,0,0">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource SelectionButtonStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RewindReelSize}" Value="Large">
+                                            <Setter Property="Background" Value="#007ACC"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="BorderBrush" Value="#005A9E"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </UniformGrid>
+                </StackPanel>
 
                 <!-- Speed Control -->
-                <StackPanel Margin="30,0" VerticalAlignment="Center" Width="300">
+                <StackPanel Margin="30,0" VerticalAlignment="Top" Width="300">
                     <TextBlock Text="{Binding Speed, StringFormat='Speed: {0:F0}%'}" 
                                HorizontalAlignment="Center" Margin="0,0,0,10" 
-                               FontSize="18" FontWeight="SemiBold" Foreground="#555"/>
+                               FontSize="18" FontWeight="Bold" Foreground="#555"/>
                     <Slider Minimum="0" Maximum="100" Value="{Binding Speed}" 
                             TickFrequency="10" IsSnapToTickEnabled="True"
                             Height="40"/>
@@ -59,34 +120,82 @@
                     </Grid>
                 </StackPanel>
 
-                <!-- Wind -->
-                 <Button Command="{Binding WindCommand}"
-                        Width="100" Height="100"
-                        Background="#007ACC" Foreground="White"
-                        FontSize="16" FontWeight="Bold"
-                        Content="Wind">
+                <!-- Wind Section -->
+                <StackPanel VerticalAlignment="Center">
+                     <Button Command="{Binding WindCommand}"
+                            Width="100" Height="100"
+                            Background="#007ACC" Foreground="White"
+                            FontSize="16" FontWeight="Bold"
+                            Content="Wind">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="100"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    
+                    <TextBlock Text="Wind Reel" HorizontalAlignment="Center" Margin="0,20,0,5" Foreground="#666" FontWeight="Bold"/>
+                    <UniformGrid Columns="2" Width="170">
+                        <Button Content="Small"  
+                                Command="{Binding SetWindSizeCommand}" CommandParameter="Small">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource SelectionButtonStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding WindReelSize}" Value="Small">
+                                            <Setter Property="Background" Value="#007ACC"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="BorderBrush" Value="#005A9E"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Content="Large"  
+                                Command="{Binding SetWindSizeCommand}" CommandParameter="Large"
+                                Margin="10,0,0,0">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource SelectionButtonStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding WindReelSize}" Value="Large">
+                                            <Setter Property="Background" Value="#007ACC"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="BorderBrush" Value="#005A9E"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </UniformGrid>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Bottom Row: Start & Stop -->
+            <StackPanel Grid.Row="1" HorizontalAlignment="Center">
+                <Button Command="{Binding StartCommand}"
+                        Width="150" Height="80"
+                        Background="#2E7D32" Foreground="White"
+                        FontSize="24" FontWeight="Bold"
+                        Content="START"
+                        Margin="0,0,0,20">
                     <Button.Resources>
                         <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="100"/>
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <Button Command="{Binding StopCommand}"
+                        Width="150" Height="80"
+                        Background="#D32F2F" Foreground="White"
+                        FontSize="24" FontWeight="Bold"
+                        Content="STOP">
+                     <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"/>
                         </Style>
                     </Button.Resources>
                 </Button>
             </StackPanel>
-
-            <!-- Bottom Row: Stop -->
-            <Button Grid.Row="1" 
-                    Command="{Binding StopCommand}"
-                    Width="150" Height="80"
-                    Background="#D32F2F" Foreground="White"
-                    FontSize="24" FontWeight="Bold"
-                    Content="STOP"
-                    HorizontalAlignment="Center">
-                 <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="10"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
         </Grid>
     </Grid>
 </Page>

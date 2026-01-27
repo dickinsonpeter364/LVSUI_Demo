@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfMvvmApp.Views"
         mc:Ignorable="d"
-        Title="Label Verification System" WindowState="Maximized" ResizeMode="NoResize">
+        Title="Label Verification System" WindowState="Maximized" WindowStyle="None" ResizeMode="NoResize">
     <DockPanel LastChildFill="True">
         <!-- Top Header Area (Shared across all pages) -->
         <Border DockPanel.Dock="Top" Background="#333" Height="60" Padding="10,0">
@@ -13,7 +13,7 @@
                 <!-- Use pack URI for reliability -->
                 <Image Source="pack://application:,,,/Images/logo.png" 
                        Stretch="Uniform" 
-                       Width="40" Height="40" 
+                       Width="105" Height="50" 
                        Margin="0,0,15,0"
                        VerticalAlignment="Center"/>
                 <TextBlock Text="Label Verification System" 

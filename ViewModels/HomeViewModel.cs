@@ -7,7 +7,7 @@ namespace WpfMvvmApp.ViewModels
 {
     public class HomeViewModel : ViewModelBase
     {
-        private readonly INavigationService _navigationService;
+        private readonly INavigationService? _navigationService;
 
         public HomeViewModel(INavigationService navigationService)
         {
@@ -21,7 +21,11 @@ namespace WpfMvvmApp.ViewModels
         // Add a public parameterless constructor
         public HomeViewModel()
         {
-            // Initialization code if needed
+            _navigationService = null;
+            NavigateToSettingsCommand = new RelayCommand(o => { });
+            NavigateToAuthoriseCommand = new RelayCommand(o => { });
+            NavigateToDeviceControlCommand = new RelayCommand(o => { });
+            NavigateToInspectionCommand = new RelayCommand(o => { });
         }
 
         public string WelcomeMessage => "UI Demo for Label Verification System";

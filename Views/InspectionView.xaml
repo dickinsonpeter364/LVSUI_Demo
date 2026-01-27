@@ -49,7 +49,7 @@
                     <RowDefinition Height="3*"/>   <!-- Alarms Text -->
                 </Grid.RowDefinitions>
                 
-                <TextBlock Grid.Row="0" Text="Backing Camera" FontSize="18" FontWeight="SemiBold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Row="0" Text="Backing Camera" FontSize="18" FontWeight="Bold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
                 
                 <!-- ViewBox set to Stretch="Fill" -->
                 <Border Grid.Row="1" BorderBrush="#999" BorderThickness="1" Background="Black" Margin="0,0,0,20">
@@ -73,7 +73,7 @@
                 </Border>
 
                 <!-- Alarms Section -->
-                <TextBlock Grid.Row="2" Text="Alarms" FontSize="18" FontWeight="SemiBold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Row="2" Text="Alarms" FontSize="18" FontWeight="Bold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
                 <TextBox Grid.Row="3" Text="{Binding AlarmsText, Mode=OneWay}" IsReadOnly="True" 
                          VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" 
                          Padding="10" FontSize="14" BorderBrush="#999" Background="White"/>
@@ -86,7 +86,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                 <TextBlock Grid.Row="0" Text="Current Label" FontSize="18" FontWeight="SemiBold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
+                 <TextBlock Grid.Row="0" Text="Current Label" FontSize="18" FontWeight="Bold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
                  
                  <!-- Height binding removed to allow it to max out its own cell -->
                  <Border Grid.Row="1" BorderBrush="#999" BorderThickness="1" Background="White">

@@ -25,10 +25,10 @@
 
         <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Text="{Binding SettingsMessage}" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
-            <TextBlock Text="App Version: 1.0.0" FontSize="16" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+            <TextBlock Text="App Version: 1.0.0" FontSize="16" FontWeight="Bold" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,10"/>
             <!-- Simulating some setting options -->
-            <CheckBox Content="Enable Advanced Mode" FontSize="16" Margin="0,0,0,10"/>
-            <CheckBox Content="Show Developer Tools" FontSize="16" Margin="0,0,0,10"/>
+            <CheckBox Content="Enable Advanced Mode" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <CheckBox Content="Show Developer Tools" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
         </StackPanel>
     </Grid>
 </Page>

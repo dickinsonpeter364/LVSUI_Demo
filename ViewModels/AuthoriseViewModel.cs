@@ -8,7 +8,7 @@ namespace WpfMvvmApp.ViewModels
     public class AuthoriseViewModel : ViewModelBase
     {
         private readonly INavigationService _navigationService;
-        private string _username;
+        private string _username = string.Empty;
 
         public string Username
         {
@@ -19,21 +19,25 @@ namespace WpfMvvmApp.ViewModels
         public ICommand OkCommand { get; }
         public ICommand CancelCommand { get; }
 
-        private readonly Action _onSuccessNavigation;
+        private readonly Action? _onSuccessNavigation;
 
-        public AuthoriseViewModel(INavigationService navigationService, Action onSuccessNavigation = null)
+        public AuthoriseViewModel(INavigationService navigationService, Action? onSuccessNavigation = null)
         {
             _navigationService = navigationService;
             _onSuccessNavigation = onSuccessNavigation;
+            
+            // Set current domain and username
+            Username = $"{Environment.UserDomainName}\\{Environment.UserName}";
+            
             OkCommand = new RelayCommand(OnOk);
             CancelCommand = new RelayCommand(OnCancel);
         }
 
-        private void OnOk(object parameter)
+        private void OnOk(object? parameter)
         {
             // In a real app, we would validate credentials here.
             // parameter can be the PasswordBox to retrieve the password securely.
-            string password = (parameter as System.Windows.Controls.PasswordBox)?.Password;
+            string? password = (parameter as System.Windows.Controls.PasswordBox)?.Password;
 
             if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(password))
             {
@@ -63,7 +67,7 @@ namespace WpfMvvmApp.ViewModels
             }
         }
 
-        private void OnCancel(object parameter)
+        private void OnCancel(object? parameter)
         {
             if (_navigationService.CanGoBack)
             {

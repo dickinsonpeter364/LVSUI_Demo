@@ -18,7 +18,7 @@
             <StackPanel>
                 <TextBlock Text="Enter LPN Number" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,30" Foreground="#333"/>
 
-                <TextBlock Text="LPN Number" FontSize="16" Foreground="#666" Margin="0,0,0,5"/>
+                <TextBlock Text="LPN Number" FontSize="16" FontWeight="Bold" Foreground="#666" Margin="0,0,0,5"/>
                 <TextBox x:Name="LpnTextBox" Text="{Binding LpnNumber, UpdateSourceTrigger=PropertyChanged}" 
                          FontSize="20" Padding="10" Height="50" Margin="0,0,0,40" 
                          VerticalContentAlignment="Center"/>

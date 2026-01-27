@@ -39,7 +39,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="Backing Camera" FontSize="18" FontWeight="SemiBold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Text="Backing Camera" FontSize="18" FontWeight="Bold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
                     <Border Grid.Row="1" BorderBrush="#999" BorderThickness="1" Background="Black">
                         <Viewbox Stretch="Fill" x:Name="CameraViewBox">
                             <Grid Width="400" Height="300" Background="Black">
@@ -66,7 +66,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="Variable Values" FontSize="18" FontWeight="SemiBold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Text="Variable Values" FontSize="18" FontWeight="Bold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
                     <TextBox Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
                              Padding="10" FontSize="14" BorderBrush="#999" Background="White"/>
                 </Grid>
@@ -83,7 +83,7 @@
                 
                 <!-- Label Image Area -->
                 <StackPanel Grid.Row="0" Margin="0,0,0,5" HorizontalAlignment="Center">
-                    <TextBlock Text="Current Label" FontSize="16" FontWeight="SemiBold" Foreground="#444" 
+                    <TextBlock Text="Current Label" FontSize="16" FontWeight="Bold" Foreground="#444" 
                                HorizontalAlignment="Center" Margin="0,0,0,3"/>
                     <Border BorderBrush="#999" BorderThickness="1" Background="White" HorizontalAlignment="Center">
                         <Viewbox Stretch="Uniform">
@@ -151,12 +151,12 @@
 
                 <!-- Checkboxes Area -->
                 <WrapPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" MaxWidth="700" Margin="0,0,0,5">
-                    <CheckBox Content="Patchy Print" IsChecked="{Binding IsPatchyPrint}" Margin="8,4" VerticalContentAlignment="Center"/>
-                    <CheckBox Content="Mark on Label" IsChecked="{Binding IsMarkOnLabel}" Margin="8,4" VerticalContentAlignment="Center"/>
-                    <CheckBox Content="Ribbon Wrinkle" IsChecked="{Binding IsRibbonWrinkle}" Margin="8,4" VerticalContentAlignment="Center"/>
-                    <CheckBox Content="Barcode Scanned Manually" IsChecked="{Binding IsBarcodeScannedManually}" Margin="8,4" VerticalContentAlignment="Center"/>
-                    <CheckBox Content="Text Movement" IsChecked="{Binding IsTextMovement}" Margin="8,4" VerticalContentAlignment="Center"/>
-                    <CheckBox Content="Other" IsChecked="{Binding IsOther}" Margin="8,4" VerticalContentAlignment="Center"/>
+                    <CheckBox Content="Patchy Print" IsChecked="{Binding IsPatchyPrint}" Margin="8,4" VerticalContentAlignment="Center" FontWeight="Bold"/>
+                    <CheckBox Content="Mark on Label" IsChecked="{Binding IsMarkOnLabel}" Margin="8,4" VerticalContentAlignment="Center" FontWeight="Bold"/>
+                    <CheckBox Content="Ribbon Wrinkle" IsChecked="{Binding IsRibbonWrinkle}" Margin="8,4" VerticalContentAlignment="Center" FontWeight="Bold"/>
+                    <CheckBox Content="Barcode Scanned Manually" IsChecked="{Binding IsBarcodeScannedManually}" Margin="8,4" VerticalContentAlignment="Center" FontWeight="Bold"/>
+                    <CheckBox Content="Text Movement" IsChecked="{Binding IsTextMovement}" Margin="8,4" VerticalContentAlignment="Center" FontWeight="Bold"/>
+                    <CheckBox Content="Other" IsChecked="{Binding IsOther}" Margin="8,4" VerticalContentAlignment="Center" FontWeight="Bold"/>
                 </WrapPanel>
 
                 <!-- Two columns for textboxes - Takes remaining height -->
@@ -171,11 +171,11 @@
                     </Grid.RowDefinitions>
 
                     <!-- Label Backing No. -->
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Label Backing No." FontWeight="SemiBold" Margin="0,0,0,3" Foreground="#333"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Label Backing No." FontWeight="Bold" Margin="0,0,0,3" Foreground="#333"/>
                     <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding LabelBackingNo, UpdateSourceTrigger=PropertyChanged}" Height="35" Padding="5" VerticalContentAlignment="Center" VerticalAlignment="Top" Margin="0,0,10,0"/>
 
                     <!-- Description -->
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DescriptionLabel}" FontWeight="SemiBold" Margin="10,0,0,3" Foreground="#333"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DescriptionLabel}" FontWeight="Bold" Margin="10,0,0,3" Foreground="#333"/>
                     <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Padding="5" VerticalContentAlignment="Top" VerticalAlignment="Stretch" Margin="10,0,0,0"/>
                 </Grid>
             </Grid>

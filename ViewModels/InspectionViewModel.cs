@@ -47,7 +47,6 @@ namespace WpfMvvmApp.ViewModels
 
         private void OnStart(object parameter)
         {
-            MessageBox.Show("Inspection Started", "Inspection", MessageBoxButton.OK, MessageBoxImage.Information);
             AlarmsText += "\nInspection Started.";
         }
 
