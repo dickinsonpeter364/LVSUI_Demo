@@ -6,8 +6,7 @@
       xmlns:local="clr-namespace:WpfMvvmApp.Views"
       mc:Ignorable="d" 
       d:DesignHeight="800" d:DesignWidth="600"
-    Title="Authorise"
-    FocusManager.FocusedElement="{Binding ElementName=UserPasswordBox}">
+    Title="Authorise">
 
     <Grid Background="#F0F0F0">
         <Border Background="White" CornerRadius="10" Padding="30" VerticalAlignment="Center" HorizontalAlignment="Center" Width="400">
@@ -19,7 +18,7 @@
                 <TextBlock Text="{Binding Title}" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,30" Foreground="#333"/>
                 
                 <TextBlock Text="Username" FontSize="16" FontWeight="Bold" Foreground="#666" Margin="0,0,0,5"/>
-                <TextBox x:Name="UsernameTextBox" Text="{Binding Username}" IsReadOnly="True" IsTabStop="False" Background="#F9F9F9" FontSize="18" Padding="10" Height="50" Margin="0,0,0,20" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="UsernameTextBox" Text="{Binding Username}" IsReadOnly="{Binding IsUsernameReadOnly}" Background="#F9F9F9" FontSize="18" Padding="10" Height="50" Margin="0,0,0,20" VerticalContentAlignment="Center"/>
                 
                 <TextBlock Text="Password" FontSize="16" FontWeight="Bold" Foreground="#666" Margin="0,0,0,5"/>
                 <PasswordBox x:Name="UserPasswordBox" FontSize="18" Padding="10" Height="50" Margin="0,0,0,40" VerticalContentAlignment="Center"/>

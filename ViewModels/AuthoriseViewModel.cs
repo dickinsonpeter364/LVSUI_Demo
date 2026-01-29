@@ -17,6 +17,13 @@ namespace WpfMvvmApp.ViewModels
             set => SetProperty(ref _title, value);
         }
 
+        private bool _isUsernameReadOnly = true;
+        public bool IsUsernameReadOnly
+        {
+            get => _isUsernameReadOnly;
+            set => SetProperty(ref _isUsernameReadOnly, value);
+        }
+
         public string Username
         {
             get => _username;
@@ -28,14 +35,15 @@ namespace WpfMvvmApp.ViewModels
 
         private readonly Action? _onSuccessNavigation;
 
-        public AuthoriseViewModel(INavigationService navigationService, Action? onSuccessNavigation = null, string title = "Authorise")
+        public AuthoriseViewModel(INavigationService navigationService, Action? onSuccessNavigation = null, string title = "Authorise", string? initialUsername = null, bool isUsernameReadOnly = true)
         {
             _navigationService = navigationService;
             _onSuccessNavigation = onSuccessNavigation;
             Title = title;
+            IsUsernameReadOnly = isUsernameReadOnly;
             
-            // Set current domain and username
-            Username = $"{Environment.UserDomainName}\\{Environment.UserName}";
+            // Set current domain and username or use provided
+            Username = initialUsername ?? $"{Environment.UserDomainName}\\{Environment.UserName}";
             
             OkCommand = new RelayCommand(OnOk);
             CancelCommand = new RelayCommand(OnCancel);

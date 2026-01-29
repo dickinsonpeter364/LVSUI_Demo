@@ -124,31 +124,31 @@ namespace WpfMvvmApp.ViewModels
             return LabelBackingNo.All(char.IsDigit);
         }
 
-        private bool CanAccept(object parameter)
+        private bool CanAccept(object? parameter)
         {
             return IsLabelBackingNoValid();
         }
 
-        private void OnAccept(object parameter)
+        private void OnAccept(object? parameter)
         {
             if (_navigationService.CanGoBack)
                 _navigationService.GoBack();
         }
 
-        private void OnMissing(object parameter)
+        private void OnMissing(object? parameter)
         {
             if (_navigationService.CanGoBack)
                 _navigationService.GoBack();
         }
 
 
-        private void OnReject(object parameter)
+        private void OnReject(object? parameter)
         {
             if (_navigationService.CanGoBack)
                 _navigationService.GoBack();
         }
 
-        private bool CanReject(object parameter)
+        private bool CanReject(object? parameter)
         {
             // Check Label Backing No is valid
             if (!IsLabelBackingNoValid())

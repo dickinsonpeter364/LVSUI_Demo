@@ -26,6 +26,7 @@
 
                 <Button Content="Log Off" 
                         Command="{Binding LogOffCommand}"
+                        Visibility="{Binding IsLogOffVisible, Converter={StaticResource BoolToVis}}"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
                         Padding="15,5"

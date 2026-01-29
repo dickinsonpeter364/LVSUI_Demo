@@ -5,10 +5,34 @@ using WpfMvvmApp.Services;
 
 namespace WpfMvvmApp.ViewModels
 {
+    public enum DeviceControlMode
+    {
+        Normal,
+        PostLogin
+    }
+
     public class DeviceControlViewModel : ViewModelBase
     {
         private readonly INavigationService _navigationService;
         private double _speed;
+        private DeviceControlMode _mode;
+        private readonly Action? _onContinue;
+
+        public DeviceControlMode Mode
+        {
+            get => _mode;
+            set
+            {
+                if (SetProperty(ref _mode, value))
+                {
+                    OnPropertyChanged(nameof(IsPostLoginMode));
+                    OnPropertyChanged(nameof(CanGoBackVisible));
+                }
+            }
+        }
+
+        public bool IsPostLoginMode => Mode == DeviceControlMode.PostLogin;
+        public bool CanGoBackVisible => Mode == DeviceControlMode.Normal;
 
         public double Speed
         {
@@ -37,10 +61,13 @@ namespace WpfMvvmApp.ViewModels
         public ICommand GoBackCommand { get; }
         public ICommand SetRewindSizeCommand { get; }
         public ICommand SetWindSizeCommand { get; }
+        public ICommand ContinueToInspectionCommand { get; }
 
-        public DeviceControlViewModel(INavigationService navigationService)
+        public DeviceControlViewModel(INavigationService navigationService, DeviceControlMode mode = DeviceControlMode.Normal, Action? onContinue = null)
         {
             _navigationService = navigationService;
+            _mode = mode;
+            _onContinue = onContinue;
             
             // Default speed
             Speed = 50;
@@ -50,11 +77,12 @@ namespace WpfMvvmApp.ViewModels
             StartCommand = new RelayCommand(OnStart);
             StopCommand = new RelayCommand(OnStop);
             GoBackCommand = new RelayCommand(o => {
-                if (_navigationService.CanGoBack) _navigationService.GoBack();
+                if (CanGoBackVisible && _navigationService.CanGoBack) _navigationService.GoBack();
             });
 
             SetRewindSizeCommand = new RelayCommand(p => RewindReelSize = p?.ToString() ?? "Small");
             SetWindSizeCommand = new RelayCommand(p => WindReelSize = p?.ToString() ?? "Small");
+            ContinueToInspectionCommand = new RelayCommand(o => _onContinue?.Invoke());
         }
 
         private void OnRewind(object? parameter)

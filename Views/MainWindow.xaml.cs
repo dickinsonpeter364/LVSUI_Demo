@@ -33,8 +33,25 @@ namespace WpfMvvmApp.Views
             this.PreviewMouseMove += (s, e) => ResetTimer();
             this.PreviewKeyDown += (s, e) => ResetTimer();
 
+            // Track navigation to show/hide Log Off button
+            MainFrame.Navigated += (s, e) => 
+            {
+                if (DataContext is MainViewModel mainVm)
+                {
+                    mainVm.IsLogOffVisible = !(MainFrame.Content is AuthoriseView);
+                }
+            };
+
             // Navigate to Login/Authorise
-            _navigationService.Navigate(new AuthoriseView(new AuthoriseViewModel(_navigationService, title: "Log On")));
+            _navigationService.Navigate(new AuthoriseView(new AuthoriseViewModel(_navigationService, () => 
+            {
+                // After startup login, go to DeviceControl in PostLogin mode
+                _navigationService.Navigate(new DeviceControlView(new DeviceControlViewModel(_navigationService, DeviceControlMode.PostLogin, () => 
+                {
+                    // After clicking "Continue to Inspection", go to LpnEntryView
+                    _navigationService.Navigate(new LpnEntryView(new LpnEntryViewModel(_navigationService)));
+                })));
+            }, title: "Log On")));
         }
 
         private void ResetTimer()

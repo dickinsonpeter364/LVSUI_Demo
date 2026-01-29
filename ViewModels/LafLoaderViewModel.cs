@@ -63,18 +63,19 @@ namespace WpfMvvmApp.ViewModels
             }
         }
 
-        private bool CanExecuteOk(object parameter)
+        private bool CanExecuteOk(object? parameter)
         {
             return !string.IsNullOrWhiteSpace(Laf1Path);
         }
 
-        private void OnOk(object parameter)
+        private void OnOk(object? parameter)
         {
-            // Navigate to Inspection Page
-            _navigationService.Navigate(new InspectionView(new InspectionViewModel(_navigationService)));
+            int lafCount = string.IsNullOrWhiteSpace(Laf2Path) ? 1 : 2;
+            // Navigate to Inspection Page with the selected LAF count
+            _navigationService.Navigate(new InspectionView(new InspectionViewModel(_navigationService, lafCount)));
         }
 
-        private void OnCancel(object parameter)
+        private void OnCancel(object? parameter)
         {
             if (_navigationService.CanGoBack)
             {

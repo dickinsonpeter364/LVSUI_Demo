@@ -6,18 +6,22 @@
       xmlns:local="clr-namespace:WpfMvvmApp.Views"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="800"
-      Title="Device Control">
+      Title="Device Control"
+      >
 
     <Grid Background="#F0F0F0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
+        <Grid.Resources>
+        </Grid.Resources>
         <!-- Header -->
         <Border Background="White" Padding="20" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
             <Grid>
-                <Button Command="{Binding GoBackCommand}" HorizontalAlignment="Left" Width="50" Height="50" Background="Transparent" BorderThickness="0" Content="&lt;" FontSize="24" Foreground="#333"/>
+                <Button Command="{Binding GoBackCommand}" 
+                        Visibility="{Binding CanGoBackVisible, Converter={StaticResource BoolToVis}}"
+                        HorizontalAlignment="Left" Width="50" Height="50" Background="Transparent" BorderThickness="0" Content="&lt;" FontSize="24" Foreground="#333"/>
                 <TextBlock Text="Device Control" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#333"/>
             </Grid>
         </Border>
@@ -29,7 +33,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Resources for selection buttons -->
+            <!-- Resources -->
             <Grid.Resources>
                 <Style x:Key="SelectionButtonStyle" TargetType="Button">
                     <Setter Property="Height" Value="50"/>
@@ -189,6 +193,20 @@
                         Background="#D32F2F" Foreground="White"
                         FontSize="24" FontWeight="Bold"
                         Content="STOP">
+                     <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                
+                <Button Command="{Binding ContinueToInspectionCommand}"
+                        Width="300" Height="60"
+                        Background="#007ACC" Foreground="White"
+                        FontSize="20" FontWeight="Bold"
+                        Content="Continue to Inspection"
+                        Margin="0,40,0,0"
+                        Visibility="{Binding IsPostLoginMode, Converter={StaticResource BoolToVis}}">
                      <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="10"/>

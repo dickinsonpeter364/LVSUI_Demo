@@ -9,6 +9,18 @@ namespace WpfMvvmApp.Views
         {
             InitializeComponent();
             DataContext = viewModel;
+            
+            this.Loaded += (s, e) => 
+            {
+                if (viewModel.IsUsernameReadOnly)
+                {
+                    UserPasswordBox.Focus();
+                }
+                else
+                {
+                    UsernameTextBox.Focus();
+                }
+            };
         }
     }
 }

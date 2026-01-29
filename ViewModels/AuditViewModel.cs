@@ -16,7 +16,7 @@ namespace WpfMvvmApp.ViewModels
             GoBackCommand = new RelayCommand(OnGoBack);
         }
 
-        private void OnGoBack(object parameter)
+        private void OnGoBack(object? parameter)
         {
             if (_navigationService.CanGoBack)
             {

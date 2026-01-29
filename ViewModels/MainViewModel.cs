@@ -26,6 +26,13 @@ namespace WpfMvvmApp.ViewModels
             _navigationService.Navigate(new AuthoriseView(new AuthoriseViewModel(_navigationService, title: "Log On")));
         }
 
+        private bool _isLogOffVisible = true;
+        public bool IsLogOffVisible
+        {
+            get => _isLogOffVisible;
+            set => SetProperty(ref _isLogOffVisible, value);
+        }
+
         private bool _isInspecting;
         public bool IsInspecting
         {

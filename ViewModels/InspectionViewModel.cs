@@ -33,9 +33,14 @@ namespace WpfMvvmApp.ViewModels
             set => SetProperty(ref _isInspecting, value);
         }
 
-        public InspectionViewModel(INavigationService navigationService)
+        private readonly int _lafCount;
+
+        public int LafCount => _lafCount;
+
+        public InspectionViewModel(INavigationService navigationService, int lafCount = 1)
         {
             _navigationService = navigationService;
+            _lafCount = lafCount;
             _alarmsText = "System initialized.\nReady for inspection...";
 
             StartCommand = new RelayCommand(OnStart);
@@ -54,6 +59,12 @@ namespace WpfMvvmApp.ViewModels
 
         private void OnStart(object? parameter)
         {
+            // Navigate to QC Review instead of starting immediately
+            _navigationService.Navigate(new QcReviewView(new QcReviewViewModel(_navigationService, _lafCount, this)));
+        }
+
+        public void CompleteStartInspection()
+        {
             IsInspecting = true;
             App.IsInspecting = true;
             AlarmsText += "\nInspection Started.";
@@ -67,8 +78,12 @@ namespace WpfMvvmApp.ViewModels
              _navigationService.Navigate(new AuthoriseView(
                  new AuthoriseViewModel(_navigationService, () => 
                  {
-                     // On successful authorisation, navigate to LpnEntryView
-                     _navigationService.Navigate(new LpnEntryView(new LpnEntryViewModel(_navigationService)));
+                     // On successful authorisation, go to DeviceControl in PostLogin mode
+                     _navigationService.Navigate(new DeviceControlView(new DeviceControlViewModel(_navigationService, DeviceControlMode.PostLogin, () => 
+                     {
+                         // After clicking "Continue to Inspection", go back to LpnEntryView
+                         _navigationService.Navigate(new LpnEntryView(new LpnEntryViewModel(_navigationService)));
+                     })));
                  })
              ));
         }
