@@ -1,3 +1,19 @@
 <Solution>
+  <Folder Name="/Libraries/">
+    <Project Path="Libraries/Enums/Enums.csproj" />
+    <Project Path="Libraries/Delegates/Delegates.csproj" />
+    <Project Path="Libraries/Constants/Constants.csproj" />
+    <Project Path="Libraries/ApplicationData/ApplicationData.csproj" />
+    <Project Path="Libraries/Interfacing/Interfacing.csproj" />
+    <Project Path="Libraries/DataAccessOracle/DataAccessOracle.csproj" />
+    <Project Path="Libraries/DataManager/DataManager.csproj" />
+    <Project Path="Libraries/mxClient/mxClient.csproj" />
+    <Project Path="Libraries/TaskBar/TaskBar.csproj" />
+    <Project Path="Libraries/UtilityFunctions/UtilityFunctions.csproj" />
+    <Project Path="Libraries/IOClasses/IOClasses.csproj" />
+    <Project Path="Libraries/CameraManager/CameraManager.csproj" />
+    <Project Path="Libraries/Messaging/Messaging.csproj" />
+    <Project Path="Libraries/Inspection/Inspection.csproj" />
+  </Folder>
   <Project Path="LVS.csproj" />
 </Solution>

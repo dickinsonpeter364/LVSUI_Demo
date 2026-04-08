@@ -6,7 +6,14 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <DisableWinFormsImplicitNamespaceImports>true</DisableWinFormsImplicitNamespaceImports>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Libraries\**" />
+    <EmbeddedResource Remove="Libraries\**" />
+    <None Remove="Libraries\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Images\**">
@@ -15,7 +22,29 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.8" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.2" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="SharpVectors.Reloaded" Version="1.8.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="Libraries\Enums\Enums.csproj" />
+    <ProjectReference Include="Libraries\Delegates\Delegates.csproj" />
+    <ProjectReference Include="Libraries\Constants\Constants.csproj" />
+    <ProjectReference Include="Libraries\ApplicationData\ApplicationData.csproj" />
+    <ProjectReference Include="Libraries\Interfacing\Interfacing.csproj" />
+    <ProjectReference Include="Libraries\DataAccessOracle\DataAccessOracle.csproj" />
+    <ProjectReference Include="Libraries\DataManager\DataManager.csproj" />
+    <ProjectReference Include="Libraries\mxClient\mxClient.csproj" />
+    <ProjectReference Include="Libraries\TaskBar\TaskBar.csproj" />
+    <ProjectReference Include="Libraries\UtilityFunctions\UtilityFunctions.csproj" />
+    <ProjectReference Include="Libraries\IOClasses\IOClasses.csproj" />
+    <ProjectReference Include="Libraries\CameraManager\CameraManager.csproj" />
+    <ProjectReference Include="Libraries\Messaging\Messaging.csproj" />
+    <ProjectReference Include="Libraries\Inspection\Inspection.csproj" />
   </ItemGroup>
 
   <ItemGroup>

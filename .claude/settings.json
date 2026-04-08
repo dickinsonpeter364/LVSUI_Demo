@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/merge/REWINDER_ANISO -name \"*.csproj\" -type f -exec grep -l \"Peripherals\\\\|Security\\\\|Signatures\" {} \\\\;)",
+      "Bash(xargs grep:*)",
+      "Read(//c//**)",
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet build:*)",
+      "Read(//c/REWINDER_ANISO/**)",
+      "Read(//c/LVS2/**)",
+      "Bash(find Libraries -type d -name obj -exec rm -rf {} +)",
+      "Bash(find Libraries -type d -name bin -exec rm -rf {} +)",
+      "Bash(cp \"/c/REWINDER_ANISO/References/Automation.BDaq4.dll\" \"c:/LVS2/Libraries/References/\")",
+      "Bash(cp -r \"/c/REWINDER_ANISO/TaskBar\" \"c:/LVS2/Libraries/TaskBar\")",
+      "Bash(cp -r \"/c/merge/REWINDER_ANISO/IOClasses\" \"c:/LVS2/Libraries/IOClasses\")",
+      "Bash(cp \"/c/merge/REWINDER_ANISO/BASE/IInspection.cs\" \"/c/LVS2/Libraries/Inspection/\")",
+      "Bash(cp \"/c/merge/REWINDER_ANISO/BASE/Inspection.cs\" \"/c/LVS2/Libraries/Inspection/\")",
+      "Bash(cp \"/c/merge/REWINDER_ANISO/BASE/DummyInspection.cs\" \"/c/LVS2/Libraries/Inspection/\")"
+    ]
+  }
+}
