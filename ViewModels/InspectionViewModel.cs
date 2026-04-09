@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using CONSTANTS;
 using LVS3;
 using Microsoft.Extensions.DependencyInjection;
 using WpfMvvmApp.Core;
@@ -67,6 +68,8 @@ namespace WpfMvvmApp.ViewModels
         private readonly int _lafCount;
         public int LafCount => _lafCount;
 
+        private bool _alarmsSuppressed;
+
         public InspectionViewModel(INavigationService navigationService, int lafCount = 1)
         {
             _navigationService = navigationService;
@@ -84,6 +87,10 @@ namespace WpfMvvmApp.ViewModels
             _messaging.Register<SystemMessage>(this, OnSystemMessage);
             _messaging.Register<AlarmMessage>(this, OnAlarmMessage);
             _messaging.Register<InspectionStatusMessage>(this, OnInspectionStatus);
+
+            // Subscribe to IO alarm events globally so alarms are caught
+            // even when no inspection is running
+            SYSTEM_IO.IO_CHANGE_Handler += OnIOChangeOfState;
 
             StartCommand = new RelayCommand(OnStart);
             StopCommand = new RelayCommand(OnStop);
@@ -115,6 +122,7 @@ namespace WpfMvvmApp.ViewModels
         /// </summary>
         public void CompleteStartInspection()
         {
+            _alarmsSuppressed = false;
             IsInspecting = true;
             App.IsInspecting = true;
 
@@ -135,7 +143,7 @@ namespace WpfMvvmApp.ViewModels
                     System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
                         SystemMessages.Add(msg));
                 },
-                OnAlarm = () => AlarmsText += "\nAlarm triggered.",
+                OnAlarm = () => HandleAlarm(),
                 OnError = err => AlarmsText += $"\nError: {err}"
             };
 
@@ -159,6 +167,108 @@ namespace WpfMvvmApp.ViewModels
                     })));
                 })
             ));
+        }
+
+        private void OnIOChangeOfState(int channel, bool high)
+        {
+            if (channel != SYSTEM_IO.ALARM || !high)
+                return;
+
+            // If an inspection is running, Inspection.IO_COS_Handler will invoke
+            // OnAlarm (which calls HandleAlarm) — don't double-handle.
+            if (IsInspecting)
+                return;
+
+            // If the user already acknowledged a non-inspection alarm, suppress
+            // further alarms until the next inspection starts.
+            if (_alarmsSuppressed)
+                return;
+
+            HandleAlarm();
+        }
+
+        private void HandleAlarm()
+        {
+            try
+            {
+                // Stop processing
+                IsInspecting = false;
+                App.IsInspecting = false;
+
+                // Read error registers from PLC
+                var errorsPresent = 0;
+                _mxClient.ReadRegister(1, "Errors_Present", ref errorsPresent, 3);
+
+                var errors = new List<string>();
+                if (errorsPresent > 0)
+                    errors = _mxClient.ErrorRegisters(1);
+
+                if (errors.Count > 0)
+                {
+                    var alarmDescription = "";
+                    foreach (var err in errors)
+                    {
+                        if (!string.IsNullOrEmpty(err))
+                        {
+                            alarmDescription = $"Active Alarm: {err} : {PLCFailCodes.GetDescription(err)}";
+
+                            System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
+                            {
+                                AlarmsText += $"\n{alarmDescription}";
+                                SystemMessages.Add($"[Alarm] {alarmDescription}");
+                            });
+                        }
+                    }
+
+                    // Capture e-signature on UI thread
+                    var lastAlarmDesc = alarmDescription;
+                    System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
+                    {
+                        var reasonDesc = _dataManager.GetMeaning(Enums.ESigReason.EndReelAlarm);
+                        var esigWindow = new ESignatureWindow(
+                            Enums.ESigReason.EndReelAlarm,
+                            reasonDesc,
+                            lastAlarmDesc,
+                            reasonRequired: true,
+                            canCancel: false);
+                        esigWindow.ShowDialog();
+
+                        // Audit trail with e-signature details
+                        _dataManager.SaveAction(
+                            "Inspection cancelled due to an alarm",
+                            "Inspection Alarm",
+                            "",
+                            esigWindow.LastUserName,
+                            "HandleAlarm()",
+                            lastAlarmDesc,
+                            esigWindow.UserReason);
+                    });
+
+                    // Reset PLC alarms
+                    _mxClient.ResetAlarm(1);
+                    _mxClient.Stop(1);
+
+                    // Suppress further alarms until next inspection starts
+                    _alarmsSuppressed = true;
+                }
+                else
+                {
+                    System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
+                    {
+                        AlarmsText += "\nAlarm triggered (no error details available).";
+                    });
+
+                    _alarmsSuppressed = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
+                {
+                    AlarmsText += $"\nAlarm handler error: {ex.Message}";
+                    SystemMessages.Add($"[Error] HandleAlarm: {ex.Message}");
+                });
+            }
         }
 
         private void OnSystemMessage(SystemMessage msg)

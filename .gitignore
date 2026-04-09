@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# DPAPI-encrypted secrets (machine-bound)
+secrets.json
+
 # User-specific files
 *.rsuser
 *.suo

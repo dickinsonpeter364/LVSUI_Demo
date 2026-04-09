@@ -1,0 +1,58 @@
+<Window x:Class="WpfMvvmApp.Views.ESignatureWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="E-Signature Authorization"
+        Width="450" Height="360"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Topmost="True">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Reason description -->
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" x:Name="LblSigMeaning"
+                   FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+        <!-- Error/alarm description -->
+        <TextBlock Grid.Row="1" Grid.ColumnSpan="2" x:Name="LblReason"
+                   Foreground="Red" TextWrapping="Wrap" Margin="0,0,0,12"/>
+
+        <!-- Username -->
+        <TextBlock Grid.Row="2" Text="Username:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="TxtUsername" Margin="0,0,0,6"
+                 KeyDown="TxtUsername_KeyDown"/>
+
+        <!-- Password -->
+        <TextBlock Grid.Row="3" Text="Password:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+        <PasswordBox Grid.Row="3" Grid.Column="1" x:Name="TxtPassword" Margin="0,0,0,6"
+                     KeyDown="TxtPassword_KeyDown"/>
+
+        <!-- User reason -->
+        <TextBlock Grid.Row="4" x:Name="LblInformation" Text="Reason:" VerticalAlignment="Top" Margin="0,0,0,6"/>
+        <TextBox Grid.Row="5" Grid.ColumnSpan="2" x:Name="TxtUserReason"
+                 Height="60" TextWrapping="Wrap" AcceptsReturn="True"
+                 VerticalScrollBarVisibility="Auto" Margin="0,0,0,8"/>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="7" Grid.ColumnSpan="2" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Content="OK" Width="80" Height="30" Margin="0,0,8,0"
+                    x:Name="BtnOk" Click="OnOk"/>
+            <Button Content="Cancel" Width="80" Height="30"
+                    x:Name="BtnCancel" Click="OnCancel" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

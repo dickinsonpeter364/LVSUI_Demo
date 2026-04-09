@@ -89,6 +89,7 @@ namespace CONSTANTS
         public static string PORT = "";
         public static Enums.DatabaseSchema SchemaToUse = Enums.DatabaseSchema.LIVE; 
 
+        public static string SqlitePath = "";
         public static string IODeviceXML = "IODevice.xml";
         public static string AppTitle = "Label Verification System III";
         public static string ProductVersion = "1.0.0.0";

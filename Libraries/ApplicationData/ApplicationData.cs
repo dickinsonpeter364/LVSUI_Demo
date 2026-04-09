@@ -1895,6 +1895,7 @@ namespace LVS3
         }
     }
 
+    [Obsolete("Use CONSTANTS.SecretStore with DPAPI instead of DES encryption. This class will be removed in a future version.")]
     [Serializable]
     public static class ConnectionData
     {

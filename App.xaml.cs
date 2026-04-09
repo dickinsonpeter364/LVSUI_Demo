@@ -1,12 +1,13 @@
-using System.Configuration;
 using System.IO;
 using System.Windows;
 using CONSTANTS;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using LVS3;
 using mxClient;
+using WpfMvvmApp.Core;
 using WpfMvvmApp.Services;
 using WpfMvvmApp.Views;
 using static LVS3.Enums;
@@ -35,14 +36,41 @@ public partial class App : Application
 
         Log.Logger.Information("Application starting");
 
-        // Read configuration
-        var databaseType = ConfigurationManager.AppSettings["DatabaseType"] ?? "dummy";
-        var savedImagesPath = ConfigurationManager.AppSettings["SavedImagesPath"];
-        if (!string.IsNullOrEmpty(savedImagesPath))
-            AppData.SavedImagesPath = savedImagesPath;
-        var saveImages = ConfigurationManager.AppSettings["SaveImages"];
-        if (saveImages?.ToLowerInvariant() == "true")
+        // Read configuration from appsettings.json
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+            .Build();
+
+        var appSettings = configuration.GetSection("App").Get<AppSettings>() ?? new AppSettings();
+        var dbSettings = configuration.GetSection("Database").Get<DatabaseSettings>() ?? new DatabaseSettings();
+
+        // Populate Defaults from config and DPAPI secrets
+        ConfigLoader.LoadDefaults(
+            appSettings.StationID,
+            appSettings.IPAddressPLC,
+            appSettings.DebugMode,
+            dbSettings.SqlitePath);
+
+        if (!string.IsNullOrEmpty(appSettings.SavedImagesPath))
+            AppData.SavedImagesPath = appSettings.SavedImagesPath;
+        if (appSettings.SaveImages)
             AppData.SaveImages = true;
+
+        // If Oracle mode, ensure credentials are available
+        if (appSettings.DatabaseType.Equals("oracle", StringComparison.OrdinalIgnoreCase)
+            && !SecretStore.HasAllOracleCredentials())
+        {
+            var setupWindow = new CredentialSetupWindow();
+            if (setupWindow.ShowDialog() != true)
+            {
+                Shutdown();
+                return;
+            }
+        }
+
+        // Load Oracle secrets into Defaults (no-op if not set)
+        ConfigLoader.LoadOracleSecrets();
 
         // Build DI container
         var services = new ServiceCollection();
@@ -59,7 +87,7 @@ public partial class App : Application
         services.AddSingleton<ICameraService, CameraService>();
 
         // Data manager — selected by config
-        switch (databaseType.ToLowerInvariant())
+        switch (appSettings.DatabaseType.ToLowerInvariant())
         {
             case "sqlite":
                 services.AddSingleton<IDataManager, SqLiteDataManager>();
@@ -76,7 +104,7 @@ public partial class App : Application
         }
 
         // PLC client — selected by config
-        switch (ConfigurationManager.AppSettings["MxClient"]?.ToLowerInvariant())
+        switch (appSettings.MxClient.ToLowerInvariant())
         {
             case "dummy":
                 services.AddSingleton<ImxClient, DummyPLCClient>();

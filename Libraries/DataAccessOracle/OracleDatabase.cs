@@ -3857,17 +3857,10 @@ namespace LVS3
         public static bool OpenOracleConnection(DatabaseSchema dbs)
         {
             bool retVal = true;
-            string IP = ConnectionData.GetVal(Defaults.IP);
-            string PORT = ConnectionData.GetVal(Defaults.PORT);
-            string serviceName = ConnectionData.GetVal(Defaults.DB_ServiceName);
-            string username = ConnectionData.GetVal(Defaults.DB_UserName);
-            string password = ConnectionData.GetVal(Defaults.DB_Password);
-            //string ReportPath = ConnectionData.GetVal(Defaults.ReportPath);
-            //Defaults.ReportPath = ReportPath;
 
             try
             {
-                string datasource = string.Format("user id={0};password={1};data source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST={2})(PORT={3}))(CONNECT_DATA=(SERVICE_NAME={4})))", username, password, IP, PORT, serviceName);
+                string datasource = BuildOracleConnectionString();
                 m_Conn = new OracleConnection(datasource);
                 m_Conn.Open();
             }
@@ -3882,17 +3875,10 @@ namespace LVS3
 
         public static OracleConnection GetOracleConnection(DatabaseSchema dbs)
         {
-            string IP = ConnectionData.GetVal(Defaults.IP);
-            string PORT = ConnectionData.GetVal(Defaults.PORT);
-
-            string serviceName = ConnectionData.GetVal(Defaults.DB_ServiceName);
-            string username = ConnectionData.GetVal(Defaults.DB_UserName);
-            string password = ConnectionData.GetVal(Defaults.DB_Password);
-
             OracleConnection retVal;
             try
             {
-                string datasource = string.Format("user id={0};password={1};data source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST={2})(PORT={3}))(CONNECT_DATA=(SERVICE_NAME={4})))", username, password, IP, PORT, serviceName);
+                string datasource = BuildOracleConnectionString();
                 retVal = new OracleConnection(datasource);
                 retVal.Open();
             }
@@ -3903,6 +3889,13 @@ namespace LVS3
                 notifyError(ErrorDesription, "Data Access", true);
             }
             return retVal;
+        }
+
+        private static string BuildOracleConnectionString()
+        {
+            return string.Format(
+                "user id={0};password={1};data source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST={2})(PORT={3}))(CONNECT_DATA=(SERVICE_NAME={4})))",
+                Defaults.DB_UserName, Defaults.DB_Password, Defaults.IP, Defaults.PORT, Defaults.DB_ServiceName);
         }
     }
 }
