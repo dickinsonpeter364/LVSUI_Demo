@@ -15,23 +15,38 @@ public static class Messaging
 {
     public static event MSGHandler? MH;
     public static EventLog? AppEventLog = null;
+    private static bool _eventLogAvailable = false;
     public static List<ArchivedNotification> NotificationHistoryList = new();
 
     public static void Init()
     {
+        NotificationHistoryList = new List<ArchivedNotification>();
+        _eventLogAvailable = false;
+        AppEventLog = null;
+
+        // Windows EventLog source creation/lookup requires administrator privileges and
+        // throws System.Security.SecurityException for normal users. Probe once at startup
+        // and disable EventLog writes if unavailable; Serilog file logging still captures
+        // everything.
         try
         {
-            AppEventLog = new EventLog();
-            AppEventLog.Source = "MVA";
-            AppEventLog.Log = Defaults.AppTitle;
-
-            if (!EventLog.SourceExists("MVA"))
+            bool sourceExists = EventLog.SourceExists("MVA");
+            if (!sourceExists)
             {
                 var escd = new EventSourceCreationData("MVA", Defaults.AppTitle);
                 EventLog.CreateEventSource(escd);
             }
 
-            NotificationHistoryList = new List<ArchivedNotification>();
+            AppEventLog = new EventLog
+            {
+                Source = "MVA",
+                Log = Defaults.AppTitle
+            };
+            _eventLogAvailable = true;
+        }
+        catch (System.Security.SecurityException)
+        {
+            Log.Logger.Warning("Windows EventLog unavailable (insufficient privileges) — falling back to file logging only");
         }
         catch (Exception ex)
         {
@@ -49,16 +64,13 @@ public static class Messaging
 
             MH?.Invoke(new MSGEventArgs(msg, iconType, showDialog));
 
-            if (AppEventLog != null && !string.IsNullOrEmpty(msg) && iconType != EventLogEntryType.Information)
+            if (_eventLogAvailable && AppEventLog != null && !string.IsNullOrEmpty(msg) && iconType != EventLogEntryType.Information)
             {
                 try
                 {
-                    if (EventLog.SourceExists(AppEventLog.Source))
-                    {
-                        string user = (Defaults.CurrentUser ?? "").PadRight(30);
-                        string paddedTitle = (title ?? "").PadRight(50);
-                        AppEventLog.WriteEntry(user + paddedTitle + msg, iconType, appEventId);
-                    }
+                    string user = (Defaults.CurrentUser ?? "").PadRight(30);
+                    string paddedTitle = (title ?? "").PadRight(50);
+                    AppEventLog.WriteEntry(user + paddedTitle + msg, iconType, appEventId);
                 }
                 catch { }
             }
@@ -79,16 +91,13 @@ public static class Messaging
 
             MH?.Invoke(new MSGEventArgs(msg, iconType, false));
 
-            if (AppEventLog != null)
+            if (_eventLogAvailable && AppEventLog != null)
             {
                 try
                 {
-                    if (EventLog.SourceExists(AppEventLog.Source))
-                    {
-                        string user = (Defaults.CurrentUser ?? "").PadRight(30);
-                        string paddedTitle = (title ?? "").PadRight(50);
-                        AppEventLog.WriteEntry(user + paddedTitle + msg, iconType, appEventId);
-                    }
+                    string user = (Defaults.CurrentUser ?? "").PadRight(30);
+                    string paddedTitle = (title ?? "").PadRight(50);
+                    AppEventLog.WriteEntry(user + paddedTitle + msg, iconType, appEventId);
                 }
                 catch { }
             }
@@ -123,7 +132,7 @@ public static class Messaging
         {
             if (Defaults.WriteToLog == false)
                 return;
-            if (AppEventLog != null && EventLog.SourceExists(AppEventLog.Source))
+            if (_eventLogAvailable && AppEventLog != null)
             {
                 string user = (Defaults.CurrentUser ?? "").PadRight(30);
                 string paddedTitle = (title ?? "").PadRight(50);
