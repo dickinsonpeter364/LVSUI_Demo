@@ -59,13 +59,8 @@
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Deavice.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Link>Deavice.xml</Link>
-    </Content>
-    <Content Include="Data\IODeviceti.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Link>IODeviceti.xml</Link>
+    <Content Include="DeviceIO.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

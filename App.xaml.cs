@@ -50,7 +50,8 @@ public partial class App : Application
             appSettings.StationID,
             appSettings.IPAddressPLC,
             appSettings.DebugMode,
-            dbSettings.SqlitePath);
+            dbSettings.SqlitePath,
+            appSettings.IODeviceName);
 
         if (!string.IsNullOrEmpty(appSettings.SavedImagesPath))
             AppData.SavedImagesPath = appSettings.SavedImagesPath;

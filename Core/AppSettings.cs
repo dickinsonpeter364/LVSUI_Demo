@@ -9,6 +9,7 @@ public class AppSettings
     public int StationID { get; set; }
     public string IPAddressPLC { get; set; } = "";
     public bool DebugMode { get; set; }
+    public string IODeviceName { get; set; } = "PCM-27D24DI,BID#0";
 }
 
 public class DatabaseSettings

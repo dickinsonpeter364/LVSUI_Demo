@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using System.Security.Principal;
 using CONSTANTS;
 using Serilog;
 using static LVS3.Delegates;
@@ -24,14 +25,19 @@ public static class Messaging
         _eventLogAvailable = false;
         AppEventLog = null;
 
-        // Windows EventLog source creation/lookup requires administrator privileges and
-        // throws System.Security.SecurityException for normal users. Probe once at startup
-        // and disable EventLog writes if unavailable; Serilog file logging still captures
-        // everything.
+        // EventLog.SourceExists / CreateEventSource require administrator privileges and
+        // throw System.Security.SecurityException for normal users. Check admin status
+        // *before* touching EventLog so we never raise a first-chance exception in the
+        // common (non-admin) case. Serilog file logging captures everything regardless.
+        if (!IsRunningAsAdministrator())
+        {
+            Log.Logger.Information("Not running as administrator — Windows EventLog disabled, using file logging only");
+            return;
+        }
+
         try
         {
-            bool sourceExists = EventLog.SourceExists("MVA");
-            if (!sourceExists)
+            if (!EventLog.SourceExists("MVA"))
             {
                 var escd = new EventSourceCreationData("MVA", Defaults.AppTitle);
                 EventLog.CreateEventSource(escd);
@@ -44,13 +50,23 @@ public static class Messaging
             };
             _eventLogAvailable = true;
         }
-        catch (System.Security.SecurityException)
-        {
-            Log.Logger.Warning("Windows EventLog unavailable (insufficient privileges) — falling back to file logging only");
-        }
         catch (Exception ex)
         {
             Log.Logger.Error(ex, "Messaging.Init() error: {Message}", ex.Message);
+        }
+    }
+
+    private static bool IsRunningAsAdministrator()
+    {
+        try
+        {
+            using var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+        catch
+        {
+            return false;
         }
     }
 

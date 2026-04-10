@@ -6,12 +6,15 @@ public static class ConfigLoader
         int stationId,
         string ipAddressPlc,
         bool debugMode,
-        string sqlitePath)
+        string sqlitePath,
+        string ioDeviceName)
     {
         Defaults.StationID = stationId;
         Defaults.IPAddressPLC = ipAddressPlc;
         Defaults.DebugMode = debugMode;
         Defaults.SqlitePath = sqlitePath;
+        if (!string.IsNullOrWhiteSpace(ioDeviceName))
+            Defaults.IODeviceXML = ioDeviceName;
     }
 
     public static void LoadOracleSecrets()
