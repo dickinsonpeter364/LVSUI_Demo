@@ -57,8 +57,12 @@ public class WpfUtilityFunctions : IUtilityFunctions
     {
         try
         {
-            if (Messaging.AppEventLog != null && EventLog.SourceExists(Messaging.AppEventLog.Source))
+            if (Messaging.AppEventLog != null)
                 EventLog.Delete(Messaging.AppEventLog.Log);
+        }
+        catch (System.Security.SecurityException)
+        {
+            Log.Logger.Warning("DeleteEventLog skipped — insufficient privileges");
         }
         catch (Exception ex)
         {
