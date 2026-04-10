@@ -85,6 +85,7 @@ public partial class App : Application
         // Core services
         services.AddSingleton<IMessagingService, MessagingService>();
         services.AddSingleton<ICameraService, CameraService>();
+        services.AddSingleton<IUtilityFunctions, WpfUtilityFunctions>();
 
         // Data manager — selected by config
         switch (appSettings.DatabaseType.ToLowerInvariant())
@@ -147,14 +148,13 @@ public partial class App : Application
             "Application", "starting application", "SUCCESS");
 
         // Initialise IO card
-        // Note: SYSTEM_IO.Init requires IUtilityFunctions which is not yet implemented in WPF.
-        // For production, provide a WPF implementation of IUtilityFunctions and uncomment:
-        // var utilityFunctions = Services.GetRequiredService<IUtilityFunctions>();
-        // if (SYSTEM_IO.Init(dataManager, utilityFunctions) == false)
-        // {
-        //     Shutdown();
-        //     return;
-        // }
+        var utilityFunctions = Services.GetRequiredService<IUtilityFunctions>();
+        if (SYSTEM_IO.Init(dataManager, utilityFunctions) == false)
+        {
+            Log.Logger.Error("SYSTEM_IO.Init failed: {Error}", SYSTEM_IO.FailDescription);
+            Shutdown();
+            return;
+        }
 
         // Initialise PLC and put into safe state
         var mxClient = Services.GetRequiredService<ImxClient>();
