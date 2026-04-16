@@ -3831,50 +3831,31 @@ namespace LVS3
             _logger.Information("Entering IO_COS_Handler(channel: {channel}, high: {high})",
                 channel,
                 high);
-            if (SYSTEM_IO.PROCESSING == false)
+            var sw = new Stopwatch();
+            sw.Start();
+            while (sw.ElapsedMilliseconds < 50)
+                ;
+            sw.Stop();
+
+            if (channel == SYSTEM_IO.END_OF_INSPECTION)
             {
-                var sw1 = new Stopwatch();
-                sw1.Start();
-                while (sw1.ElapsedMilliseconds < 50)
-                    ;
-                sw1.Stop();
-                if (channel == SYSTEM_IO.END_OF_INSPECTION)
-                {
-                    ReviewLuiModeIndex = 0; // Clear the auto mode index count
-                    Amh -= FrmInspect.Amd;
-                    Emh -= FrmInspect.Emd;
-                    SYSTEM_IO.IO_CHANGE_Handler -= IO_COS_Handler;
-                    SYSTEM_IO.IO_INTERRUPT_Handler -= IO_INTERRUPT_Handler;
-                    SYSTEM_IO.IO_CHANGE_Handler -= _frmI.IO_COS_Handler;
-                }
+                ReviewLuiModeIndex = 0;
+                SYSTEM_IO.PROCESSING = false;
+                Amh -= FrmInspect.Amd;
+                Emh -= FrmInspect.Emd;
+                SYSTEM_IO.IO_CHANGE_Handler -= IO_COS_Handler;
+                SYSTEM_IO.IO_INTERRUPT_Handler -= IO_INTERRUPT_Handler;
+                CompleteInspection();
             }
-            else
+            else if (channel == SYSTEM_IO.ALARM)
             {
-                var sw = new Stopwatch();
-                sw.Start();
-                while (sw.ElapsedMilliseconds < 50)
-                    ;
-                sw.Stop();
-                if (channel == SYSTEM_IO.END_OF_INSPECTION)
-                {
-                    ReviewLuiModeIndex = 0; // Clear the auto mode index count
-                    SYSTEM_IO.PROCESSING = false;
-                    Amh -= FrmInspect.Amd;
-                    Emh -= FrmInspect.Emd;
-                    SYSTEM_IO.IO_CHANGE_Handler -= IO_COS_Handler;
-                    SYSTEM_IO.IO_INTERRUPT_Handler -= IO_INTERRUPT_Handler;
-                    SYSTEM_IO.IO_CHANGE_Handler -= _frmI.IO_COS_Handler;
-                    CompleteInspection();
-                }
-                else if (channel == SYSTEM_IO.ALARM)
-                {
-                    SYSTEM_IO.PROCESSING = false;
-                    Emh -= FrmInspect.Emd;
-                    SYSTEM_IO.IO_CHANGE_Handler -= IO_COS_Handler;
-                    SYSTEM_IO.IO_INTERRUPT_Handler -= IO_INTERRUPT_Handler;
-                    Amh?.Invoke();
-                    Amh -= FrmInspect.Amd;
-                }
+                _logger.Information("ALARM received in IO_COS_Handler, invoking Amh");
+                SYSTEM_IO.PROCESSING = false;
+                Emh -= FrmInspect.Emd;
+                SYSTEM_IO.IO_CHANGE_Handler -= IO_COS_Handler;
+                SYSTEM_IO.IO_INTERRUPT_Handler -= IO_INTERRUPT_Handler;
+                Amh?.Invoke();
+                Amh -= FrmInspect.Amd;
             }
         }
 
