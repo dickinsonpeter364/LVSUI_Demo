@@ -74,9 +74,10 @@
 
                 <!-- Alarms Section -->
                 <TextBlock Grid.Row="2" Text="Alarms" FontSize="18" FontWeight="Bold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
-                <TextBox Grid.Row="3" Text="{Binding AlarmsText, Mode=OneWay}" IsReadOnly="True" 
-                         VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" 
-                         Padding="10" FontSize="14" BorderBrush="#999" Background="White"/>
+                <TextBox Grid.Row="3" Text="{Binding AlarmsText, Mode=OneWay}" IsReadOnly="True"
+                         VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"
+                         Padding="10" FontSize="14" FontWeight="SemiBold"
+                         Foreground="#D32F2F" BorderBrush="#999" Background="#FFF5F5"/>
             </Grid>
 
             <!-- Picture Box Area -->
