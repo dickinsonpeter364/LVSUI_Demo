@@ -249,34 +249,45 @@ namespace LVS3
 
         private static void InCtrl_ChangeOfState(object sender, DiSnapEventArgs e)
         {
-            _logger.Information("InCtrl_ChangeOfState called, SrcNum={Port}", e.SrcNum);
             try
             {
-                int port = e.SrcNum;
-                byte portData = e.PortData[port];
-                try
-                {
-                    Stopwatch sw = new Stopwatch();
-                    sw.Start();
-                    while (sw.ElapsedMilliseconds < 50)
-                        ;
+                // Log everything the card is actually reporting
+                int srcNum = e.SrcNum;
+                string portDataStr = "";
+                for (int i = 0; i < e.PortData.Length; i++)
+                    portDataStr += $"Port[{i}]=0x{e.PortData[i]:X2} ";
+                _logger.Information("InCtrl_ChangeOfState: SrcNum={SrcNum}, {PortData}, HandlerNull={Null}",
+                    srcNum, portDataStr, IO_CHANGE_Handler == null);
 
-                    // ALARM is channel 8 = port 1, bit 0
-                    if (port == 1 && (portData & 0x01) != 0)
-                    {
-                        bool channelHigh = (GetInputStatePortAndChannel(1, 0)) == 1;
-                        _logger.Information("ALARM change-of-state detected, channelHigh={High}", channelHigh);
-                        IO_CHANGE_Handler?.Invoke(ALARM, channelHigh);
-                    }
-                    // END_OF_INSPECTION is channel 4 = port 0, bit 4
-                    else if (port == 0 && (portData & (1 << m_END_OF_INSPECTION)) != 0)
-                    {
-                        IO_CHANGE_Handler?.Invoke(m_END_OF_INSPECTION, true);
-                    }
-                }
-                catch (Exception ex)
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                while (sw.ElapsedMilliseconds < 50)
+                    ;
+
+                // Check every port for alarm channel (channel 8 = port 1 bit 0)
+                bool alarmDetected = false;
+                if (e.PortData.Length > 1 && (e.PortData[1] & 0x01) != 0)
+                    alarmDetected = true;
+                // Also check if port 0 byte equals m_ALARM value (legacy pattern)
+                if (e.PortData[0] == m_ALARM)
+                    alarmDetected = true;
+
+                if (alarmDetected)
                 {
-                    _logger.Error(ex, "Exception in InCtrl_ChangeOfState inner: {Message}", ex.Message);
+                    _logger.Information("ALARM detected in ChangeOfState, invoking IO_CHANGE_Handler");
+                    IO_CHANGE_Handler?.Invoke(ALARM, true);
+                }
+                else if (e.PortData[0] == m_END_OF_INSPECTION ||
+                         (e.PortData[0] & (1 << m_END_OF_INSPECTION)) != 0)
+                {
+                    if (e.PortData[0] != 0)
+                        IO_CHANGE_Handler?.Invoke(m_END_OF_INSPECTION, true);
+                }
+                else
+                {
+                    // Unknown change — log it so we can diagnose
+                    _logger.Warning("InCtrl_ChangeOfState: unhandled change, SrcNum={SrcNum}, {PortData}",
+                        srcNum, portDataStr);
                 }
             }
             catch (Exception ex)

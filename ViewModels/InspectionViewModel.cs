@@ -174,7 +174,7 @@ namespace WpfMvvmApp.ViewModels
 
         private void OnIOChangeOfState(int channel, bool high)
         {
-            if (channel != SYSTEM_IO.ALARM || !high)
+            if (channel != SYSTEM_IO.ALARM)
                 return;
 
             if (_alarmsSuppressed)
