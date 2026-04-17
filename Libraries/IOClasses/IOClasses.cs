@@ -185,23 +185,26 @@ namespace LVS3
             try
             {
                 string profilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DeviceIO.xml");
+
+                // Configure device FIRST
                 InCtrl.SelectedDevice = new DeviceInformation(IODeviceName);
                 DeviceInformation devinf = InCtrl.SelectedDevice;
                 devinf.DeviceMode = AccessMode.ModeWriteShared;
-                InCtrl.ChangeOfState -= new EventHandler<DiSnapEventArgs>(InCtrl_ChangeOfState);
-                InCtrl.ChangeOfState += new EventHandler<DiSnapEventArgs>(InCtrl_ChangeOfState);
-                InCtrl.Interrupt -= new EventHandler<DiSnapEventArgs>(InCtrl_Interrupt);
-                InCtrl.Interrupt += new EventHandler<DiSnapEventArgs>(InCtrl_Interrupt);
                 InCtrl.SelectedDevice = devinf;
+
+                // Load profile
                 ErrorCode errorCode = InCtrl.LoadProfile(profilePath);
                 if (IOControlFailed(errorCode))
                 {
-                    _logger.Error("IO card profile path error");
+                    _logger.Error("IO card profile load failed: {ErrorCode}", errorCode);
                     throw new Exception("IO card profile path?");
                 }
+
+                // Enable interrupt channels
                 DiintChannel[] diintChannels = InCtrl.DiintChannels;
                 if (diintChannels != null)
                 {
+                    _logger.Information("DiintChannels count: {Count}", diintChannels.Length);
                     if (diintChannels.Length >= 2)
                     {
                         diintChannels[0].Enabled = true;
@@ -215,6 +218,14 @@ namespace LVS3
                     _logger.Error(FailDescription);
                     throw new Exception(FailDescription);
                 }
+
+                // Subscribe to events AFTER device is configured and profile loaded
+                InCtrl.ChangeOfState -= new EventHandler<DiSnapEventArgs>(InCtrl_ChangeOfState);
+                InCtrl.ChangeOfState += new EventHandler<DiSnapEventArgs>(InCtrl_ChangeOfState);
+                InCtrl.Interrupt -= new EventHandler<DiSnapEventArgs>(InCtrl_Interrupt);
+                InCtrl.Interrupt += new EventHandler<DiSnapEventArgs>(InCtrl_Interrupt);
+
+                _logger.Information("IO event handlers subscribed after device configuration");
             }
             catch (Exception ex)
             {
