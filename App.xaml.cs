@@ -57,20 +57,18 @@ public partial class App : Application
         if (appSettings.SaveImages)
             AppData.SaveImages = true;
 
-        // If Oracle mode, ensure credentials are available
-        if (appSettings.DatabaseType.Equals("oracle", StringComparison.OrdinalIgnoreCase)
-            && !SecretStore.HasAllOracleCredentials())
-        {
-            var setupWindow = new CredentialSetupWindow();
-            if (setupWindow.ShowDialog() != true)
-            {
-                Shutdown();
-                return;
-            }
-        }
-
-        // Load Oracle secrets into Defaults (no-op if not set)
-        ConfigLoader.LoadOracleSecrets();
+        // TODO: restore Oracle credential check:
+        // if (appSettings.DatabaseType.Equals("oracle", StringComparison.OrdinalIgnoreCase)
+        //     && !SecretStore.HasAllOracleCredentials())
+        // {
+        //     var setupWindow = new CredentialSetupWindow();
+        //     if (setupWindow.ShowDialog() != true)
+        //     {
+        //         Shutdown();
+        //         return;
+        //     }
+        // }
+        // ConfigLoader.LoadOracleSecrets();
 
         // Build DI container
         var services = new ServiceCollection();
