@@ -166,6 +166,11 @@ public partial class App : Application
             Defaults.VAMImageCount = dataManager.ImageCount(VAMImageTypes.VAM);
             Defaults.TestImageCount = dataManager.ImageCount(VAMImageTypes.TEST);
 
+            // Load PLC fail codes for user-friendly alarm descriptions
+            var failCodes = dataManager.LoadFailCodes();
+            if (failCodes != null)
+                PLCFailCodes.FailCodes = failCodes;
+
             mxClient.InspectionLampOn();
         }
 
