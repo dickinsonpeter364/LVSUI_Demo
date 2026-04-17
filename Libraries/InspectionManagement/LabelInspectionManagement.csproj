@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net9.0-windows</TargetFramework>
+		<TargetFramework>net10.0-windows</TargetFramework>
 		<OutputType>Library</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
@@ -20,27 +20,26 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AlkUSB3-64">
-      <HintPath>..\..\References\AlkUSB3-64.dll</HintPath>
+      <HintPath>..\References\AlkUSB3-64.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ApplicationData\ApplicationData\ApplicationData.csproj" />
-    <ProjectReference Include="..\..\CameraManager\CameraManager.csproj" />
-    <ProjectReference Include="..\..\Constants\Constants.csproj" />
-    <ProjectReference Include="..\..\DataManager\DataManager\DataManager.csproj">
-    </ProjectReference>
-    <ProjectReference Include="..\..\Delegates\Delegates\Delegates.csproj" />
-    <ProjectReference Include="..\..\Document\Document.csproj" />
-    <ProjectReference Include="..\..\Enums\Enums.csproj" />
-    <ProjectReference Include="..\..\Interfacing\Interfacing.csproj" />
-    <ProjectReference Include="..\..\IOClasses\IOClasses.csproj" />
-    <ProjectReference Include="..\..\mxClient\mxClient.csproj" />
-    <ProjectReference Include="..\..\Peripherals\Peripherals\Peripherals.csproj" />
-    <ProjectReference Include="..\..\Security\AD\Security.csproj" />
-    <ProjectReference Include="..\..\Signatures\Signatures\Signatures.csproj" />
-    <ProjectReference Include="..\..\TaskBar\TaskBar.csproj" />
-    <ProjectReference Include="..\..\UserControls\UserControls.csproj" />
-    <ProjectReference Include="..\..\UtilityFunctions\UtilityFunctions\UtilityFunctions.csproj" />
+    <ProjectReference Include="..\ApplicationData\ApplicationData.csproj" />
+    <ProjectReference Include="..\CameraManager\CameraManager.csproj" />
+    <ProjectReference Include="..\Constants\Constants.csproj" />
+    <ProjectReference Include="..\DataManager\DataManager.csproj" />
+    <ProjectReference Include="..\Delegates\Delegates.csproj" />
+    <ProjectReference Include="..\Document\Document.csproj" />
+    <ProjectReference Include="..\Enums\Enums.csproj" />
+    <ProjectReference Include="..\Interfacing\Interfacing.csproj" />
+    <ProjectReference Include="..\IOClasses\IOClasses.csproj" />
+    <ProjectReference Include="..\mxClient\mxClient.csproj" />
+    <ProjectReference Include="..\Peripherals\Peripherals.csproj" />
+    <ProjectReference Include="..\Security\Security.csproj" />
+    <ProjectReference Include="..\Signatures\Signatures.csproj" />
+    <ProjectReference Include="..\TaskBar\TaskBar.csproj" />
+    <ProjectReference Include="..\UserControls\UserControls.csproj" />
+    <ProjectReference Include="..\UtilityFunctions\UtilityFunctions.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

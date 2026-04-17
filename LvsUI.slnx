@@ -16,4 +16,8 @@
     <Project Path="Libraries/Inspection/Inspection.csproj" />
   </Folder>
   <Project Path="LVS.csproj" />
+  <!-- Migrated projects not yet in build: Document, InspectionManagement, Peripherals,
+       Security, Signatures, UserControls, USBLib, MELSEC, mxServer, SharedClasses, StaticClasses
+       Source files tracked in Libraries/ — add to solution once project references are wired up -->
+
 </Solution>
