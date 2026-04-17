@@ -28,8 +28,8 @@ namespace LVS3
         //
         private static string IODeviceName = "";
         public static string FailDescription = "";
-        private static InstantDiCtrl InCtrl = new InstantDiCtrl();
-        private static InstantDoCtrl OutCtrl = new InstantDoCtrl();
+        private static InstantDiCtrl InCtrl;
+        private static InstantDoCtrl OutCtrl;
         //public static int ReadyChannel { get { return m_Ready; } }
         public static int ALARM { get { return m_ALARM; } }
         public static int PULSE_INPUT { get { return m_INPUT_FROM_PLC; } }
