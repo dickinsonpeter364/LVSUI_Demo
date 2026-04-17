@@ -121,61 +121,47 @@ public partial class App : Application
 
         Services = services.BuildServiceProvider();
 
-        // --- Initialisation sequence (matching old Program.cs) ---
+        // TODO: restore full initialisation sequence:
+        // var dataManager = Services.GetRequiredService<IDataManager>();
+        // if (dataManager.OpenConnection(Defaults.SchemaToUse) == false)
+        // {
+        //     Log.Logger.Error("Connection Failed. Cannot establish database connection. {Error}",
+        //         dataManager.ErrorDesription);
+        //     MessageBox.Show(
+        //         "Connection Failed.\nThe system cannot continue because a database connection could not be established.\n\n" +
+        //         dataManager.ErrorDesription,
+        //         "Application Startup", MessageBoxButton.OK, MessageBoxImage.Error);
+        //     Shutdown();
+        //     return;
+        // }
+        // Messaging.Init();
+        // Defaults.UserLoggedIn = Environment.UserName;
+        // Defaults.UserName = Environment.UserName;
+        // dataManager.SaveAction("Application Start", "LVS3", "", Defaults.UserLoggedIn,
+        //     "Application", "starting application", "SUCCESS");
+        // var utilityFunctions = Services.GetRequiredService<IUtilityFunctions>();
+        // if (SYSTEM_IO.Init(dataManager, utilityFunctions) == false)
+        // {
+        //     Log.Logger.Error("SYSTEM_IO.Init failed: {Error}", SYSTEM_IO.FailDescription);
+        //     Shutdown();
+        //     return;
+        // }
+        // var mxClient = Services.GetRequiredService<ImxClient>();
+        // if (mxClient.INIT())
+        // {
+        //     mxClient.ResetAlarm(1);
+        // }
+        // mxClient.Stop(1);
+        // Defaults.VAMImageCount = dataManager.ImageCount(VAMImageTypes.VAM);
+        // Defaults.TestImageCount = dataManager.ImageCount(VAMImageTypes.TEST);
+        // mxClient.InspectionLampOn();
 
-        var dataManager = Services.GetRequiredService<IDataManager>();
-
-        // Open database connection
-        if (dataManager.OpenConnection(Defaults.SchemaToUse) == false)
-        {
-            Log.Logger.Error("Connection Failed. Cannot establish database connection. {Error}",
-                dataManager.ErrorDesription);
-            MessageBox.Show(
-                "Connection Failed.\nThe system cannot continue because a database connection could not be established.\n\n" +
-                dataManager.ErrorDesription,
-                "Application Startup", MessageBoxButton.OK, MessageBoxImage.Error);
-            Shutdown();
-            return;
-        }
-
-        // Initialise messaging (Windows EventLog)
-        Messaging.Init();
-
-        // Set current user
+        // Temporary: minimal init for alarm debugging — skip DB, IO card, PLC
         Defaults.UserLoggedIn = Environment.UserName;
         Defaults.UserName = Environment.UserName;
 
-        // Audit trail: application start
-        dataManager.SaveAction("Application Start", "LVS3", "", Defaults.UserLoggedIn,
-            "Application", "starting application", "SUCCESS");
+        Log.Logger.Information("Initialisation complete (debug mode), showing main window");
 
-        // Initialise IO card
-        var utilityFunctions = Services.GetRequiredService<IUtilityFunctions>();
-        if (SYSTEM_IO.Init(dataManager, utilityFunctions) == false)
-        {
-            Log.Logger.Error("SYSTEM_IO.Init failed: {Error}", SYSTEM_IO.FailDescription);
-            Shutdown();
-            return;
-        }
-
-        // Initialise PLC and put into safe state
-        var mxClient = Services.GetRequiredService<ImxClient>();
-        if (mxClient.INIT())
-        {
-            mxClient.ResetAlarm(1);
-        }
-        mxClient.Stop(1); // Safety stop on startup
-
-        // Load image counts from database
-        Defaults.VAMImageCount = dataManager.ImageCount(VAMImageTypes.VAM);
-        Defaults.TestImageCount = dataManager.ImageCount(VAMImageTypes.TEST);
-
-        // Turn on inspection lamp
-        mxClient.InspectionLampOn();
-
-        Log.Logger.Information("Initialisation complete, showing main window");
-
-        // Create and show main window
         var mainWindow = new MainWindow();
         mainWindow.Show();
     }

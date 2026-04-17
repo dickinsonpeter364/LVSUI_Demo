@@ -24,13 +24,14 @@ namespace WpfMvvmApp.Views
             var mainViewModel = new MainViewModel(_navigationService);
             DataContext = mainViewModel;
 
-            // Inactivity Timer (1 minute)
+            // Inactivity Timer — temporarily disabled for alarm debugging
+            // TODO: restore inactivity timer
             _inactivityTimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromMinutes(1)
             };
-            _inactivityTimer.Tick += InactivityTimer_Tick;
-            _inactivityTimer.Start();
+            // _inactivityTimer.Tick += InactivityTimer_Tick;
+            // _inactivityTimer.Start();
 
             // Hook input events to reset timer
             this.PreviewMouseMove += (s, e) => ResetTimer();
@@ -45,16 +46,17 @@ namespace WpfMvvmApp.Views
                 }
             };
 
-            // Navigate to Login/Authorise
-            _navigationService.Navigate(new AuthoriseView(new AuthoriseViewModel(_navigationService, () =>
-            {
-                // After startup login, go to DeviceControl in PostLogin mode
-                _navigationService.Navigate(new DeviceControlView(new DeviceControlViewModel(_navigationService, DeviceControlMode.PostLogin, () =>
-                {
-                    // After clicking "Continue to Inspection", go to LpnEntryView
-                    _navigationService.Navigate(new LpnEntryView(new LpnEntryViewModel(_navigationService)));
-                })));
-            }, title: "Log On")));
+            // TODO: restore full startup flow (Authorise → DeviceControl → LpnEntry):
+            // _navigationService.Navigate(new AuthoriseView(new AuthoriseViewModel(_navigationService, () =>
+            // {
+            //     _navigationService.Navigate(new DeviceControlView(new DeviceControlViewModel(_navigationService, DeviceControlMode.PostLogin, () =>
+            //     {
+            //         _navigationService.Navigate(new LpnEntryView(new LpnEntryViewModel(_navigationService)));
+            //     })));
+            // }, title: "Log On")));
+
+            // Temporary: skip login and go straight to InspectionView for alarm debugging
+            _navigationService.Navigate(new InspectionView(new InspectionViewModel(_navigationService)));
         }
 
         private void ResetTimer()
