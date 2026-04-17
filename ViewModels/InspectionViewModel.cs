@@ -108,6 +108,7 @@ namespace WpfMvvmApp.ViewModels
             ResetAlarmsCommand = new RelayCommand(o =>
             {
                 AlarmsText = string.Empty;
+                _alarmsSuppressed = false;
                 _mxClient.ResetAlarm(1);
             });
             SimulateAlarmCommand = new RelayCommand(OnSimulateAlarm);
