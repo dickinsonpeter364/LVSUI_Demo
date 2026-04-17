@@ -177,6 +177,13 @@ namespace WpfMvvmApp.ViewModels
             if (channel != SYSTEM_IO.ALARM || !high)
                 return;
 
+            // If an inspection is running, Inspection.IO_COS_Handler will invoke
+            // OnAlarm (which calls HandleAlarm) — don't double-handle.
+            if (IsInspecting)
+                return;
+
+            // If the user already acknowledged a non-inspection alarm, suppress
+            // further alarms until the next inspection starts.
             if (_alarmsSuppressed)
                 return;
 

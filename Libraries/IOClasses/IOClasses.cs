@@ -238,28 +238,33 @@ namespace LVS3
 
         private static void InCtrl_ChangeOfState(object sender, DiSnapEventArgs e)
         {
-            _logger.Information("InCtrl_ChangeOfState called, SrcNum={Port}", e.SrcNum);
+            _logger.Information("InCtrl_ChangeOfState called");
             try
             {
-                int port = e.SrcNum;
-                byte portData = e.PortData[port];
+                byte b = new byte();
+                b = e.PortData[0];
+                int channel = e.SrcNum;
                 try
                 {
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
                     while (sw.ElapsedMilliseconds < 50)
                         ;
-
-                    // ALARM is channel 8 = port 1, bit 0
-                    if (port == 1 && (portData & 0x01) != 0)
+                    if (b == ALARM)
                     {
-                        bool channelHigh = (GetInputStatePortAndChannel(1, 0)) == 1;
-                        _logger.Information("ALARM change-of-state detected, channelHigh={High}", channelHigh);
-                        IO_CHANGE_Handler?.Invoke(ALARM, channelHigh);
+                        bool isChannelSet = (e.PortData[0] != 0);
+                        if (IO_CHANGE_Handler != null)
+                        {
+                            bool channelHigh = (SYSTEM_IO.GetInputStatePortAndChannel(0, SYSTEM_IO.ALARM)) == 1 ? true : false;
+                            IO_CHANGE_Handler(ALARM, channelHigh);
+                        }
                     }
-                    // END_OF_INSPECTION is channel 4 = port 0, bit 4
-                    else if (port == 0 && (portData & (1 << m_END_OF_INSPECTION)) != 0)
+                    else
+                    if (b == m_END_OF_INSPECTION)
                     {
+                        bool isChannelSet = (e.PortData[0] != 0);
+                        if (isChannelSet == false)
+                            return;
                         IO_CHANGE_Handler?.Invoke(m_END_OF_INSPECTION, true);
                     }
                 }
@@ -276,7 +281,7 @@ namespace LVS3
 
         private static void InCtrl_Interrupt(object sender, DiSnapEventArgs e)
         {
-            _logger.Information("InCtrl_Interrupt called, SrcNum={Channel}", e.SrcNum);
+            _logger.Information("InCtrl_Interrupt called");
             bool IsChannelSet = false;
             int channel = e.SrcNum;
             try
@@ -295,12 +300,6 @@ namespace LVS3
                         IOEventArgs ioe = new IOEventArgs(PULSE_INPUT, IsChannelSet);
                         IO_INTERRUPT_Handler(PULSE_INPUT, ioe);
                     }
-                }
-                else if (channel == ALARM)
-                {
-                    bool channelHigh = (GetInputStatePortAndChannel(1, 0)) == 1;
-                    _logger.Information("ALARM interrupt detected, channelHigh={High}", channelHigh);
-                    IO_CHANGE_Handler?.Invoke(ALARM, channelHigh);
                 }
             }
             catch (Exception ex)
