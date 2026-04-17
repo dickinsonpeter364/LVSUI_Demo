@@ -24,39 +24,41 @@ namespace WpfMvvmApp.Views
             var mainViewModel = new MainViewModel(_navigationService);
             DataContext = mainViewModel;
 
-            // Inactivity Timer — temporarily disabled for alarm debugging
-            // TODO: restore inactivity timer
             _inactivityTimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromMinutes(1)
             };
-            // _inactivityTimer.Tick += InactivityTimer_Tick;
-            // _inactivityTimer.Start();
 
-            // Hook input events to reset timer
-            this.PreviewMouseMove += (s, e) => ResetTimer();
-            this.PreviewKeyDown += (s, e) => ResetTimer();
-
-            // Track navigation to show/hide Log Off button
-            MainFrame.Navigated += (s, e) =>
+            if (App.IsDummyMode)
             {
-                if (DataContext is MainViewModel mainVm)
+                // Dummy mode: skip login, go straight to InspectionView for testing
+                _navigationService.Navigate(new InspectionView(new InspectionViewModel(_navigationService)));
+            }
+            else
+            {
+                // Production: inactivity timer and full login flow
+                _inactivityTimer.Tick += InactivityTimer_Tick;
+                _inactivityTimer.Start();
+
+                this.PreviewMouseMove += (s, e) => ResetTimer();
+                this.PreviewKeyDown += (s, e) => ResetTimer();
+
+                MainFrame.Navigated += (s, e) =>
                 {
-                    mainVm.IsLogOffVisible = !(MainFrame.Content is AuthoriseView);
-                }
-            };
+                    if (DataContext is MainViewModel mainVm)
+                    {
+                        mainVm.IsLogOffVisible = !(MainFrame.Content is AuthoriseView);
+                    }
+                };
 
-            // TODO: restore full startup flow (Authorise → DeviceControl → LpnEntry):
-            // _navigationService.Navigate(new AuthoriseView(new AuthoriseViewModel(_navigationService, () =>
-            // {
-            //     _navigationService.Navigate(new DeviceControlView(new DeviceControlViewModel(_navigationService, DeviceControlMode.PostLogin, () =>
-            //     {
-            //         _navigationService.Navigate(new LpnEntryView(new LpnEntryViewModel(_navigationService)));
-            //     })));
-            // }, title: "Log On")));
-
-            // Temporary: skip login and go straight to InspectionView for alarm debugging
-            _navigationService.Navigate(new InspectionView(new InspectionViewModel(_navigationService)));
+                _navigationService.Navigate(new AuthoriseView(new AuthoriseViewModel(_navigationService, () =>
+                {
+                    _navigationService.Navigate(new DeviceControlView(new DeviceControlViewModel(_navigationService, DeviceControlMode.PostLogin, () =>
+                    {
+                        _navigationService.Navigate(new LpnEntryView(new LpnEntryViewModel(_navigationService)));
+                    })));
+                }, title: "Log On")));
+            }
         }
 
         private void ResetTimer()

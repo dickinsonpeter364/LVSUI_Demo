@@ -17,6 +17,7 @@ namespace WpfMvvmApp;
 public partial class App : Application
 {
     public static bool IsInspecting { get; set; }
+    public static bool IsDummyMode { get; private set; }
 
     public static IServiceProvider Services { get; private set; } = null!;
 
@@ -57,18 +58,24 @@ public partial class App : Application
         if (appSettings.SaveImages)
             AppData.SaveImages = true;
 
-        // TODO: restore Oracle credential check:
-        // if (appSettings.DatabaseType.Equals("oracle", StringComparison.OrdinalIgnoreCase)
-        //     && !SecretStore.HasAllOracleCredentials())
-        // {
-        //     var setupWindow = new CredentialSetupWindow();
-        //     if (setupWindow.ShowDialog() != true)
-        //     {
-        //         Shutdown();
-        //         return;
-        //     }
-        // }
-        // ConfigLoader.LoadOracleSecrets();
+        bool isDummyMode = appSettings.MxClient.Equals("dummy", StringComparison.OrdinalIgnoreCase);
+        IsDummyMode = isDummyMode;
+
+        if (!isDummyMode)
+        {
+            // Production: ensure Oracle credentials are available
+            if (appSettings.DatabaseType.Equals("oracle", StringComparison.OrdinalIgnoreCase)
+                && !SecretStore.HasAllOracleCredentials())
+            {
+                var setupWindow = new CredentialSetupWindow();
+                if (setupWindow.ShowDialog() != true)
+                {
+                    Shutdown();
+                    return;
+                }
+            }
+            ConfigLoader.LoadOracleSecrets();
+        }
 
         // Build DI container
         var services = new ServiceCollection();
@@ -85,80 +92,85 @@ public partial class App : Application
         services.AddSingleton<ICameraService, CameraService>();
         services.AddSingleton<IUtilityFunctions, WpfUtilityFunctions>();
 
-        // Data manager — temporarily forced to dummy for testing
-        services.AddSingleton<IDataManager, DummyDataProvider>();
-        // TODO: restore config-driven selection:
-        // switch (appSettings.DatabaseType.ToLowerInvariant())
-        // {
-        //     case "sqlite":
-        //         services.AddSingleton<IDataManager, SqLiteDataManager>();
-        //         break;
-        //     case "oracle":
-        //         services.AddSingleton<IDataManager, OracleDataManager>();
-        //         break;
-        //     case "capturing":
-        //         services.AddSingleton<IDataManager, CapturingDataManager>();
-        //         break;
-        //     default:
-        //         services.AddSingleton<IDataManager, DummyDataProvider>();
-        //         break;
-        // }
-
-        // PLC client — selected by config
-        switch (appSettings.MxClient.ToLowerInvariant())
+        if (isDummyMode)
         {
-            case "dummy":
-                services.AddSingleton<ImxClient, DummyPLCClient>();
-                services.AddSingleton<IInspection, DummyInspection>();
-                break;
-            default:
-                services.AddSingleton<ImxClient, LVS3.mxClient>();
-                services.AddSingleton<IInspection, DummyInspection>(); // Real Inspection not yet fully decoupled
-                break;
+            // Dummy mode: no database, no real PLC
+            services.AddSingleton<IDataManager, DummyDataProvider>();
+            services.AddSingleton<ImxClient, DummyPLCClient>();
+            services.AddSingleton<IInspection, DummyInspection>();
+        }
+        else
+        {
+            // Production: config-driven data manager
+            switch (appSettings.DatabaseType.ToLowerInvariant())
+            {
+                case "sqlite":
+                    services.AddSingleton<IDataManager, SqLiteDataManager>();
+                    break;
+                case "oracle":
+                    services.AddSingleton<IDataManager, OracleDataManager>();
+                    break;
+                case "capturing":
+                    services.AddSingleton<IDataManager, CapturingDataManager>();
+                    break;
+                default:
+                    services.AddSingleton<IDataManager, DummyDataProvider>();
+                    break;
+            }
+            services.AddSingleton<ImxClient, LVS3.mxClient>();
+            services.AddSingleton<IInspection, DummyInspection>();
         }
 
         Services = services.BuildServiceProvider();
 
-        // TODO: restore full initialisation sequence:
-        // var dataManager = Services.GetRequiredService<IDataManager>();
-        // if (dataManager.OpenConnection(Defaults.SchemaToUse) == false)
-        // {
-        //     Log.Logger.Error("Connection Failed. Cannot establish database connection. {Error}",
-        //         dataManager.ErrorDesription);
-        //     MessageBox.Show(
-        //         "Connection Failed.\nThe system cannot continue because a database connection could not be established.\n\n" +
-        //         dataManager.ErrorDesription,
-        //         "Application Startup", MessageBoxButton.OK, MessageBoxImage.Error);
-        //     Shutdown();
-        //     return;
-        // }
-        // Messaging.Init();
-        // Defaults.UserLoggedIn = Environment.UserName;
-        // Defaults.UserName = Environment.UserName;
-        // dataManager.SaveAction("Application Start", "LVS3", "", Defaults.UserLoggedIn,
-        //     "Application", "starting application", "SUCCESS");
-        // var utilityFunctions = Services.GetRequiredService<IUtilityFunctions>();
-        // if (SYSTEM_IO.Init(dataManager, utilityFunctions) == false)
-        // {
-        //     Log.Logger.Error("SYSTEM_IO.Init failed: {Error}", SYSTEM_IO.FailDescription);
-        //     Shutdown();
-        //     return;
-        // }
-        // var mxClient = Services.GetRequiredService<ImxClient>();
-        // if (mxClient.INIT())
-        // {
-        //     mxClient.ResetAlarm(1);
-        // }
-        // mxClient.Stop(1);
-        // Defaults.VAMImageCount = dataManager.ImageCount(VAMImageTypes.VAM);
-        // Defaults.TestImageCount = dataManager.ImageCount(VAMImageTypes.TEST);
-        // mxClient.InspectionLampOn();
-
-        // Temporary: minimal init for alarm debugging — skip DB, IO card, PLC
         Defaults.UserLoggedIn = Environment.UserName;
         Defaults.UserName = Environment.UserName;
 
-        Log.Logger.Information("Initialisation complete (debug mode), showing main window");
+        if (!isDummyMode)
+        {
+            // Production: full initialisation sequence
+            var dataManager = Services.GetRequiredService<IDataManager>();
+
+            if (dataManager.OpenConnection(Defaults.SchemaToUse) == false)
+            {
+                Log.Logger.Error("Connection Failed. Cannot establish database connection. {Error}",
+                    dataManager.ErrorDesription);
+                MessageBox.Show(
+                    "Connection Failed.\nThe system cannot continue because a database connection could not be established.\n\n" +
+                    dataManager.ErrorDesription,
+                    "Application Startup", MessageBoxButton.OK, MessageBoxImage.Error);
+                Shutdown();
+                return;
+            }
+
+            Messaging.Init();
+
+            dataManager.SaveAction("Application Start", "LVS3", "", Defaults.UserLoggedIn,
+                "Application", "starting application", "SUCCESS");
+
+            var utilityFunctions = Services.GetRequiredService<IUtilityFunctions>();
+            if (SYSTEM_IO.Init(dataManager, utilityFunctions) == false)
+            {
+                Log.Logger.Error("SYSTEM_IO.Init failed: {Error}", SYSTEM_IO.FailDescription);
+                Shutdown();
+                return;
+            }
+
+            var mxClient = Services.GetRequiredService<ImxClient>();
+            if (mxClient.INIT())
+            {
+                mxClient.ResetAlarm(1);
+            }
+            mxClient.Stop(1);
+
+            Defaults.VAMImageCount = dataManager.ImageCount(VAMImageTypes.VAM);
+            Defaults.TestImageCount = dataManager.ImageCount(VAMImageTypes.TEST);
+
+            mxClient.InspectionLampOn();
+        }
+
+        Log.Logger.Information("Initialisation complete{Mode}, showing main window",
+            isDummyMode ? " (dummy mode)" : "");
 
         var mainWindow = new MainWindow();
         mainWindow.Show();
