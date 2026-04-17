@@ -16,10 +16,12 @@ namespace LVS3
 {
     public class DummyDataProvider : IDataManager
     {
+        // TODO: restore Oracle-backed ErrorDesription when reconnecting to DB
+        private string _errorDescription = "";
         public string ErrorDesription
         {
-            get => OracleDatabase.ErrorDesription;
-            set => OracleDatabase.ErrorDesription = value;
+            get => _errorDescription;
+            set => _errorDescription = value;
         }
 
         public SystemMessageHandler DataManagerSMHO { get; set; } = OracleDatabase.SMH;
@@ -78,14 +80,14 @@ namespace LVS3
         }
         public bool OpenConnection(DatabaseSchema dbs)
         {
-            bool retVal = OracleDatabase.OpenOracleConnection(dbs);
-            if (retVal == false)
-            {
-                DataManagerSMEA = new SystemMessageEventArgs(ErrorDesription, "Data Access", (int)CriticalLevels.Red);
-                DataManagerSMHO?.Invoke(DataManagerSMEA);
-            }
-
-            return retVal;
+            // TODO: restore Oracle connection when reconnecting to DB
+            // bool retVal = OracleDatabase.OpenOracleConnection(dbs);
+            // if (retVal == false)
+            // {
+            //     DataManagerSMEA = new SystemMessageEventArgs(ErrorDesription, "Data Access", (int)CriticalLevels.Red);
+            //     DataManagerSMHO?.Invoke(DataManagerSMEA);
+            // }
+            return true;
         }
 
         public bool SetReportFilePath(string path)
@@ -462,28 +464,15 @@ namespace LVS3
         public bool SaveAction(string message, string title, string lpn, string username, string method,
             string refersto, string userreason)
         {
-            bool retVal = OracleDatabase.SaveAction(message, title, lpn, username, method, refersto, userreason);
-            if (ErrorDesription.Trim() != "")
-            {
-                DataManagerSMEA = new SystemMessageEventArgs(ErrorDesription, "Data Access", (int)CriticalLevels.Red);
-                DataManagerSMHO?.Invoke(DataManagerSMEA);
-            }
-
-            return retVal;
+            // TODO: restore Oracle audit trail when reconnecting to DB
+            return true;
         }
 
         public bool SaveAction1(string message, string title, string lpn, string username, string method,
             string refersto, string operatottext, string userreason)
         {
-            bool retVal = OracleDatabase.SaveAction1(message, title, lpn, username, method, refersto, operatottext,
-                userreason);
-            if (ErrorDesription.Trim() != "")
-            {
-                DataManagerSMEA = new SystemMessageEventArgs(ErrorDesription, "Data Access", (int)CriticalLevels.Red);
-                DataManagerSMHO?.Invoke(DataManagerSMEA);
-            }
-
-            return retVal;
+            // TODO: restore Oracle audit trail when reconnecting to DB
+            return true;
         }
 
 
