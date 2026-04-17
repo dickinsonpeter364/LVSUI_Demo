@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<OutputType>Library</OutputType>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AlkUSB3-64">
+      <HintPath>..\..\References\AlkUSB3-64.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ApplicationData\ApplicationData\ApplicationData.csproj" />
+    <ProjectReference Include="..\..\CameraManager\CameraManager.csproj" />
+    <ProjectReference Include="..\..\Constants\Constants.csproj" />
+    <ProjectReference Include="..\..\DataManager\DataManager\DataManager.csproj">
+    </ProjectReference>
+    <ProjectReference Include="..\..\Delegates\Delegates\Delegates.csproj" />
+    <ProjectReference Include="..\..\Document\Document.csproj" />
+    <ProjectReference Include="..\..\Enums\Enums.csproj" />
+    <ProjectReference Include="..\..\Interfacing\Interfacing.csproj" />
+    <ProjectReference Include="..\..\IOClasses\IOClasses.csproj" />
+    <ProjectReference Include="..\..\mxClient\mxClient.csproj" />
+    <ProjectReference Include="..\..\Peripherals\Peripherals\Peripherals.csproj" />
+    <ProjectReference Include="..\..\Security\AD\Security.csproj" />
+    <ProjectReference Include="..\..\Signatures\Signatures\Signatures.csproj" />
+    <ProjectReference Include="..\..\TaskBar\TaskBar.csproj" />
+    <ProjectReference Include="..\..\UserControls\UserControls.csproj" />
+    <ProjectReference Include="..\..\UtilityFunctions\UtilityFunctions\UtilityFunctions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rotate1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\pass.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\fail.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MVTec.HalconDotNet-Windows" Version="22111.0.0" />
+  </ItemGroup>
+</Project>

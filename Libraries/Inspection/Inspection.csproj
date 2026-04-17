@@ -8,6 +8,12 @@
   <ItemGroup>
     <Compile Remove="DummyInspection.cs" />
     <Compile Remove="Inspection.cs" />
+    <Compile Remove="frmUnderInvestigation.cs" />
+    <Compile Remove="frmUnderInvestigation.Designer.cs" />
+    <Compile Remove="InvestigationData.cs" />
+    <EmbeddedResource Remove="frmUnderInvestigation.resx" />
+    <Compile Remove="Properties_Legacy\**" />
+    <EmbeddedResource Remove="Properties_Legacy\**" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
