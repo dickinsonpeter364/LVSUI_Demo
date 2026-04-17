@@ -87,22 +87,24 @@ public partial class App : Application
         services.AddSingleton<ICameraService, CameraService>();
         services.AddSingleton<IUtilityFunctions, WpfUtilityFunctions>();
 
-        // Data manager — selected by config
-        switch (appSettings.DatabaseType.ToLowerInvariant())
-        {
-            case "sqlite":
-                services.AddSingleton<IDataManager, SqLiteDataManager>();
-                break;
-            case "oracle":
-                services.AddSingleton<IDataManager, OracleDataManager>();
-                break;
-            case "capturing":
-                services.AddSingleton<IDataManager, CapturingDataManager>();
-                break;
-            default:
-                services.AddSingleton<IDataManager, DummyDataProvider>();
-                break;
-        }
+        // Data manager — temporarily forced to dummy for testing
+        services.AddSingleton<IDataManager, DummyDataProvider>();
+        // TODO: restore config-driven selection:
+        // switch (appSettings.DatabaseType.ToLowerInvariant())
+        // {
+        //     case "sqlite":
+        //         services.AddSingleton<IDataManager, SqLiteDataManager>();
+        //         break;
+        //     case "oracle":
+        //         services.AddSingleton<IDataManager, OracleDataManager>();
+        //         break;
+        //     case "capturing":
+        //         services.AddSingleton<IDataManager, CapturingDataManager>();
+        //         break;
+        //     default:
+        //         services.AddSingleton<IDataManager, DummyDataProvider>();
+        //         break;
+        // }
 
         // PLC client — selected by config
         switch (appSettings.MxClient.ToLowerInvariant())
