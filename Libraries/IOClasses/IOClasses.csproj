@@ -20,6 +20,11 @@
   <ItemGroup>
     <Reference Include="Automation.BDaq4">
       <HintPath>..\References\Automation.BDaq4.dll</HintPath>
+      <Private>true</Private>
     </Reference>
+    <!-- BioDaq.dll is the native dependency of Automation.BDaq4.dll (P/Invoke).
+         It is installed by the Advantech DAQNavi driver package and must be
+         present on the target machine (typically in System32 or the DAQNavi folder).
+         It is NOT redistributable and cannot be included in source control. -->
   </ItemGroup>
 </Project>
