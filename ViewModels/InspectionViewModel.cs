@@ -27,6 +27,7 @@ namespace WpfMvvmApp.ViewModels
         public ICommand GoBackCommand { get; }
         public ICommand ViewAuditTrailCommand { get; }
         public ICommand ResetAlarmsCommand { get; }
+        public ICommand SimulateAlarmCommand { get; }
 
         private string _alarmsText = string.Empty;
         public string AlarmsText
@@ -69,6 +70,7 @@ namespace WpfMvvmApp.ViewModels
         public int LafCount => _lafCount;
 
         private bool _alarmsSuppressed;
+        private int _simulateAlarmLevel;
 
         public InspectionViewModel(INavigationService navigationService, int lafCount = 1)
         {
@@ -108,6 +110,7 @@ namespace WpfMvvmApp.ViewModels
                 AlarmsText = string.Empty;
                 _mxClient.ResetAlarm(1);
             });
+            SimulateAlarmCommand = new RelayCommand(OnSimulateAlarm);
         }
 
         private void OnStart(object? parameter)
@@ -261,6 +264,27 @@ namespace WpfMvvmApp.ViewModels
                     AlarmsText += $"\nAlarm handler error: {ex.Message}";
                     SystemMessages.Add($"[Error] HandleAlarm: {ex.Message}");
                 });
+            }
+        }
+
+        private void OnSimulateAlarm(object? parameter)
+        {
+            _simulateAlarmLevel++;
+            var timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
+
+            if (_simulateAlarmLevel == 1)
+            {
+                // LEVEL 1: Direct property set from UI thread.
+                // If this text does NOT appear, the binding/DataContext is broken.
+                AlarmsText += $"\n[{timestamp}] DEBUG L1: Direct AlarmsText set from UI thread.";
+            }
+            else
+            {
+                // LEVEL 2: Fire the full handler chain.
+                _alarmsSuppressed = false;
+                AlarmsText += $"\n[{timestamp}] DEBUG L2: Invoking OnIOChangeOfState(ALARM, true)...";
+                OnIOChangeOfState(SYSTEM_IO.ALARM, true);
+                _simulateAlarmLevel = 0;
             }
         }
 

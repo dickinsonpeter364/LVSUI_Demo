@@ -157,9 +157,21 @@
                     </Button.Resources>
                 </Button>
 
-                <Button Command="{Binding ResetAlarmsCommand}" Content="Reset Alarms" 
+                <Button Command="{Binding ResetAlarmsCommand}" Content="Reset Alarms"
                          Width="160" Height="60" FontSize="18" FontWeight="SemiBold"
                          Background="#FF9800" Foreground="White">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <!-- DEBUG: Remove before release -->
+                <Button Command="{Binding SimulateAlarmCommand}" Content="Simulate Alarm"
+                         Width="180" Height="60" FontSize="18" FontWeight="SemiBold"
+                         Background="#9C27B0" Foreground="White" Margin="20,0,0,0"
+                         ToolTip="Click 1: test binding. Click 2: test full alarm chain.">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="8"/>
