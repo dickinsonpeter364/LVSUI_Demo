@@ -207,7 +207,8 @@ namespace WpfMvvmApp.ViewModels
                     {
                         if (!string.IsNullOrEmpty(err))
                         {
-                            alarmDescription = $"Active Alarm: {err} : {PLCFailCodes.GetDescription(err)}";
+                            var friendly = LVS3.mxClient.GetAlarmDescription(err);
+                            alarmDescription = $"Active Alarm: {friendly}";
 
                             System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
                             {

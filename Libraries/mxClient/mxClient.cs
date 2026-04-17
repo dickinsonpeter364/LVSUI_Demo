@@ -301,6 +301,23 @@ namespace LVS3
             return retVal;
         }
 
+        private static readonly Dictionary<string, string> AlarmDescriptions = new()
+        {
+            { "DB8.DBX22.0", "E-Stop Activated" },
+            { "DB8.DBX22.1", "LHS Door Open" },
+            { "DB8.DBX22.2", "RHS Door Open" },
+            { "DB8.DBX22.3", "Air Pressure Low" },
+            { "DB8.DBX22.4", "8U1 Common Fault" },
+            { "DB8.DBX22.5", "9U1 Common Fault" },
+            { "DB8.DBX22.6", "Guider Not OK" },
+            { "DB8.DBX22.7", "Web Loss" },
+        };
+
+        public static string GetAlarmDescription(string register)
+        {
+            return AlarmDescriptions.TryGetValue(register, out var desc) ? desc : register;
+        }
+
         private static string PLCIOMapping(string PLCTag, out string DataType)
         {
             string retVal = "";
