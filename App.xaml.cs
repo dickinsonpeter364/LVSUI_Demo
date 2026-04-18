@@ -18,6 +18,7 @@ public partial class App : Application
 {
     public static bool IsInspecting { get; set; }
     public static bool IsDummyMode { get; private set; }
+    public static bool BypassSecurity { get; private set; }
 
     public static IServiceProvider Services { get; private set; } = null!;
 
@@ -60,6 +61,7 @@ public partial class App : Application
 
         bool isDummyMode = appSettings.MxClient.Equals("dummy", StringComparison.OrdinalIgnoreCase);
         IsDummyMode = isDummyMode;
+        BypassSecurity = appSettings.BypassSecurity;
 
         if (!isDummyMode)
         {
@@ -144,6 +146,10 @@ public partial class App : Application
             }
 
             Messaging.Init();
+
+            // Initialize Active Directory groups (unless security bypassed)
+            if (!BypassSecurity)
+                AD.Init(dataManager);
 
             dataManager.SaveAction("Application Start", "LVS3", "", Defaults.UserLoggedIn,
                 "Application", "starting application", "SUCCESS");

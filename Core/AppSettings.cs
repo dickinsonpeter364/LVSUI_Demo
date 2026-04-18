@@ -9,6 +9,7 @@ public class AppSettings
     public int StationID { get; set; }
     public string IPAddressPLC { get; set; } = "";
     public bool DebugMode { get; set; }
+    public bool BypassSecurity { get; set; }
 }
 
 public class DatabaseSettings

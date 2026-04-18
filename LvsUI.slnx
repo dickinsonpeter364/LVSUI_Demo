@@ -14,6 +14,7 @@
     <Project Path="Libraries/CameraManager/CameraManager.csproj" />
     <Project Path="Libraries/Messaging/Messaging.csproj" />
     <Project Path="Libraries/Inspection/Inspection.csproj" />
+    <Project Path="Libraries/Security/Security.csproj" />
   </Folder>
   <Project Path="LVS.csproj" />
   <!-- Migrated projects not yet in build: Document, InspectionManagement, Peripherals,

@@ -1,28 +1,40 @@
 <Page x:Class="WpfMvvmApp.Views.InspectionView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:WpfMvvmApp.Views"
-      mc:Ignorable="d" 
+      mc:Ignorable="d"
       d:DesignHeight="600" d:DesignWidth="900"
       Title="Inspection">
 
     <Grid Background="#F0F0F0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- Header -->
-            <RowDefinition Height="*"/>    <!-- Content (Changed to * to fill available space naturally) -->
+            <RowDefinition Height="Auto"/> <!-- Alarms bar -->
+            <RowDefinition Height="*"/>    <!-- Content -->
             <RowDefinition Height="Auto"/> <!-- Footer/Buttons -->
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <Border Background="White" Padding="20" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
+        <!-- Alarms Bar -->
+        <Border Background="#FFF5F5" Padding="15,10" BorderBrush="#D32F2F" BorderThickness="0,0,0,1"
+                MinHeight="50">
             <Grid>
-                <Button Command="{Binding GoBackCommand}" HorizontalAlignment="Left" Width="50" Height="50" Background="Transparent" BorderThickness="0" Content="&lt;" FontSize="24" Foreground="#333"/>
-                <TextBlock Text="Inspection" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#333"/>
-                <Button Command="{Binding NavigateToLabelInvestigationCommand}" Content="Check Label" 
-                        Width="140" Height="40" FontSize="16" FontWeight="SemiBold"
-                        Background="#FFA000" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Command="{Binding GoBackCommand}" Width="40" Height="40"
+                        Background="Transparent" BorderThickness="0" Content="&lt;" FontSize="22" Foreground="#333"
+                        VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Grid.Column="1" Text="{Binding AlarmsText, Mode=OneWay}" IsReadOnly="True"
+                         HorizontalScrollBarVisibility="Auto" TextWrapping="NoWrap"
+                         FontSize="14" FontWeight="SemiBold" Foreground="#D32F2F"
+                         Background="Transparent" BorderThickness="0"
+                         VerticalAlignment="Center"/>
+                <Button Grid.Column="2" Command="{Binding ResetAlarmsCommand}" Content="Cancel Alarms"
+                        Width="140" Height="40" FontSize="14" FontWeight="SemiBold"
+                        Background="#FF9800" Foreground="White" VerticalAlignment="Center" Margin="10,0,0,0">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="8"/>
@@ -33,30 +45,27 @@
         </Border>
 
         <!-- Content Area -->
-        <!-- User requested margin of 10. We apply it to the containers. -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"/> <!-- 30% approx -->
-                <ColumnDefinition Width="7*"/> <!-- 70% approx -->
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="7*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Video Box and Alarms Area -->
+            <!-- Video Box and Information Panel -->
             <Grid Grid.Column="0" Margin="10">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/> <!-- Label -->
-                    <RowDefinition Height="5*"/>   <!-- Video -->
-                    <RowDefinition Height="Auto"/> <!-- Alarms Label -->
-                    <RowDefinition Height="3*"/>   <!-- Alarms Text -->
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="3*"/>
                 </Grid.RowDefinitions>
-                
+
                 <TextBlock Grid.Row="0" Text="Backing Camera" FontSize="18" FontWeight="Bold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
-                
-                <!-- ViewBox set to Stretch="Fill" -->
-                <Border Grid.Row="1" BorderBrush="#999" BorderThickness="1" Background="Black" Margin="0,0,0,20">
+
+                <Border Grid.Row="1" BorderBrush="#999" BorderThickness="1" Background="Black" Margin="0,0,0,10">
                     <Viewbox Stretch="Fill" x:Name="CameraViewBox">
                         <Grid Width="400" Height="300" Background="Black">
-                            <!-- Simulate Camera Feed -->
-                            <TextBlock Text="[LIVE FEED]" Foreground="#333" FontSize="40" FontWeight="Bold" 
+                            <TextBlock Text="[LIVE FEED]" Foreground="#333" FontSize="40" FontWeight="Bold"
                                        HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5">
                                 <TextBlock.LayoutTransform>
                                     <RotateTransform Angle="-15"/>
@@ -72,9 +81,9 @@
                     </Viewbox>
                 </Border>
 
-                <!-- Alarms Section -->
-                <TextBlock Grid.Row="2" Text="Alarms" FontSize="18" FontWeight="Bold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
-                <TextBox Grid.Row="3" Text="{Binding AlarmsText, Mode=OneWay}" IsReadOnly="True"
+                <!-- Information Panel -->
+                <TextBlock Grid.Row="2" Text="Information" FontSize="18" FontWeight="Bold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
+                <TextBox Grid.Row="3" Text="{Binding InfoText, Mode=OneWay}" IsReadOnly="True"
                          VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"
                          Padding="10" FontSize="14" BorderBrush="#999" Background="White"/>
             </Grid>
@@ -87,26 +96,24 @@
                 </Grid.RowDefinitions>
 
                  <TextBlock Grid.Row="0" Text="Current Label" FontSize="18" FontWeight="Bold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
-                 
-                 <!-- Height binding removed to allow it to max out its own cell -->
+
                  <Border Grid.Row="1" BorderBrush="#999" BorderThickness="1" Background="White">
                      <Viewbox Stretch="Fill">
-                         <Grid Width="320" Height="180" Background="White"> 
+                         <Grid Width="320" Height="180" Background="White">
                              <Path Data="M10,90 L60,40 L110,90 M100,70 L150,20 L200,70 M-10,190 L330,190" Stroke="#CCC" StrokeThickness="2" Stretch="Uniform" Margin="20"/>
                              <TextBlock Text="LABEL-12345" FontSize="20" FontWeight="Bold" Foreground="#333" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                          </Grid>
                      </Viewbox>
                  </Border>
             </Grid>
-            
+
         </Grid>
 
         <!-- Bottom Buttons -->
         <Grid Grid.Row="2" Margin="0,0,0,40">
-            <!-- Centered StackPanel for original buttons -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                
-                <Button Command="{Binding StartCommand}" Content="START" 
+
+                <Button Command="{Binding StartCommand}" Content="START"
                         Width="140" Height="60" FontSize="18" FontWeight="Bold"
                         Background="#2E7D32" Foreground="White" Margin="0,0,20,0">
                     <Button.Resources>
@@ -116,7 +123,7 @@
                     </Button.Resources>
                 </Button>
 
-                <Button Command="{Binding StopCommand}" Content="Cancel Inspection" 
+                <Button Command="{Binding StopCommand}" Content="Cancel Inspection"
                         Width="200" Height="60" FontSize="18" FontWeight="Bold"
                         Background="#D32F2F" Foreground="White" Margin="0,0,20,0">
                     <Button.Resources>
@@ -126,7 +133,7 @@
                     </Button.Resources>
                 </Button>
 
-                <Button Command="{Binding NavigateToDeviceControlCommand}" Content="Device Control" 
+                <Button Command="{Binding NavigateToDeviceControlCommand}" Content="Device Control"
                          Width="160" Height="60" FontSize="18" FontWeight="SemiBold"
                          Background="#007ACC" Foreground="White" Margin="0,0,20,0">
                     <Button.Resources>
@@ -136,7 +143,7 @@
                     </Button.Resources>
                 </Button>
 
-                <Button Command="{Binding NavigateToSettingsCommand}" Content="Settings" 
+                <Button Command="{Binding NavigateToSettingsCommand}" Content="Settings"
                          Width="140" Height="60" FontSize="18" FontWeight="SemiBold"
                          Background="#555" Foreground="White" Margin="0,0,20,0">
                     <Button.Resources>
@@ -146,19 +153,9 @@
                     </Button.Resources>
                 </Button>
 
-                <Button Command="{Binding ViewAuditTrailCommand}" Content="View Audit Trail" 
+                <Button Command="{Binding ViewAuditTrailCommand}" Content="View Audit Trail"
                          Width="180" Height="60" FontSize="18" FontWeight="SemiBold"
                          Background="#795548" Foreground="White" Margin="0,0,20,0">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="8"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
-
-                <Button Command="{Binding ResetAlarmsCommand}" Content="Reset Alarms"
-                         Width="160" Height="60" FontSize="18" FontWeight="SemiBold"
-                         Background="#FF9800" Foreground="White">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="8"/>
@@ -169,7 +166,7 @@
                 <!-- DEBUG: Remove before release -->
                 <Button Command="{Binding SimulateAlarmCommand}" Content="Simulate Alarm"
                          Width="180" Height="60" FontSize="18" FontWeight="SemiBold"
-                         Background="#9C27B0" Foreground="White" Margin="20,0,0,0"
+                         Background="#9C27B0" Foreground="White"
                          ToolTip="Click 1: test binding. Click 2: test full alarm chain.">
                     <Button.Resources>
                         <Style TargetType="Border">

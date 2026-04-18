@@ -21,13 +21,10 @@
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="9.0.7" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ApplicationData\ApplicationData\ApplicationData.csproj">
-    </ProjectReference>
-    <ProjectReference Include="..\..\Constants\Constants.csproj">
-    </ProjectReference>
-    <ProjectReference Include="..\..\DataManager\DataManager\DataManager.csproj">
-    </ProjectReference>
-    <ProjectReference Include="..\..\Enums\Enums.csproj">
-    </ProjectReference>
+    <ProjectReference Include="..\ApplicationData\ApplicationData.csproj" />
+    <ProjectReference Include="..\Constants\Constants.csproj" />
+    <ProjectReference Include="..\DataManager\DataManager.csproj" />
+    <ProjectReference Include="..\Delegates\Delegates.csproj" />
+    <ProjectReference Include="..\Enums\Enums.csproj" />
   </ItemGroup>
 </Project>

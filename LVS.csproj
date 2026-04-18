@@ -49,6 +49,7 @@
     <ProjectReference Include="Libraries\CameraManager\CameraManager.csproj" />
     <ProjectReference Include="Libraries\Messaging\Messaging.csproj" />
     <ProjectReference Include="Libraries\Inspection\Inspection.csproj" />
+    <ProjectReference Include="Libraries\Security\Security.csproj" />
   </ItemGroup>
 
   <ItemGroup>

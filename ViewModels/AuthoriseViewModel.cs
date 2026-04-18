@@ -1,7 +1,10 @@
 using System.Windows.Input;
 using System.Windows;
+using CONSTANTS;
+using LVS3;
 using WpfMvvmApp.Core;
 using WpfMvvmApp.Services;
+using static LVS3.Enums;
 
 namespace WpfMvvmApp.ViewModels
 {
@@ -51,36 +54,87 @@ namespace WpfMvvmApp.ViewModels
 
         private void OnOk(object? parameter)
         {
-            // In a real app, we would validate credentials here.
-            // parameter can be the PasswordBox to retrieve the password securely.
             string? password = (parameter as System.Windows.Controls.PasswordBox)?.Password;
 
-            if (!string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(password))
-            {
-               // Removed message box as requested
-               // MessageBox.Show($"Authorising user: {Username}", "Authorisation", MessageBoxButton.OK, MessageBoxImage.Information);
-               
-               if (_onSuccessNavigation != null)
-               {
-                   _onSuccessNavigation();
-               }
-               else
-               {
-                   // Default behavior if no specific callback provided (legacy support for simple login)
-                   // _navigationService.Navigate(new Views.LpnEntryView(new LpnEntryViewModel(_navigationService)));
-                   // But wait, the previous logic was specific to startup. 
-                   // Let's assume if no callback, we do default startup flow or simple GoBack?
-                   // The user didn't specify what to do for standard login, but "Change LabelInvestigationView...".
-                   // Let's keep the old default for now if it's not the LabelInvestigation case, OR
-                   // better yet, we can pass the specific startup flow in MainWindow.
-                   
-                   _navigationService.Navigate(new Views.LpnEntryView(new LpnEntryViewModel(_navigationService)));
-               }
-            }
-            else
+            if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(password))
             {
                 MessageBox.Show("Please enter username and password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
+
+            if (App.BypassSecurity || App.IsDummyMode)
+            {
+                // Security bypassed — accept without AD validation
+                Defaults.UserLoggedIn = Username;
+                Defaults.UserName = Username;
+                NavigateOnSuccess();
+                return;
+            }
+
+            // Active Directory authentication
+            try
+            {
+                string domain = Environment.UserDomainName;
+                string user = Username;
+
+                // Split domain\username if provided
+                if (Username.Contains('\\') || Username.Contains('/'))
+                {
+                    var parts = Username.Split(new[] { '\\', '/' });
+                    domain = parts[0];
+                    user = parts[1];
+                }
+
+                if (!AD.AuthenticateUser(domain, user, password))
+                {
+                    MessageBox.Show("Authentication failed. Please check your credentials.",
+                        "Authentication Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // Check AD group membership
+                var userGroups = AD.ADUserGroups(user, domain);
+                bool isMember = false;
+                if (AD.ADGroups != null)
+                {
+                    foreach (var adGroup in AD.ADGroups)
+                    {
+                        if (userGroups.Any(g => g.Equals(adGroup.ADGroupName, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            isMember = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!isMember)
+                {
+                    MessageBox.Show("You are not a member of an authorised group.",
+                        "Access Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Set logged in user details
+                Defaults.UserLoggedIn = user;
+                Defaults.UserName = AD.GetUserInfo(user, UserInfo.name);
+                if (string.IsNullOrEmpty(Defaults.UserName))
+                    Defaults.UserName = user;
+
+                NavigateOnSuccess();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Authentication error: {ex.Message}",
+                    "Authentication Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void NavigateOnSuccess()
+        {
+            if (_onSuccessNavigation != null)
+                _onSuccessNavigation();
+            else
+                _navigationService.Navigate(new Views.LpnEntryView(new LpnEntryViewModel(_navigationService)));
         }
 
         private void OnCancel(object? parameter)

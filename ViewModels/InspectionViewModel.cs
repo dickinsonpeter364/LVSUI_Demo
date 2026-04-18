@@ -36,6 +36,22 @@ namespace WpfMvvmApp.ViewModels
             set => SetProperty(ref _alarmsText, value);
         }
 
+        private void AppendAlarm(string text)
+        {
+            if (string.IsNullOrEmpty(AlarmsText))
+                AlarmsText = text;
+            else
+                AlarmsText += $" | {text}";
+        }
+
+        private void AppendInfo(string text)
+        {
+            if (string.IsNullOrEmpty(InfoText))
+                InfoText = text;
+            else
+                InfoText += $"\n{text}";
+        }
+
         private string _infoText = string.Empty;
         public string InfoText
         {
@@ -83,7 +99,7 @@ namespace WpfMvvmApp.ViewModels
             _dataManager = App.Services.GetRequiredService<IDataManager>();
             _messaging = App.Services.GetRequiredService<IMessagingService>();
 
-            _alarmsText = "System initialized.\nReady for inspection...";
+            _infoText = "System initialized. Ready for inspection...";
 
             // Subscribe to messages
             _messaging.Register<SystemMessage>(this, OnSystemMessage);
@@ -116,8 +132,16 @@ namespace WpfMvvmApp.ViewModels
 
         private void OnStart(object? parameter)
         {
-            // Navigate to QC Review before starting
-            _navigationService.Navigate(new QcReviewView(new QcReviewViewModel(_navigationService, _lafCount, this)));
+            var popup = new PreInspectionWindow();
+            if (popup.ShowDialog() == true && popup.Accepted)
+            {
+                if (!App.IsDummyMode)
+                {
+                    _mxClient.WriteToRegister(1, "Speed_Control", (int)popup.Speed, 3);
+                    // TODO: write reel size registers to PLC
+                }
+                CompleteStartInspection();
+            }
         }
 
         /// <summary>
@@ -148,11 +172,11 @@ namespace WpfMvvmApp.ViewModels
                         SystemMessages.Add(msg));
                 },
                 OnAlarm = () => HandleAlarm(),
-                OnError = err => AlarmsText += $"\nError: {err}"
+                OnError = err => AppendInfo($"Error: {err}")
             };
 
             _inspection.InitInspection(ctx);
-            AlarmsText += "\nInspection Started.";
+            AppendInfo("Inspection Started.");
         }
 
         private void OnStop(object? parameter)
@@ -212,7 +236,10 @@ namespace WpfMvvmApp.ViewModels
 
                             System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
                             {
-                                AlarmsText += $"\n{alarmDescription}";
+                                if (err.StartsWith("DB8.DBX22."))
+                                    AppendAlarm(friendly);
+                                else
+                                    AppendInfo(alarmDescription);
                                 SystemMessages.Add($"[Alarm] {alarmDescription}");
                             });
                         }
@@ -253,7 +280,7 @@ namespace WpfMvvmApp.ViewModels
                 {
                     System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
                     {
-                        AlarmsText += "\nAlarm triggered (no error details available).";
+                        AppendAlarm("Alarm triggered (no error details available).");
                     });
 
                     _alarmsSuppressed = true;
@@ -263,7 +290,7 @@ namespace WpfMvvmApp.ViewModels
             {
                 System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
                 {
-                    AlarmsText += $"\nAlarm handler error: {ex.Message}";
+                    AppendAlarm($"Alarm handler error: {ex.Message}");
                     SystemMessages.Add($"[Error] HandleAlarm: {ex.Message}");
                 });
             }
@@ -278,13 +305,13 @@ namespace WpfMvvmApp.ViewModels
             {
                 // LEVEL 1: Direct property set from UI thread.
                 // If this text does NOT appear, the binding/DataContext is broken.
-                AlarmsText += $"\n[{timestamp}] DEBUG L1: Direct AlarmsText set from UI thread.";
+                AppendAlarm($"[{timestamp}] DEBUG L1: Direct AlarmsText set from UI thread.");
             }
             else
             {
                 // LEVEL 2: Fire the full handler chain.
                 _alarmsSuppressed = false;
-                AlarmsText += $"\n[{timestamp}] DEBUG L2: Invoking OnIOChangeOfState(ALARM, true)...";
+                AppendAlarm($"[{timestamp}] DEBUG L2: Invoking OnIOChangeOfState(ALARM, true)...");
                 OnIOChangeOfState(SYSTEM_IO.ALARM, true);
                 _simulateAlarmLevel = 0;
             }
@@ -296,7 +323,7 @@ namespace WpfMvvmApp.ViewModels
             {
                 SystemMessages.Add($"[{msg.Severity}] {msg.Message}");
                 if (msg.Severity == MessageSeverity.Error || msg.Severity == MessageSeverity.Critical)
-                    AlarmsText += $"\n{msg.Message}";
+                    AppendInfo(msg.Message);
             });
         }
 
@@ -304,7 +331,7 @@ namespace WpfMvvmApp.ViewModels
         {
             System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
             {
-                AlarmsText += $"\nAlarm Ch{msg.Channel}: {(msg.IsActive ? "ACTIVE" : "cleared")}";
+                AppendAlarm($"Alarm Ch{msg.Channel}: {(msg.IsActive ? "ACTIVE" : "cleared")}");
             });
         }
 
@@ -315,7 +342,7 @@ namespace WpfMvvmApp.ViewModels
                 IsInspecting = msg.IsProcessing;
                 App.IsInspecting = msg.IsProcessing;
                 if (msg.Result != null)
-                    AlarmsText += $"\nLabel {msg.LabelIndex}: {msg.Result}";
+                    AppendInfo($"Label {msg.LabelIndex}: {msg.Result}");
             });
         }
     }

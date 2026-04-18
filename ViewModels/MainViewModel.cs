@@ -19,11 +19,8 @@ namespace WpfMvvmApp.ViewModels
 
         private void OnLogOff(object? parameter)
         {
-            // Reset state
             App.IsInspecting = false;
-            
-            // Navigate back to startup screen (AuthoriseView with "Log On" title)
-            _navigationService.Navigate(new AuthoriseView(new AuthoriseViewModel(_navigationService, title: "Log On")));
+            System.Windows.Application.Current.Shutdown();
         }
 
         private bool _isLogOffVisible = true;
