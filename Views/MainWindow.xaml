@@ -57,6 +57,35 @@
             </Grid>
         </Border>
 
+        <!-- Global Alarms Bar (shown on every screen) -->
+        <Border DockPanel.Dock="Top" Background="#FFF5F5" Padding="15,8"
+                BorderBrush="#D32F2F" BorderThickness="0,0,0,1" MinHeight="40">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0"
+                         Text="{Binding AlarmsText, Mode=OneWay}"
+                         IsReadOnly="True"
+                         HorizontalScrollBarVisibility="Auto" TextWrapping="NoWrap"
+                         FontSize="14" FontWeight="SemiBold" Foreground="#D32F2F"
+                         Background="Transparent" BorderThickness="0"
+                         VerticalAlignment="Center"/>
+                <Button Grid.Column="1" Content="Cancel Alarms"
+                        Command="{Binding CancelAlarmsCommand}"
+                        Width="130" Height="30" FontSize="13" FontWeight="SemiBold"
+                        Background="#FF9800" Foreground="White" Margin="10,0,0,0"
+                        BorderThickness="0">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="6"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
+        </Border>
+
         <!-- Page Navigator -->
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
     </DockPanel>

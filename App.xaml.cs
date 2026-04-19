@@ -19,6 +19,7 @@ public partial class App : Application
     public static bool IsInspecting { get; set; }
     public static bool IsDummyMode { get; private set; }
     public static bool BypassSecurity { get; private set; }
+    public static bool CaptureOnly { get; private set; }
 
     public static IServiceProvider Services { get; private set; } = null!;
 
@@ -62,6 +63,7 @@ public partial class App : Application
         bool isDummyMode = appSettings.MxClient.Equals("dummy", StringComparison.OrdinalIgnoreCase);
         IsDummyMode = isDummyMode;
         BypassSecurity = appSettings.BypassSecurity;
+        CaptureOnly = appSettings.CaptureOnly;
 
         if (!isDummyMode)
         {
@@ -91,6 +93,7 @@ public partial class App : Application
 
         // Core services
         services.AddSingleton<IMessagingService, MessagingService>();
+        services.AddSingleton<IAlarmService, AlarmService>();
         services.AddSingleton<ICameraService, CameraService>();
         services.AddSingleton<IUtilityFunctions, WpfUtilityFunctions>();
 

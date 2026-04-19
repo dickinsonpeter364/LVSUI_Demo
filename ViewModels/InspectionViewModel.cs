@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using CONSTANTS;
 using LVS3;
@@ -18,6 +20,9 @@ namespace WpfMvvmApp.ViewModels
         private readonly ImxClient _mxClient;
         private readonly IDataManager _dataManager;
         private readonly IMessagingService _messaging;
+        private readonly ICameraService _cameraService;
+        private readonly IAlarmService _alarmService;
+        private CancellationTokenSource? _captureCts;
 
         public ICommand StartCommand { get; }
         public ICommand StopCommand { get; }
@@ -29,19 +34,29 @@ namespace WpfMvvmApp.ViewModels
         public ICommand ResetAlarmsCommand { get; }
         public ICommand SimulateAlarmCommand { get; }
 
-        private string _alarmsText = string.Empty;
-        public string AlarmsText
+        public string AlarmsText => _alarmService.AlarmsText;
+
+        private void AppendAlarm(string text) => _alarmService.Append(text);
+
+        private System.Windows.Media.ImageSource? _latestImage;
+        public System.Windows.Media.ImageSource? LatestImage
         {
-            get => _alarmsText;
-            set => SetProperty(ref _alarmsText, value);
+            get => _latestImage;
+            set => SetProperty(ref _latestImage, value);
         }
 
-        private void AppendAlarm(string text)
+        private static System.Windows.Media.ImageSource BitmapToImageSource(System.Drawing.Bitmap bmp)
         {
-            if (string.IsNullOrEmpty(AlarmsText))
-                AlarmsText = text;
-            else
-                AlarmsText += $" | {text}";
+            using var ms = new System.IO.MemoryStream();
+            bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+            ms.Position = 0;
+            var bi = new System.Windows.Media.Imaging.BitmapImage();
+            bi.BeginInit();
+            bi.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+            bi.StreamSource = ms;
+            bi.EndInit();
+            bi.Freeze();
+            return bi;
         }
 
         private void AppendInfo(string text)
@@ -98,6 +113,8 @@ namespace WpfMvvmApp.ViewModels
             _mxClient = App.Services.GetRequiredService<ImxClient>();
             _dataManager = App.Services.GetRequiredService<IDataManager>();
             _messaging = App.Services.GetRequiredService<IMessagingService>();
+            _cameraService = App.Services.GetRequiredService<ICameraService>();
+            _alarmService = App.Services.GetRequiredService<IAlarmService>();
 
             _infoText = "System initialized. Ready for inspection...";
 
@@ -123,9 +140,9 @@ namespace WpfMvvmApp.ViewModels
             ViewAuditTrailCommand = new RelayCommand(o => _navigationService.Navigate(new AuditView(new AuditViewModel(navigationService))));
             ResetAlarmsCommand = new RelayCommand(o =>
             {
-                AlarmsText = string.Empty;
+                _alarmService.Clear();
                 _alarmsSuppressed = false;
-                _mxClient.ResetAlarm(1);
+                try { _mxClient.ResetAlarm(1); } catch { }
             });
             SimulateAlarmCommand = new RelayCommand(OnSimulateAlarm);
         }
@@ -140,8 +157,87 @@ namespace WpfMvvmApp.ViewModels
                     _mxClient.WriteToRegister(1, "Speed_Control", (int)popup.Speed, 3);
                     // TODO: write reel size registers to PLC
                 }
-                CompleteStartInspection();
+
+                if (App.CaptureOnly)
+                {
+                    StartCaptureOnly();
+                }
+                else
+                {
+                    CompleteStartInspection();
+                }
             }
+        }
+
+        private void StartCaptureOnly()
+        {
+            IsInspecting = true;
+            App.IsInspecting = true;
+            AppendInfo("Capture-only inspection started. Reels rolling.");
+
+            try
+            {
+                // Start the reels forward
+                _mxClient.StartForward(1);
+            }
+            catch (Exception ex)
+            {
+                AppendInfo($"StartForward failed: {ex.Message}");
+            }
+
+            // Initialise the dummy inspection so it knows the ReelLpn for saving
+            var ctx = new InspectionContext
+            {
+                ReelLpn = DateTime.Now.ToString("yyyyMMdd_HHmmss"),
+                MxClient = _mxClient,
+                OnInfoTextChanged = text => System.Windows.Application.Current?.Dispatcher?.Invoke(() => InfoText = text)
+            };
+            _inspection.InitInspection(ctx);
+
+            _captureCts = new CancellationTokenSource();
+            var token = _captureCts.Token;
+
+            Task.Run(async () =>
+            {
+                int captured = 0;
+                while (!token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        // Trigger capture on the PLC
+                        _mxClient.WriteToRegister(1, "Capture_Image", 1, 3);
+
+                        // Give hardware a moment to capture, then pull the frame
+                        await Task.Delay(200, token);
+
+                        var bmp = _cameraService.GetLastCameraImage(0);
+                        if (bmp != null)
+                        {
+                            var fp = new FailRecord("capture", captured);
+                            _inspection.InspectLabel(bmp, ref fp);
+
+                            // Show the captured image in the UI
+                            var src = BitmapToImageSource(bmp);
+                            System.Windows.Application.Current?.Dispatcher?.Invoke(() => LatestImage = src);
+
+                            captured++;
+
+                            if (captured % 10 == 0)
+                            {
+                                int c = captured;
+                                System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
+                                    AppendInfo($"Captured {c} images"));
+                            }
+                        }
+                    }
+                    catch (OperationCanceledException) { break; }
+                    catch (Exception ex)
+                    {
+                        System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
+                            AppendInfo($"Capture error: {ex.Message}"));
+                    }
+                }
+            }, token);
         }
 
         /// <summary>
@@ -183,7 +279,18 @@ namespace WpfMvvmApp.ViewModels
         {
             IsInspecting = false;
             App.IsInspecting = false;
+
+            // Stop the capture loop if running
+            _captureCts?.Cancel();
+            _captureCts = null;
+
             _mxClient.Stop(1);
+
+            if (App.CaptureOnly || App.IsDummyMode)
+            {
+                AppendInfo("Inspection stopped.");
+                return;
+            }
 
             // Navigate to Authorise View (Cancel Inspection)
             _navigationService.Navigate(new AuthoriseView(

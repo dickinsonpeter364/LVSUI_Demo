@@ -10,6 +10,7 @@ public class AppSettings
     public string IPAddressPLC { get; set; } = "";
     public bool DebugMode { get; set; }
     public bool BypassSecurity { get; set; }
+    public bool CaptureOnly { get; set; }
 }
 
 public class DatabaseSettings

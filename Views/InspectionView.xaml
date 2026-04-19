@@ -10,39 +10,16 @@
 
     <Grid Background="#F0F0F0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/> <!-- Alarms bar -->
+            <RowDefinition Height="Auto"/> <!-- Back button row -->
             <RowDefinition Height="*"/>    <!-- Content -->
             <RowDefinition Height="Auto"/> <!-- Footer/Buttons -->
         </Grid.RowDefinitions>
 
-        <!-- Alarms Bar -->
-        <Border Background="#FFF5F5" Padding="15,10" BorderBrush="#D32F2F" BorderThickness="0,0,0,1"
-                MinHeight="50">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Command="{Binding GoBackCommand}" Width="40" Height="40"
-                        Background="Transparent" BorderThickness="0" Content="&lt;" FontSize="22" Foreground="#333"
-                        VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <TextBox Grid.Column="1" Text="{Binding AlarmsText, Mode=OneWay}" IsReadOnly="True"
-                         HorizontalScrollBarVisibility="Auto" TextWrapping="NoWrap"
-                         FontSize="14" FontWeight="SemiBold" Foreground="#D32F2F"
-                         Background="Transparent" BorderThickness="0"
-                         VerticalAlignment="Center"/>
-                <Button Grid.Column="2" Command="{Binding ResetAlarmsCommand}" Content="Cancel Alarms"
-                        Width="140" Height="40" FontSize="14" FontWeight="SemiBold"
-                        Background="#FF9800" Foreground="White" VerticalAlignment="Center" Margin="10,0,0,0">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="8"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
-            </Grid>
-        </Border>
+        <!-- Back button (alarms now displayed globally in MainWindow) -->
+        <Button Grid.Row="0" Command="{Binding GoBackCommand}" Width="40" Height="40"
+                HorizontalAlignment="Left"
+                Background="Transparent" BorderThickness="0" Content="&lt;" FontSize="22" Foreground="#333"
+                Margin="10,5,0,0"/>
 
         <!-- Content Area -->
         <Grid Grid.Row="1">
@@ -63,22 +40,7 @@
                 <TextBlock Grid.Row="0" Text="Backing Camera" FontSize="18" FontWeight="Bold" Foreground="#444" Margin="0,0,0,5" HorizontalAlignment="Center"/>
 
                 <Border Grid.Row="1" BorderBrush="#999" BorderThickness="1" Background="Black" Margin="0,0,0,10">
-                    <Viewbox Stretch="Fill" x:Name="CameraViewBox">
-                        <Grid Width="400" Height="300" Background="Black">
-                            <TextBlock Text="[LIVE FEED]" Foreground="#333" FontSize="40" FontWeight="Bold"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5">
-                                <TextBlock.LayoutTransform>
-                                    <RotateTransform Angle="-15"/>
-                                </TextBlock.LayoutTransform>
-                            </TextBlock>
-                            <Border BorderBrush="#33FF00" BorderThickness="2" CornerRadius="4" Margin="10"/>
-                            <Ellipse Width="20" Height="20" Fill="Red" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20">
-                                <Ellipse.Effect>
-                                    <BlurEffect Radius="5"/>
-                                </Ellipse.Effect>
-                            </Ellipse>
-                        </Grid>
-                    </Viewbox>
+                    <Image Source="{Binding LatestImage}" Stretch="Uniform"/>
                 </Border>
 
                 <!-- Information Panel -->
