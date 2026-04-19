@@ -208,22 +208,22 @@ namespace WpfMvvmApp.ViewModels
             try
             {
                 bool ok = _mxClient.WriteToRegister(1, "Mode_Inspect", 1, 3);
-                Trace($"[3/7] Mode_Inspect=1 write {(ok ? "OK" : "FAILED")}");
+                Trace($"[3/6] Mode_Inspect=1 write {(ok ? "OK" : "FAILED")}");
 
                 SYSTEM_IO.PROCESSING = true;
-                Trace("[4/7] SYSTEM_IO.PROCESSING=true");
+                Trace("[4/6] SYSTEM_IO.PROCESSING=true");
 
                 _cameraService.StartCapture(0, OnFrameAcquired);
-                Trace($"[5/7] Camera StartCapture(0) registered. CamerasReady={_cameraService.CamerasReady}");
+                Trace($"[5/6] Camera StartCapture(0) registered. CamerasReady={_cameraService.CamerasReady}");
 
-                _mxClient.StartForward(1);
-                Trace("[6/7] StartForward — reels rolling.");
-
-                // Arm PLC/camera for the first label. Each subsequent frame is
-                // re-armed inside OnFrameAcquired (same pattern as the old
-                // WinForms Inspection.ProcessInspectionImage end-of-loop).
+                // Arm PLC/camera for the first label. Old GetImageInspection
+                // does this once, then ProcessInspectionImage re-arms on
+                // each frame (we do the same in OnFrameAcquired).
+                // NOTE: StartForward intentionally NOT called — old frmInspect
+                // doesn't call it either. Mode_Inspect=1 triggers the PLC's
+                // own motion logic.
                 bool armed = _mxClient.WriteToRegister(1, "Capture_Image", 1, 3);
-                Trace($"[7/7] Capture_Image=1 (initial arm) write {(armed ? "OK" : "FAILED")}. Waiting for frames…");
+                Trace($"[6/6] Capture_Image=1 (initial arm) write {(armed ? "OK" : "FAILED")}. Waiting for frames…");
             }
             catch (Exception ex)
             {

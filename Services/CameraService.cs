@@ -25,7 +25,10 @@ public class CameraService : ICameraService
             cameraIndex < CameraManager.NectaCameras.Length &&
             CameraManager.NectaCameras[cameraIndex] != null)
         {
-            CameraManager.NectaCameras[cameraIndex].GrabCameraImage(onFrameAcquired);
+            var cam = CameraManager.NectaCameras[cameraIndex];
+            // Ensure the camera is acquiring (matches old GetImageInspection)
+            cam.EnsureAcquiring();
+            cam.GrabCameraImage(onFrameAcquired);
         }
     }
 

@@ -716,6 +716,32 @@ namespace LVS3
 
             private Action channelMethodCaller = null;
 
+            /// <summary>
+            /// Ensures the camera is actively acquiring. Matches old
+            /// GetImageInspection() behaviour which set Acquire=true before
+            /// registering the frame callback.
+            /// </summary>
+            public void EnsureAcquiring()
+            {
+                try
+                {
+                    if (m_nectaCam != null && m_nectaCam.Acquire == false)
+                    {
+                        m_nectaCam.Acquire = true;
+                        Log.Logger.Information("[NectaCam] EnsureAcquiring: Acquire set to true");
+                    }
+                    else
+                    {
+                        Log.Logger.Information("[NectaCam] EnsureAcquiring: already acquiring ({Acq})",
+                            m_nectaCam?.Acquire);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Error(ex, "[NectaCam] EnsureAcquiring failed: {Message}", ex.Message);
+                }
+            }
+
             public void GrabCameraImage(Action channelcaller)
             {
                 string err = "";
