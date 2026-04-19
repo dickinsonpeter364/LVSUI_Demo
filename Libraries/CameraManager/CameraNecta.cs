@@ -547,6 +547,7 @@ namespace LVS3
                     // LiveControl for live preview is not used in WPF;
                     // frames are captured via RawFrameAcquired event instead
                     m_ariaCam.Acquire = true;
+                    m_grabberOpen = true;
                     retVal = true;
                 }
                 catch (Exception ex)
@@ -837,6 +838,7 @@ namespace LVS3
                     //imgY = m_nectaCam.ImageSizeY;
                     allocateFramesForGrab(1);
                     m_nectaCam.Acquire = true;
+                    m_grabberOpen = true;
                     retVal = true;
                 }
                 catch (Exception ex)
