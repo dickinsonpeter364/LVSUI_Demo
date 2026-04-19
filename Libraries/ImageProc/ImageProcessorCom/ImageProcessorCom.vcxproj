@@ -70,8 +70,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir);C:\opencv\opencv\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\opencv\opencv\build\lib\Debug;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);C:\vcpkg\installed\x64-windows\lib</LibraryPath>
+    <IncludePath>$(SolutionDir);$(VCPKG_ROOT)\installed\x64-windows\include\opencv4;$(VCPKG_ROOT)\installed\x64-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(VCPKG_ROOT)\installed\x64-windows\debug\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
@@ -84,6 +84,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir);$(VCPKG_ROOT)\installed\x64-windows\include\opencv4;$(VCPKG_ROOT)\installed\x64-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(VCPKG_ROOT)\installed\x64-windows\lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -113,7 +115,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <ModuleDefinitionFile>.\ImageProcessorCom.def</ModuleDefinitionFile>
-      <AdditionalDependencies>comsvcs.lib;%(AdditionalDependencies);opencv_world4120d.lib</AdditionalDependencies>
+      <AdditionalDependencies>comsvcs.lib;opencv_world4d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RegisterOutput>true</RegisterOutput>
     </Link>
   </ItemDefinitionGroup>
@@ -213,7 +215,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <ModuleDefinitionFile>.\ImageProcessorCom.def</ModuleDefinitionFile>
-      <AdditionalDependencies>comsvcs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comsvcs.lib;opencv_world4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <RegisterOutput>true</RegisterOutput>

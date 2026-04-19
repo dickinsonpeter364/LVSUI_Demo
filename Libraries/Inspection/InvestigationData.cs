@@ -9,8 +9,8 @@ namespace LVS3
 {
     public class InvestigationData
     {
-        public HalconDotNet.HObject imgReject = null;
-        //public HalconDotNet.HObject imgBackingCam = null;
+        // TODO: replaced HalconDotNet.HObject with Bitmap — use ImageProc/OpenCV for image processing
+        public Bitmap imgReject = null;
         public Bitmap imgBackingCam = null;
         public string MedID;
 

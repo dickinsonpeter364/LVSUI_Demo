@@ -58,6 +58,5 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MVTec.HalconDotNet-Windows" Version="22111.0.0" />
   </ItemGroup>
 </Project>

@@ -275,11 +275,13 @@ namespace LVS3
                 _iParams.InspectBright = _inspectLightAreas;
 
                 _variationRegion?.Dispose();
+                /* TODO: Replace Halcon
                 HOperatorSet.GenRectangle1(out _variationRegion,
                     _variationRegionCoords[0],
                     _variationRegionCoords[1],
                     _variationRegionCoords[2],
                     _variationRegionCoords[3]);
+                */
                 retVal = LoadOpZoneData(labelId);
 
 
@@ -605,6 +607,7 @@ namespace LVS3
                     out var h);
                 //Create a region in order to do the edge detection (Halcon refer to this as am measurement tool)
                 //Defined in size automatically by the image dimensions
+                /* TODO: Replace Halcon
                 HOperatorSet.GenMeasureRectangle2(h / 2,
                     w / 2,
                     new object(90).TupleRad(),
@@ -614,6 +617,7 @@ namespace LVS3
                     h,
                     "nearest_neighbor",
                     out var msr1);
+                */
                 //Find the edge of the label
                 //Sigma indicates the sharpness of the edge, the threshold determines the acceptable limit
                 //Positive indicates a dark->Light transition and first is the choice of edge found.
@@ -628,6 +632,7 @@ namespace LVS3
                     out _,
                     out _);
                 //repeat this to find the top edge of the label as bottom is always ref. edge?
+                /* TODO: Replace Halcon
                 HOperatorSet.GenMeasureRectangle2(startRow,
                     (w / 2),
                     new object(0).TupleRad(),
@@ -637,6 +642,7 @@ namespace LVS3
                     h,
                     "nearest_neighbor",
                     out var msr2);
+                */
                 /* TODO: Replace HOperatorSet.MeasurePos */ //img,
                     msr2,
                     1.0,
@@ -682,17 +688,21 @@ namespace LVS3
                 //Label is always cropped from left edge only
                 #region CommonCode - no params required          
                 if (labelRow.Length == 0) //we didn't find the row-edge - code is the same in each section of the if!
+                    /* TODO: Replace Halcon
                     HOperatorSet.GenRectangle1(out region,
                         0,
                         labelCol,
                         h,
                         w);
+                    */
                 else
+                    /* TODO: Replace Halcon
                     HOperatorSet.GenRectangle1(out region,
                         0,
                         labelCol,
                         h,
                         w);
+                    */
 
                 //trim the image smaller
                 /* TODO: Replace HOperatorSet.ReduceDomain */ //img,
@@ -816,11 +826,13 @@ namespace LVS3
                 else
                     rfd.Reasons.Add("bright areas/marks on label");
                 fp.RegionFailDataList.Add(rfd);
+                /* TODO: Replace Halcon
                 HOperatorSet.SmallestRectangle1(regiondata,
                     out var r1Sel,
                     out var c1Sel,
                     out var r2Sel,
                     out var c2Sel);
+                */
                 if (r1Sel.Length == 1)
                     rfd.failCoordsList.Add(new RegionCoordPoints([r1Sel - 2, c1Sel - 2, r2Sel + 2, c2Sel + 2]));
                 else
@@ -898,8 +910,10 @@ namespace LVS3
                 //Elininate Small clutter pixels groups
                 ///* TODO: Replace HOperatorSet.SelectShape */ //rgnConnected, out rgnSelected, "area", "and", 10, 999999);
                 //Join all disconnected areas into 1 region
+                /* TODO: Replace Halcon
                 HOperatorSet.Union1(rgnConnected,
                     out rgnUnion);//this line is currently redundant
+                */
 
                 //Merge fragments by growing the region to join stuff together (Dilation) then  fill in any gaps (FillUp) then shrink back again to re-separate (Erosion)
                 /* TODO: Replace HOperatorSet.DilationCircle */ //rgnUnion,
@@ -1093,16 +1107,20 @@ namespace LVS3
                             {
                                 if (ratio.D <= 0.05)
                                 {
+                                    /* TODO: Replace Halcon
                                     HOperatorSet.SmallestRectangle1(selectedArea,
                                         out var r1,
                                         out var c1,
                                         out var r2,
                                         out var c2);
+                                    */
+                                    /* TODO: Replace Halcon
                                     HOperatorSet.GenRectangle1(out tmpLine,
                                         r1 - 4,
                                         c1 - 4,
                                         r2 + 4,
                                         c2 + 4);
+                                    */
                                     /* TODO: Replace HOperatorSet.Complement */ //tmpLine,
                                         out rgnComplement);
                                     /* TODO: Replace HOperatorSet.ReduceDomain */ //labelimage,
@@ -1150,11 +1168,13 @@ namespace LVS3
             {
                 _variationRegion?.Dispose();
                 //The image is prepared by making it 8px bigger than the variation region - not sure why at the moment. may just be to allow edge effects or maybe to allow a small amount of rotation/translation?
+                /* TODO: Replace Halcon
                 HOperatorSet.GenRectangle1(out _variationRegion,
                     _variationRegionCoords[0] - 4,
                     _variationRegionCoords[1] - 4,
                     _variationRegionCoords[2] + 4,
                     _variationRegionCoords[3] + 4);
+                */
                 /* TODO: Replace HOperatorSet.ReduceDomain */ //img,
                     _variationRegion,
                     out img);
@@ -1223,24 +1243,32 @@ namespace LVS3
                         var opZoneRow = ozd.FIXTURE_Y - row;
                         var opZoneCol = ozd.FIXTURE_X - column;
                         //Create the transformation matrix to describe the move
+                        /* TODO: Replace Halcon
                         HOperatorSet.HomMat2dIdentity(out var homMat2D);
+                        */
                         //The image will be stretches/shrunk based on the shape model...not sure if this will be helpful for the variation model
+                        /* TODO: Replace Halcon
                         HOperatorSet.HomMat2dScale(homMat2D,
                             1 / scaleR,
                             1 / scaleC,
                             row,
                             column,
                             out homMat2D);
+                        */
                         //Rotate by -angle to make the image 'square' again
+                        /* TODO: Replace Halcon
                         HOperatorSet.HomMat2dRotate(homMat2D,
                             -angle,
                             row,
                             column,
                             out homMat2D);
+                        */
+                        /* TODO: Replace Halcon
                         HOperatorSet.HomMat2dTranslate(homMat2D,
                             opZoneRow,
                             opZoneCol,
                             out homMat2D);
+                        */
                         //Moves the image back into a 'square' position
                         /* TODO: Replace HOperatorSet.AffineTransImage */ //img,
                             out imgTransform,
@@ -1251,11 +1279,13 @@ namespace LVS3
                             _variationRegion,
                             out img); //Not sure this line is doing anything useful
                         ozd.HomMat2D = homMat2D;
+                        /* TODO: Replace Halcon
                         HOperatorSet.GenRectangle1(out opzRoi,
                             ozd.OPZONE_TOP,
                             ozd.OPZONE_LEFT,
                             ozd.OPZONE_BOTTOM,
                             ozd.OPZONE_RIGHT);
+                        */
                         /* TODO: Replace HOperatorSet.CopyObj */ //opzRoi,
                             out ozd.region,
                             1,
@@ -1280,12 +1310,14 @@ namespace LVS3
                             ref fp,
                             imgTransform);
                         //creates a rotated rectangle that should outline the opzone as per the corrected orientation from the shape match, assume for display purposes and not sure if used.
+                        /* TODO: Replace Halcon
                         HOperatorSet.GenRectangle2(out ozd.AffineRegion,
                             row,
                             column,
                             angle,
                             ((ozd.OPZONE_RIGHT - ozd.OPZONE_LEFT) / 2),
                             (ozd.OPZONE_BOTTOM - ozd.OPZONE_TOP) / 2);
+                        */
 
                         if (bVdeFoundFalse == false)
                         {
@@ -1502,11 +1534,13 @@ namespace LVS3
                     rfd.Reasons.Add("Print Variation in " + ozd.NAME);
                     fp.RegionFailDataList.Add(rfd);
                     //create and record boxes around each fault
+                    /* TODO: Replace Halcon
                     HOperatorSet.SmallestRectangle1(connectedRegions,
                         out var r1,
                         out var c1,
                         out var r2,
                         out var c2);
+                    */
                     if (r1.Length == 1)
                         rfd.failCoordsList.Add(new RegionCoordPoints([r1.I, c1.I, r2.I, c2.I]));
                     else
@@ -1603,16 +1637,20 @@ namespace LVS3
                     _variationImg?.Dispose();
                     if (ozd.AffineRegion != null)
                     {
+                        /* TODO: Replace Halcon
                         HOperatorSet.SmallestRectangle1(ozd.AffineRegion,
                             out var r1,
                             out var c1,
                             out var r2,
                             out var c2);
+                        */
+                        /* TODO: Replace Halcon
                         HOperatorSet.GenRectangle1(out zoneRegion,
                             r1 - 4,
                             c1 - 20,
                             r2 + 4,
                             c2 + 20);
+                        */
                         /* TODO: Replace HOperatorSet.ReduceDomain */ //imgTmp,
                             zoneRegion,
                             out imgZone);
@@ -1726,11 +1764,13 @@ namespace LVS3
                             col2 = w;
 
                         region?.Dispose();
+                        /* TODO: Replace Halcon
                         HOperatorSet.GenRectangle1(out region,
                             row1,
                             col1,
                             row2,
                             col2);
+                        */
                         /* TODO: Replace HOperatorSet.Complement */ //region,
                             out var regionComplement);
                         /* TODO: Replace HOperatorSet.ReduceDomain */ //img,
@@ -1804,11 +1844,13 @@ namespace LVS3
                     if (b > h) b = h;
                     if (r > w) r = w;
                     //Create the region to search in
+                    /* TODO: Replace Halcon
                     HOperatorSet.GenRectangle1(out region,
                         t,
                         l,
                         b,
                         r);
+                    */
                     /* TODO: Replace HOperatorSet.ReduceDomain */ //img,
                         region,
                         out tmpObj);
@@ -1818,12 +1860,15 @@ namespace LVS3
                         3);
                     //Create the barcode reader - this ocld be done outside of the inspection to save time (if it takes much time)
                     //read barcode with default  params - you can restrict the parameters for a faster read
+                    /* TODO: Replace Halcon
                     HOperatorSet.CreateDataCode2dModel(barcodeType,
                         "default_parameters",
                         "standard_recognition",
                         out dataCodeHandle);
+                    */
                     //HOperatorSet.FindDataCode2d(tmpObj, out SymbolXLDs, DataCodeHandle, "stop_after_result_num", new object(2), out object ResultHandles, out object DecodedDataStrings);
                     //read barcode 
+                    /* TODO: Replace Halcon
                     HOperatorSet.FindDataCode2d(tmpObj,
                         out symbolXlDs,
                         dataCodeHandle,
@@ -1831,7 +1876,10 @@ namespace LVS3
                         new object(),
                         out _,
                         out var decodedDataStrings);
+                    */
+                    /* TODO: Replace Halcon
                     HOperatorSet.ClearDataCode2dModel(dataCodeHandle);
+                    */
                     object symbolCount;
                     try { /* TODO: Replace HOperatorSet.CountObj */ //symbolXlDs,
                         out symbolCount); } catch { symbolCount = 0; }
@@ -1859,11 +1907,13 @@ namespace LVS3
                                     vdi.BarcodeRegion[1] = col1;
                                     vdi.BarcodeRegion[2] = row2;
                                     vdi.BarcodeRegion[3] = col2;
+                                    /* TODO: Replace Halcon
                                     HOperatorSet.GenRectangle1(out rgnBc,
                                         row1,
                                         col1,
                                         row2,
                                         col2);
+                                    */
                                 }
                                 else
                                 {
@@ -1878,11 +1928,13 @@ namespace LVS3
                                         var col1 = vdi.BarcodeRegion[1] - (Defaults.PADDING_BARCODE / 2);
                                         var row2 = vdi.BarcodeRegion[2] + (Defaults.PADDING_BARCODE / 2);
                                         var col2 = vdi.BarcodeRegion[3] + (Defaults.PADDING_BARCODE / 2);
+                                        /* TODO: Replace Halcon
                                         HOperatorSet.GenRectangle1(out rgnBc,
                                             row1,
                                             col1,
                                             row2,
                                             col2);
+                                        */
 
                                         var rfd = new RegionFailData(vdi.BarcodeName);
                                         if (rfd.Img == null)
@@ -1897,21 +1949,25 @@ namespace LVS3
                                             "missing and/or unreadable"));
                                         if (rgnBc != null)
                                         {
+                                            /* TODO: Replace Halcon
                                             HOperatorSet.SmallestRectangle1(rgnBc,
                                                 out var r1,
                                                 out var c1,
                                                 out var r2,
                                                 out var c2);
+                                            */
                                             rfd.failCoordsList.Add(new RegionCoordPoints([r1, c1, r2, c2]));
                                         }
                                         else if (region != null)
                                         {
                                             rfd.Reasons.Add("A readable barcode was not found");
+                                            /* TODO: Replace Halcon
                                             HOperatorSet.SmallestRectangle1(region,
                                                 out var r1,
                                                 out var c1,
                                                 out var r2,
                                                 out var c2);
+                                            */
                                             rfd.failCoordsList.Add(new RegionCoordPoints([r1, c1, r2, c2]));
                                         }
                                         else
@@ -1981,21 +2037,25 @@ namespace LVS3
                                         vdi.BarcodeNonVDEData));
                                 if (rgnBc != null)
                                 {
+                                    /* TODO: Replace Halcon
                                     HOperatorSet.SmallestRectangle1(rgnBc,
                                         out var r1,
                                         out var c1,
                                         out var r2,
                                         out var c2);
+                                    */
                                     rfd.failCoordsList.Add(new RegionCoordPoints([r1, c1, r2, c2]));
                                 }
                                 else if (region != null)
                                 {
                                     rfd.Reasons.Add("No barcode found within extended search area");
+                                    /* TODO: Replace Halcon
                                     HOperatorSet.SmallestRectangle1(region,
                                         out var r1,
                                         out var c1,
                                         out var r2,
                                         out var c2);
+                                    */
                                     rfd.failCoordsList.Add(new RegionCoordPoints([r1, c1, r2, c2]));
                                 }
                                 else
@@ -2018,11 +2078,13 @@ namespace LVS3
                                 var col1 = vdi.BarcodeRegion[1] - Defaults.PADDING_BARCODE / 2;
                                 var row2 = vdi.BarcodeRegion[2] + Defaults.PADDING_BARCODE / 2;
                                 var col2 = vdi.BarcodeRegion[3] + Defaults.PADDING_BARCODE / 2;
+                                /* TODO: Replace Halcon
                                 HOperatorSet.GenRectangle1(out rgnBc,
                                     row1,
                                     col1,
                                     row2,
                                     col2);
+                                */
                             }
 
                             var rfd = new RegionFailData(vdi.BarcodeName);
@@ -2038,21 +2100,25 @@ namespace LVS3
                                 "missing and/or unreadable"));
                             if (rgnBc != null)
                             {
+                                /* TODO: Replace Halcon
                                 HOperatorSet.SmallestRectangle1(rgnBc,
                                     out var r1,
                                     out var c1,
                                     out var r2,
                                     out var c2);
+                                */
                                 rfd.failCoordsList.Add(new RegionCoordPoints([r1, c1, r2, c2]));
                             }
                             else if (region != null)
                             {
                                 rfd.Reasons.Add("A readable 2D barcode was not found");
+                                /* TODO: Replace Halcon
                                 HOperatorSet.SmallestRectangle1(region,
                                     out var r1,
                                     out var c1,
                                     out var r2,
                                     out var c2);
+                                */
                                 rfd.failCoordsList.Add(new RegionCoordPoints([r1, c1, r2, c2]));
                             }
                             fp.ACCEPTED = false;
@@ -2113,11 +2179,13 @@ namespace LVS3
                     var col1 = vdi.BarcodeRegion[1] - (Defaults.PADDING_BARCODE / 2);
                     var row2 = vdi.BarcodeRegion[2] + Defaults.PADDING_BARCODE / 2;
                     var col2 = vdi.BarcodeRegion[3] + Defaults.PADDING_BARCODE / 2;
+                    /* TODO: Replace Halcon
                     HOperatorSet.GenRectangle1(out rgnBc,
                         row1,
                         col1,
                         row2,
                         col2);
+                    */
                     /* TODO: Replace HOperatorSet.Complement */ //rgnBc,
                         out rgnComplement);
                     /* TODO: Replace HOperatorSet.ReduceDomain */ //img,
@@ -2163,11 +2231,13 @@ namespace LVS3
                     var col1 = vdi.BarcodeRegion[1] - (Defaults.PADDING_BARCODE / 2);
                     var row2 = vdi.BarcodeRegion[2] + Defaults.PADDING_BARCODE / 2;
                     var col2 = vdi.BarcodeRegion[3] + Defaults.PADDING_BARCODE / 2;
+                    /* TODO: Replace Halcon
                     HOperatorSet.GenRectangle1(out rgnBc,
                         row1,
                         col1,
                         row2,
                         col2);
+                    */
                     /* TODO: Replace HOperatorSet.Complement */ //rgnBc,
                         out rgnComplement);
                     /* TODO: Replace HOperatorSet.ReduceDomain */ //img,
@@ -2231,11 +2301,13 @@ namespace LVS3
                             b = h;
                         if (r > w)
                             r = w;
+                        /* TODO: Replace Halcon
                         HOperatorSet.GenRectangle1(out region,
                             t,
                             l,
                             b,
                             r);
+                        */
                         /* TODO: Replace HOperatorSet.ReduceDomain */ //img,
                             region,
                             out tmpObj);
@@ -2293,11 +2365,13 @@ namespace LVS3
                                     string.Join(",",
                                         vdi.BarcodeData)));
                                 fp.RegionFailDataList.Add(rfd);
+                                /* TODO: Replace Halcon
                                 HOperatorSet.SmallestRectangle1(region,
                                     out var r1,
                                     out var c1,
                                     out var r2,
                                     out var c2);
+                                */
                                 rfd.failCoordsList.Add(new RegionCoordPoints([r1, c1, r2, c2]));
                                 fp.DATA_FOUND = false;
                                 fp.ACCEPTED = false;
@@ -2327,11 +2401,13 @@ namespace LVS3
                                     vdi.BarcodeData)));
                             rfd.Reasons.Add("No barcode found within extended search area");
                             fp.RegionFailDataList.Add(rfd);
+                            /* TODO: Replace Halcon
                             HOperatorSet.SmallestRectangle1(region,
                                 out var r1,
                                 out var c1,
                                 out var r2,
                                 out var c2);
+                            */
                             rfd.failCoordsList.Add(new RegionCoordPoints([r1, c1, r2, c2]));
                             fp.ACCEPTED = false;
                             fp.BARCODE_UNREADABLE_LINEAR = true;
@@ -2442,11 +2518,13 @@ namespace LVS3
 
                     if (vdi.RepeatType > 0)
                     {
+                        /* TODO: Replace Halcon
                         HOperatorSet.GenRectangle1(out rgn,
                             vdi.VDERegion[0] - 4,
                             vdi.VDERegion[1] - 8,
                             vdi.VDERegion[2] + 4,
                             vdi.VDERegion[3] + 8);
+                        */
                         /* TODO: Replace HOperatorSet.Complement */ //rgn,
                             out regionComplement);
                         /* TODO: Replace HOperatorSet.ReduceDomain */ //img,
@@ -2909,7 +2987,9 @@ namespace LVS3
                 {
                     case PixelFormat.Format8bppIndexed:
                         // Grayscale image
+                        /* TODO: Replace Halcon
                         HOperatorSet.GenImage1(out hImage, "byte", width, height, ptr);
+                        */
                         break;
 
                     case PixelFormat.Format24bppRgb:

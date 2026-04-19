@@ -1,5 +1,5 @@
 ﻿using CONSTANTS;
-using HalconDotNet;
+// TODO: removed using HalconDotNet — use ImageProc/OpenCV
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -10,7 +10,7 @@ namespace LVS3
     public partial class frmUnderInvestigation : Form
     {
 
-        private HObject tmpBackingImg = null;
+        private System.Drawing.Bitmap tmpBackingImg = null;
         private ESignature eSig;
         private ADGroupData signatureGroupLevel;
         public bool SignatureAccepted;
@@ -215,8 +215,12 @@ namespace LVS3
                     hWinBackingCam.HalconWindow.ClearWindow();
                     if (tmpBackingImg != null)
                         tmpBackingImg.Dispose();
+                    /* TODO: Replace Halcon
                     HOperatorSet.CopyObj(CameraManager.AriaCameras[0].CameraImage, out tmpBackingImg, 1, 1);
+                    */
+                    /* TODO: Replace Halcon
                     HOperatorSet.RotateImage(tmpBackingImg, out tmpBackingImg, rotateAngleBackingImg * -90, "constant");
+                    */
                     tmpBackingImg.DispObj(hWinBackingCam.HalconWindow);
                     hWinBackingCam.SetFullImagePart();
                 }
@@ -233,7 +237,9 @@ namespace LVS3
                 if (tmpBackingImg.CountObj() > 0)
                 {
                     hWinBackingCam.HalconWindow.ClearWindow();
+                    /* TODO: Replace Halcon
                     HOperatorSet.RotateImage(tmpBackingImg, out tmpBackingImg, -90, "constant");
+                    */
                     tmpBackingImg.DispObj(hWinBackingCam.HalconWindow);
                     hWinBackingCam.SetFullImagePart();
                 }
