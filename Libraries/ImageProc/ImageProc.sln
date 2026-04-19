@@ -1,0 +1,179 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11217.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageProc", "ImageProc\ImageProc.vcxproj", "{7A4D0855-C273-47C4-B01D-277AD1B63E49}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bin", "Bin", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		Bin\archive.dll = Bin\archive.dll
+		Bin\bz2.dll = Bin\bz2.dll
+		Bin\bz2d.dll = Bin\bz2d.dll
+		Bin\gif.dll = Bin\gif.dll
+		Bin\jpeg62.dll = Bin\jpeg62.dll
+		Bin\leptonica-1.85.0.dll = Bin\leptonica-1.85.0.dll
+		Bin\leptonica-1.85.0d.dll = Bin\leptonica-1.85.0d.dll
+		Bin\libcrypto-3-x64.dll = Bin\libcrypto-3-x64.dll
+		Bin\libcurl-d.dll = Bin\libcurl-d.dll
+		Bin\libcurl.dll = Bin\libcurl.dll
+		Bin\liblzma.dll = Bin\liblzma.dll
+		Bin\libpng16.dll = Bin\libpng16.dll
+		Bin\libpng16d.dll = Bin\libpng16d.dll
+		Bin\libsharpyuv.dll = Bin\libsharpyuv.dll
+		Bin\libwebp.dll = Bin\libwebp.dll
+		Bin\libwebpmux.dll = Bin\libwebpmux.dll
+		Bin\lz4.dll = Bin\lz4.dll
+		Bin\lz4d.dll = Bin\lz4d.dll
+		Bin\opencv_aruco4130.dll = Bin\opencv_aruco4130.dll
+		Bin\opencv_bgsegm4130.dll = Bin\opencv_bgsegm4130.dll
+		Bin\opencv_bioinspired4130.dll = Bin\opencv_bioinspired4130.dll
+		Bin\opencv_calib3d4130.dll = Bin\opencv_calib3d4130.dll
+		Bin\opencv_ccalib4130.dll = Bin\opencv_ccalib4130.dll
+		Bin\opencv_core4130.dll = Bin\opencv_core4130.dll
+		Bin\opencv_cudaarithm4130.dll = Bin\opencv_cudaarithm4130.dll
+		Bin\opencv_cudabgsegm4130.dll = Bin\opencv_cudabgsegm4130.dll
+		Bin\opencv_cudacodec4130.dll = Bin\opencv_cudacodec4130.dll
+		Bin\opencv_cudafeatures2d4130.dll = Bin\opencv_cudafeatures2d4130.dll
+		Bin\opencv_cudafilters4130.dll = Bin\opencv_cudafilters4130.dll
+		Bin\opencv_cudaimgproc4130.dll = Bin\opencv_cudaimgproc4130.dll
+		Bin\opencv_cudalegacy4130.dll = Bin\opencv_cudalegacy4130.dll
+		Bin\opencv_cudaobjdetect4130.dll = Bin\opencv_cudaobjdetect4130.dll
+		Bin\opencv_cudaoptflow4130.dll = Bin\opencv_cudaoptflow4130.dll
+		Bin\opencv_cudastereo4130.dll = Bin\opencv_cudastereo4130.dll
+		Bin\opencv_cudawarping4130.dll = Bin\opencv_cudawarping4130.dll
+		Bin\opencv_cudev4130.dll = Bin\opencv_cudev4130.dll
+		Bin\opencv_datasets4130.dll = Bin\opencv_datasets4130.dll
+		Bin\opencv_dnn4130.dll = Bin\opencv_dnn4130.dll
+		Bin\opencv_dnn_objdetect4130.dll = Bin\opencv_dnn_objdetect4130.dll
+		Bin\opencv_dnn_superres4130.dll = Bin\opencv_dnn_superres4130.dll
+		Bin\opencv_dpm4130.dll = Bin\opencv_dpm4130.dll
+		Bin\opencv_face4130.dll = Bin\opencv_face4130.dll
+		Bin\opencv_features2d4130.dll = Bin\opencv_features2d4130.dll
+		Bin\opencv_flann4130.dll = Bin\opencv_flann4130.dll
+		Bin\opencv_fuzzy4130.dll = Bin\opencv_fuzzy4130.dll
+		Bin\opencv_gapi4130.dll = Bin\opencv_gapi4130.dll
+		Bin\opencv_hfs4130.dll = Bin\opencv_hfs4130.dll
+		Bin\opencv_highgui4130.dll = Bin\opencv_highgui4130.dll
+		Bin\opencv_imgcodecs4130.dll = Bin\opencv_imgcodecs4130.dll
+		Bin\opencv_imgproc4130.dll = Bin\opencv_imgproc4130.dll
+		Bin\opencv_img_hash4130.dll = Bin\opencv_img_hash4130.dll
+		Bin\opencv_img_hash4130d.dll = Bin\opencv_img_hash4130d.dll
+		Bin\opencv_intensity_transform4130.dll = Bin\opencv_intensity_transform4130.dll
+		Bin\opencv_line_descriptor4130.dll = Bin\opencv_line_descriptor4130.dll
+		Bin\opencv_mcc4130.dll = Bin\opencv_mcc4130.dll
+		Bin\opencv_ml4130.dll = Bin\opencv_ml4130.dll
+		Bin\opencv_objdetect4130.dll = Bin\opencv_objdetect4130.dll
+		Bin\opencv_optflow4130.dll = Bin\opencv_optflow4130.dll
+		Bin\opencv_phase_unwrapping4130.dll = Bin\opencv_phase_unwrapping4130.dll
+		Bin\opencv_photo4130.dll = Bin\opencv_photo4130.dll
+		Bin\opencv_plot4130.dll = Bin\opencv_plot4130.dll
+		Bin\opencv_quality4130.dll = Bin\opencv_quality4130.dll
+		Bin\opencv_rapid4130.dll = Bin\opencv_rapid4130.dll
+		Bin\opencv_reg4130.dll = Bin\opencv_reg4130.dll
+		Bin\opencv_rgbd4130.dll = Bin\opencv_rgbd4130.dll
+		Bin\opencv_saliency4130.dll = Bin\opencv_saliency4130.dll
+		Bin\opencv_shape4130.dll = Bin\opencv_shape4130.dll
+		Bin\opencv_signal4130.dll = Bin\opencv_signal4130.dll
+		Bin\opencv_stereo4130.dll = Bin\opencv_stereo4130.dll
+		Bin\opencv_stitching4130.dll = Bin\opencv_stitching4130.dll
+		Bin\opencv_structured_light4130.dll = Bin\opencv_structured_light4130.dll
+		Bin\opencv_superres4130.dll = Bin\opencv_superres4130.dll
+		Bin\opencv_surface_matching4130.dll = Bin\opencv_surface_matching4130.dll
+		Bin\opencv_text4130.dll = Bin\opencv_text4130.dll
+		Bin\opencv_tracking4130.dll = Bin\opencv_tracking4130.dll
+		Bin\opencv_video4130.dll = Bin\opencv_video4130.dll
+		Bin\opencv_videoio4130.dll = Bin\opencv_videoio4130.dll
+		Bin\opencv_videoio_ffmpeg4130_64.dll = Bin\opencv_videoio_ffmpeg4130_64.dll
+		Bin\opencv_videostab4130.dll = Bin\opencv_videostab4130.dll
+		Bin\opencv_wechat_qrcode4130.dll = Bin\opencv_wechat_qrcode4130.dll
+		Bin\opencv_world4130.dll = Bin\opencv_world4130.dll
+		Bin\opencv_world4130d.dll = Bin\opencv_world4130d.dll
+		Bin\opencv_xfeatures2d4130.dll = Bin\opencv_xfeatures2d4130.dll
+		Bin\opencv_ximgproc4130.dll = Bin\opencv_ximgproc4130.dll
+		Bin\opencv_xobjdetect4130.dll = Bin\opencv_xobjdetect4130.dll
+		Bin\opencv_xphoto4130.dll = Bin\opencv_xphoto4130.dll
+		Bin\openjp2.dll = Bin\openjp2.dll
+		Bin\tesseract55.dll = Bin\tesseract55.dll
+		Bin\tesseract55d.dll = Bin\tesseract55d.dll
+		Bin\tiff.dll = Bin\tiff.dll
+		Bin\tiffd.dll = Bin\tiffd.dll
+		Bin\zlib1.dll = Bin\zlib1.dll
+		Bin\zlibd1.dll = Bin\zlibd1.dll
+		Bin\zstd.dll = Bin\zstd.dll
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComMatcherTest", "ComMatcherTest\ComMatcherTest.csproj", "{4B26FBB6-18F9-4794-87C2-566549EEBFC3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenCVComMatcher", "OpenCVComMatcher\OpenCVComMatcher.vcxproj", "{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenCVComMatcherPS", "OpenCVComMatcherPS\OpenCVComMatcherPS.vcxproj", "{38313F7A-CDFC-F042-8F47-BC19D28E347C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B} = {E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E165CAB9-3A85-4FE8-97C6-78474405A4FF}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Debug|Any CPU.Build.0 = Debug|x64
+		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Debug|x64.ActiveCfg = Debug|x64
+		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Debug|x64.Build.0 = Debug|x64
+		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Debug|x86.ActiveCfg = Debug|Win32
+		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Debug|x86.Build.0 = Debug|Win32
+		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Release|Any CPU.ActiveCfg = Release|x64
+		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Release|Any CPU.Build.0 = Release|x64
+		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Release|x64.ActiveCfg = Release|x64
+		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Release|x64.Build.0 = Release|x64
+		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Release|x86.ActiveCfg = Release|Win32
+		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Release|x86.Build.0 = Release|Win32
+		{4B26FBB6-18F9-4794-87C2-566549EEBFC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B26FBB6-18F9-4794-87C2-566549EEBFC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B26FBB6-18F9-4794-87C2-566549EEBFC3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4B26FBB6-18F9-4794-87C2-566549EEBFC3}.Debug|x64.Build.0 = Debug|Any CPU
+		{4B26FBB6-18F9-4794-87C2-566549EEBFC3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4B26FBB6-18F9-4794-87C2-566549EEBFC3}.Debug|x86.Build.0 = Debug|Any CPU
+		{4B26FBB6-18F9-4794-87C2-566549EEBFC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B26FBB6-18F9-4794-87C2-566549EEBFC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B26FBB6-18F9-4794-87C2-566549EEBFC3}.Release|x64.ActiveCfg = Release|Any CPU
+		{4B26FBB6-18F9-4794-87C2-566549EEBFC3}.Release|x64.Build.0 = Release|Any CPU
+		{4B26FBB6-18F9-4794-87C2-566549EEBFC3}.Release|x86.ActiveCfg = Release|Any CPU
+		{4B26FBB6-18F9-4794-87C2-566549EEBFC3}.Release|x86.Build.0 = Release|Any CPU
+		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}.Debug|Any CPU.Build.0 = Debug|x64
+		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}.Debug|x64.ActiveCfg = Debug|x64
+		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}.Debug|x64.Build.0 = Debug|x64
+		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}.Debug|x86.ActiveCfg = Debug|Win32
+		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}.Debug|x86.Build.0 = Debug|Win32
+		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}.Release|Any CPU.ActiveCfg = Release|x64
+		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}.Release|Any CPU.Build.0 = Release|x64
+		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}.Release|x64.ActiveCfg = Release|x64
+		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}.Release|x64.Build.0 = Release|x64
+		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}.Release|x86.ActiveCfg = Release|Win32
+		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}.Release|x86.Build.0 = Release|Win32
+		{38313F7A-CDFC-F042-8F47-BC19D28E347C}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{38313F7A-CDFC-F042-8F47-BC19D28E347C}.Debug|x64.ActiveCfg = Debug|x64
+		{38313F7A-CDFC-F042-8F47-BC19D28E347C}.Debug|x86.ActiveCfg = Debug|Win32
+		{38313F7A-CDFC-F042-8F47-BC19D28E347C}.Release|Any CPU.ActiveCfg = Release|x64
+		{38313F7A-CDFC-F042-8F47-BC19D28E347C}.Release|x64.ActiveCfg = Release|x64
+		{38313F7A-CDFC-F042-8F47-BC19D28E347C}.Release|x86.ActiveCfg = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {169C749D-1111-43F7-9F2D-1B188C517D16}
+	EndGlobalSection
+EndGlobal

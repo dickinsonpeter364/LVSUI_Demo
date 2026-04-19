@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LabelDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Boehringer Ingelheim Label 1404-0038</Name>
+  <Elements>
+    <!-- === LOGOS & ICONS (TemplateSearchDefinition) === -->
+
+    <!-- Main Company Logo (Top Center of White Panel) -->
+    <ElementSearchDefinition xsi:type="TemplateSearchDefinition">
+      <SearchX>1977</SearchX>
+      <SearchY>270</SearchY>
+      <SearchWidth>350</SearchWidth>
+      <SearchHeight>350</SearchHeight>
+      <TemplateFileName>logo_boehringer.png</TemplateFileName>
+    </ElementSearchDefinition>
+
+    <!-- Small Arrow Icon (Top Left Tab) -->
+    <ElementSearchDefinition xsi:type="TemplateSearchDefinition">
+      <SearchX>75</SearchX>
+      <SearchY>130</SearchY>
+      <SearchWidth>175</SearchWidth>
+      <SearchHeight>175</SearchHeight>
+      <TemplateFileName>icon_arrow_small.png</TemplateFileName>
+    </ElementSearchDefinition>
+
+    <!-- Small Arrow Icon (Bottom Left Tab) -->
+    <ElementSearchDefinition xsi:type="TemplateSearchDefinition">
+      <SearchX>75</SearchX>
+      <SearchY>1100</SearchY>
+      <SearchWidth>175</SearchWidth>
+      <SearchHeight>175</SearchHeight>
+      <TemplateFileName>icon_arrow_small.png</TemplateFileName>
+    </ElementSearchDefinition>
+
+    <!-- Large Arrow Icon (Right Tab) -->
+    <ElementSearchDefinition xsi:type="TemplateSearchDefinition">
+      <SearchX>4006</SearchX>
+      <SearchY>103</SearchY>
+      <SearchWidth>1200</SearchWidth>
+      <SearchHeight>700</SearchHeight>
+      <TemplateFileName>icon_arrow_large.png</TemplateFileName>
+    </ElementSearchDefinition>
+
+    <!-- Data Matrix (Bottom Right of Main Panel) -->
+    <ElementSearchDefinition xsi:type="TemplateSearchDefinition">
+      <SearchX>3950</SearchX>
+      <SearchY>1550</SearchY>
+      <SearchWidth>450</SearchWidth>
+      <SearchHeight>450</SearchHeight>
+      <TemplateFileName>datamatrix_code.png</TemplateFileName>
+    </ElementSearchDefinition>
+
+    <!-- === TEXT LINES (TextSearchDefinition) === -->
+
+    <!-- Top Left Tab Text -->
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>250</SearchX>
+      <SearchY>300</SearchY>
+      <SearchWidth>600</SearchWidth>
+      <SearchHeight>100</SearchHeight>
+      <SearchText>Ref. Code:</SearchText>
+    </ElementSearchDefinition>
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>250</SearchX>
+      <SearchY>420</SearchY>
+      <SearchWidth>600</SearchWidth>
+      <SearchHeight>100</SearchHeight>
+      <SearchText>1404-0038</SearchText>
+    </ElementSearchDefinition>
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>250</SearchX>
+      <SearchY>580</SearchY>
+      <SearchWidth>600</SearchWidth>
+      <SearchHeight>100</SearchHeight>
+      <SearchText>Med. No.:</SearchText>
+    </ElementSearchDefinition>
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>250</SearchX>
+      <SearchY>700</SearchY>
+      <SearchWidth>400</SearchWidth>
+      <SearchHeight>100</SearchHeight>
+      <SearchText>10690</SearchText>
+    </ElementSearchDefinition>
+
+    <!-- Bottom Left Tab Text -->
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>250</SearchX>
+      <SearchY>1300</SearchY>
+      <SearchWidth>600</SearchWidth>
+      <SearchHeight>100</SearchHeight>
+      <SearchText>Ref. Code:</SearchText>
+    </ElementSearchDefinition>
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>250</SearchX>
+      <SearchY>1420</SearchY>
+      <SearchWidth>600</SearchWidth>
+      <SearchHeight>100</SearchHeight>
+      <SearchText>1404-0038</SearchText>
+    </ElementSearchDefinition>
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>250</SearchX>
+      <SearchY>1580</SearchY>
+      <SearchWidth>600</SearchWidth>
+      <SearchHeight>100</SearchHeight>
+      <SearchText>Med. No.:</SearchText>
+    </ElementSearchDefinition>
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>250</SearchX>
+      <SearchY>1700</SearchY>
+      <SearchWidth>400</SearchWidth>
+      <SearchHeight>100</SearchHeight>
+      <SearchText>10690</SearchText>
+    </ElementSearchDefinition>
+
+    <!-- Main Panel Header Text -->
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>1850</SearchX>
+      <SearchY>250</SearchY>
+      <SearchWidth>1000</SearchWidth>
+      <SearchHeight>150</SearchHeight>
+      <SearchText>Boehringer</SearchText>
+    </ElementSearchDefinition>
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>1850</SearchX>
+      <SearchY>400</SearchY>
+      <SearchWidth>1000</SearchWidth>
+      <SearchHeight>150</SearchHeight>
+      <SearchText>Ingelheim</SearchText>
+    </ElementSearchDefinition>
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>2200</SearchX>
+      <SearchY>550</SearchY>
+      <SearchWidth>1600</SearchWidth>
+      <SearchHeight>120</SearchHeight>
+      <SearchText>BI 456906 solution for</SearchText>
+    </ElementSearchDefinition>
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>2200</SearchX>
+      <SearchY>680</SearchY>
+      <SearchWidth>1600</SearchWidth>
+      <SearchHeight>120</SearchHeight>
+      <SearchText>injection 0.5 mL or placebo</SearchText>
+    </ElementSearchDefinition>
+
+    <!-- Main Panel Body Text -->
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>1600</SearchX>
+      <SearchY>1000</SearchY>
+      <SearchWidth>2000</SearchWidth>
+      <SearchHeight>120</SearchHeight>
+      <SearchText>Reference Code: 1404-0038</SearchText>
+    </ElementSearchDefinition>
+
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>1600</SearchX>
+      <SearchY>1150</SearchY>
+      <SearchWidth>2000</SearchWidth>
+      <SearchHeight>120</SearchHeight>
+      <SearchText>Visit No.: _______________</SearchText>
+    </ElementSearchDefinition>
+
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>1600</SearchX>
+      <SearchY>1300</SearchY>
+      <SearchWidth>2000</SearchWidth>
+      <SearchHeight>120</SearchHeight>
+      <SearchText>Med. No.: 10690</SearchText>
+    </ElementSearchDefinition>
+
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>1600</SearchX>
+      <SearchY>1450</SearchY>
+      <SearchWidth>2200</SearchWidth>
+      <SearchHeight>120</SearchHeight>
+      <SearchText>Batch No.: E247920-0011L001</SearchText>
+    </ElementSearchDefinition>
+
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>1600</SearchX>
+      <SearchY>1600</SearchY>
+      <SearchWidth>2000</SearchWidth>
+      <SearchHeight>120</SearchHeight>
+      <SearchText>Expiry date: 10/2027</SearchText>
+    </ElementSearchDefinition>
+
+    <!-- Bottom Left Code (Main Panel) -->
+    <ElementSearchDefinition xsi:type="TextSearchDefinition">
+      <SearchX>1450</SearchX>
+      <SearchY>2000</SearchY>
+      <SearchWidth>600</SearchWidth>
+      <SearchHeight>100</SearchHeight>
+      <SearchText>1404PPC-03</SearchText>
+    </ElementSearchDefinition>
+
+  </Elements>
+</LabelDefinition>

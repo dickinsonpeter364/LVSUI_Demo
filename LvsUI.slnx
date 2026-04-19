@@ -16,6 +16,9 @@
     <Project Path="Libraries/Inspection/Inspection.csproj" />
     <Project Path="Libraries/Security/Security.csproj" />
   </Folder>
+  <!-- ImageProc projects in Libraries/ImageProc/ have their own ImageProc.sln
+       ComMatcherTest has COM references requiring full VS MSBuild
+       C++ projects (ImageProc, OpenCVComMatcher, etc.) need VS C++ toolchain -->
   <Project Path="LVS.csproj" />
   <!-- Migrated projects not yet in build: Document, InspectionManagement, Peripherals,
        Security, Signatures, UserControls, USBLib, MELSEC, mxServer, SharedClasses, StaticClasses
