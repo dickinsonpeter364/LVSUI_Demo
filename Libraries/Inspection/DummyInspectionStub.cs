@@ -57,6 +57,8 @@ public class DummyInspection : IInspection
 
     public bool InspectLabel(Bitmap img, ref FailRecord fp)
     {
+        _logger.Information("DummyInspection.InspectLabel called: img={NotNull}, SaveImages={Save}, Path='{Path}'",
+            img != null, AppData.SaveImages, AppData.SavedImagesPath ?? "(null)");
         SaveImage(img);
         return true;
     }
@@ -83,8 +85,8 @@ public class DummyInspection : IInspection
     /// </summary>
     private void SaveImage(Bitmap? img)
     {
-        if (img == null) return;
-        if (!AppData.SaveImages) return;
+        if (img == null) { _logger.Warning("SaveImage: img is null, skipping"); return; }
+        if (!AppData.SaveImages) { _logger.Warning("SaveImage: AppData.SaveImages=false, skipping"); return; }
 
         try
         {

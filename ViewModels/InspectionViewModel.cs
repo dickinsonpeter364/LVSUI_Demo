@@ -172,13 +172,27 @@ namespace WpfMvvmApp.ViewModels
         private int _captureCount;
         private bool _captureOnlyActive;
 
+        private static readonly Serilog.ILogger _captureLog =
+            Serilog.Log.ForContext("Tag", "CaptureOnly");
+
+        /// <summary>
+        /// Diagnostic trace. Writes to Serilog and the Information panel so
+        /// we can see which stage of the capture chain is or isn't reached.
+        /// </summary>
+        private void Trace(string msg)
+        {
+            _captureLog.Information("{Msg}", msg);
+            System.Windows.Application.Current?.Dispatcher?.Invoke(() => AppendInfo(msg));
+        }
+
         private void StartCaptureOnly()
         {
             IsInspecting = true;
             App.IsInspecting = true;
             _captureCount = 0;
             _captureOnlyActive = true;
-            AppendInfo("Capture-only inspection started. Reels rolling.");
+
+            Trace("[1/6] StartCaptureOnly entered.");
 
             // Initialise the dummy inspection so it knows the ReelLpn for saving
             var ctx = new InspectionContext
@@ -189,29 +203,28 @@ namespace WpfMvvmApp.ViewModels
                     System.Windows.Application.Current?.Dispatcher?.Invoke(() => InfoText = text)
             };
             _inspection.InitInspection(ctx);
+            Trace($"[2/6] InitInspection done. ReelLpn={ctx.ReelLpn}");
 
             try
             {
-                // Put PLC into inspection mode (same as old WinForms flow)
-                _mxClient.WriteToRegister(1, "Mode_Inspect", 1, 3);
+                bool ok = _mxClient.WriteToRegister(1, "Mode_Inspect", 1, 3);
+                Trace($"[3/6] Mode_Inspect=1 write {(ok ? "OK" : "FAILED")}");
 
-                // Enable IO interrupt processing (label-arrival pulse path)
                 SYSTEM_IO.PROCESSING = true;
 
-                // Subscribe to the label-detect pulse on channel 0
                 SYSTEM_IO.IO_INTERRUPT_Handler -= OnLabelPulse;
                 SYSTEM_IO.IO_INTERRUPT_Handler += OnLabelPulse;
+                Trace("[4/6] Subscribed to IO_INTERRUPT_Handler (channel 0 / PULSE_INPUT)");
 
-                // Register the camera frame-acquired callback. When the camera
-                // finishes exposing a frame, OnFrameAcquired fires.
                 _cameraService.StartCapture(0, OnFrameAcquired);
+                Trace($"[5/6] Camera StartCapture(0) called. CamerasReady={_cameraService.CamerasReady}");
 
-                // Start the reels moving forward
                 _mxClient.StartForward(1);
+                Trace("[6/6] StartForward — reels rolling. Waiting for label pulses…");
             }
             catch (Exception ex)
             {
-                AppendInfo($"StartCaptureOnly setup failed: {ex.Message}");
+                Trace($"StartCaptureOnly setup FAILED: {ex.Message}");
             }
         }
 
@@ -221,18 +234,28 @@ namespace WpfMvvmApp.ViewModels
         /// </summary>
         private void OnLabelPulse(int channel, IOEventArgs e)
         {
-            if (!_captureOnlyActive) return;
-            if (channel != SYSTEM_IO.PULSE_INPUT) return;
+            _captureLog.Information("OnLabelPulse fired: channel={Ch}, active={Active}",
+                channel, _captureOnlyActive);
+
+            if (!_captureOnlyActive)
+            {
+                Trace($"OnLabelPulse ch={channel} — dropped (capture not active)");
+                return;
+            }
+            if (channel != SYSTEM_IO.PULSE_INPUT)
+            {
+                Trace($"OnLabelPulse ch={channel} — not PULSE_INPUT ({SYSTEM_IO.PULSE_INPUT}), ignored");
+                return;
+            }
 
             try
             {
-                // Tell the PLC to hardware-trigger the camera for THIS label
-                _mxClient.WriteToRegister(1, "Capture_Image", 1, 3);
+                bool ok = _mxClient.WriteToRegister(1, "Capture_Image", 1, 3);
+                Trace($"Label pulse → Capture_Image=1 write {(ok ? "OK" : "FAILED")}");
             }
             catch (Exception ex)
             {
-                System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
-                    AppendInfo($"Capture trigger failed: {ex.Message}"));
+                Trace($"Capture trigger failed: {ex.Message}");
             }
         }
 
@@ -242,15 +265,28 @@ namespace WpfMvvmApp.ViewModels
         /// </summary>
         private void OnFrameAcquired()
         {
-            if (!_captureOnlyActive) return;
+            _captureLog.Information("OnFrameAcquired fired: active={Active}", _captureOnlyActive);
+
+            if (!_captureOnlyActive)
+            {
+                Trace("OnFrameAcquired — dropped (capture not active)");
+                return;
+            }
 
             try
             {
                 var bmp = _cameraService.GetLastCameraImage(0);
-                if (bmp == null) return;
+                if (bmp == null)
+                {
+                    Trace("OnFrameAcquired — GetLastCameraImage(0) returned null");
+                    return;
+                }
+
+                Trace($"OnFrameAcquired — got bitmap {bmp.Width}x{bmp.Height}");
 
                 var fp = new FailRecord("capture", _captureCount);
                 _inspection.InspectLabel(bmp, ref fp);
+                Trace($"InspectLabel called (#{_captureCount}) — image should be saved by DummyInspection");
 
                 var src = BitmapToImageSource(bmp);
                 _captureCount++;
@@ -259,14 +295,12 @@ namespace WpfMvvmApp.ViewModels
                 System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
                 {
                     LatestImage = src;
-                    if (count % 10 == 0)
-                        AppendInfo($"Captured {count} images");
+                    _captureLog.Information("LatestImage updated on UI thread (#{Count})", count);
                 });
             }
             catch (Exception ex)
             {
-                System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
-                    AppendInfo($"Frame-acquired error: {ex.Message}"));
+                Trace($"Frame-acquired error: {ex.Message}");
             }
         }
 
