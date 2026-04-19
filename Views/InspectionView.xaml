@@ -133,26 +133,6 @@
                     </Button.Resources>
                 </Button>
 
-                <Button Command="{Binding NavigateToDeviceControlCommand}" Content="Device Control"
-                         Width="160" Height="60" FontSize="18" FontWeight="SemiBold"
-                         Background="#007ACC" Foreground="White" Margin="0,0,20,0">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="8"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
-
-                <Button Command="{Binding NavigateToSettingsCommand}" Content="Settings"
-                         Width="140" Height="60" FontSize="18" FontWeight="SemiBold"
-                         Background="#555" Foreground="White" Margin="0,0,20,0">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="8"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
-
                 <Button Command="{Binding ViewAuditTrailCommand}" Content="View Audit Trail"
                          Width="180" Height="60" FontSize="18" FontWeight="SemiBold"
                          Background="#795548" Foreground="White" Margin="0,0,20,0">
