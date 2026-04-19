@@ -208,54 +208,26 @@ namespace WpfMvvmApp.ViewModels
             try
             {
                 bool ok = _mxClient.WriteToRegister(1, "Mode_Inspect", 1, 3);
-                Trace($"[3/6] Mode_Inspect=1 write {(ok ? "OK" : "FAILED")}");
+                Trace($"[3/7] Mode_Inspect=1 write {(ok ? "OK" : "FAILED")}");
 
                 SYSTEM_IO.PROCESSING = true;
-
-                SYSTEM_IO.IO_INTERRUPT_Handler -= OnLabelPulse;
-                SYSTEM_IO.IO_INTERRUPT_Handler += OnLabelPulse;
-                Trace("[4/6] Subscribed to IO_INTERRUPT_Handler (channel 0 / PULSE_INPUT)");
+                Trace("[4/7] SYSTEM_IO.PROCESSING=true");
 
                 _cameraService.StartCapture(0, OnFrameAcquired);
-                Trace($"[5/6] Camera StartCapture(0) called. CamerasReady={_cameraService.CamerasReady}");
+                Trace($"[5/7] Camera StartCapture(0) registered. CamerasReady={_cameraService.CamerasReady}");
 
                 _mxClient.StartForward(1);
-                Trace("[6/6] StartForward — reels rolling. Waiting for label pulses…");
+                Trace("[6/7] StartForward — reels rolling.");
+
+                // Arm PLC/camera for the first label. Each subsequent frame is
+                // re-armed inside OnFrameAcquired (same pattern as the old
+                // WinForms Inspection.ProcessInspectionImage end-of-loop).
+                bool armed = _mxClient.WriteToRegister(1, "Capture_Image", 1, 3);
+                Trace($"[7/7] Capture_Image=1 (initial arm) write {(armed ? "OK" : "FAILED")}. Waiting for frames…");
             }
             catch (Exception ex)
             {
                 Trace($"StartCaptureOnly setup FAILED: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Fired when the IO card detects a label passing the sensor
-        /// (PLC pulse on PULSE_INPUT / channel 0).
-        /// </summary>
-        private void OnLabelPulse(int channel, IOEventArgs e)
-        {
-            _captureLog.Information("OnLabelPulse fired: channel={Ch}, active={Active}",
-                channel, _captureOnlyActive);
-
-            if (!_captureOnlyActive)
-            {
-                Trace($"OnLabelPulse ch={channel} — dropped (capture not active)");
-                return;
-            }
-            if (channel != SYSTEM_IO.PULSE_INPUT)
-            {
-                Trace($"OnLabelPulse ch={channel} — not PULSE_INPUT ({SYSTEM_IO.PULSE_INPUT}), ignored");
-                return;
-            }
-
-            try
-            {
-                bool ok = _mxClient.WriteToRegister(1, "Capture_Image", 1, 3);
-                Trace($"Label pulse → Capture_Image=1 write {(ok ? "OK" : "FAILED")}");
-            }
-            catch (Exception ex)
-            {
-                Trace($"Capture trigger failed: {ex.Message}");
             }
         }
 
@@ -297,6 +269,10 @@ namespace WpfMvvmApp.ViewModels
                     LatestImage = src;
                     _captureLog.Information("LatestImage updated on UI thread (#{Count})", count);
                 });
+
+                // Re-arm PLC/camera for the next label
+                try { _mxClient.WriteToRegister(1, "Capture_Image", 1, 3); }
+                catch (Exception ex) { Trace($"Re-arm Capture_Image failed: {ex.Message}"); }
             }
             catch (Exception ex)
             {
@@ -307,7 +283,6 @@ namespace WpfMvvmApp.ViewModels
         private void StopCaptureOnly()
         {
             _captureOnlyActive = false;
-            try { SYSTEM_IO.IO_INTERRUPT_Handler -= OnLabelPulse; } catch { }
             try { _cameraService.StopCapture(0); } catch { }
             try { _mxClient.Stop(1); } catch { }
             try { _mxClient.WriteToRegister(1, "Mode_Inspect", 0, 3); } catch { }
