@@ -22,7 +22,6 @@ namespace WpfMvvmApp.ViewModels
         private readonly IMessagingService _messaging;
         private readonly ICameraService _cameraService;
         private readonly IAlarmService _alarmService;
-        private CancellationTokenSource? _captureCts;
 
         public ICommand StartCommand { get; }
         public ICommand StopCommand { get; }
@@ -169,75 +168,116 @@ namespace WpfMvvmApp.ViewModels
             }
         }
 
+        // --- CaptureOnly mode state ---
+        private int _captureCount;
+        private bool _captureOnlyActive;
+
         private void StartCaptureOnly()
         {
             IsInspecting = true;
             App.IsInspecting = true;
+            _captureCount = 0;
+            _captureOnlyActive = true;
             AppendInfo("Capture-only inspection started. Reels rolling.");
-
-            try
-            {
-                // Start the reels forward
-                _mxClient.StartForward(1);
-            }
-            catch (Exception ex)
-            {
-                AppendInfo($"StartForward failed: {ex.Message}");
-            }
 
             // Initialise the dummy inspection so it knows the ReelLpn for saving
             var ctx = new InspectionContext
             {
                 ReelLpn = DateTime.Now.ToString("yyyyMMdd_HHmmss"),
                 MxClient = _mxClient,
-                OnInfoTextChanged = text => System.Windows.Application.Current?.Dispatcher?.Invoke(() => InfoText = text)
+                OnInfoTextChanged = text =>
+                    System.Windows.Application.Current?.Dispatcher?.Invoke(() => InfoText = text)
             };
             _inspection.InitInspection(ctx);
 
-            _captureCts = new CancellationTokenSource();
-            var token = _captureCts.Token;
-
-            Task.Run(async () =>
+            try
             {
-                int captured = 0;
-                while (!token.IsCancellationRequested)
+                // Put PLC into inspection mode (same as old WinForms flow)
+                _mxClient.WriteToRegister(1, "Mode_Inspect", 1, 3);
+
+                // Enable IO interrupt processing (label-arrival pulse path)
+                SYSTEM_IO.PROCESSING = true;
+
+                // Subscribe to the label-detect pulse on channel 0
+                SYSTEM_IO.IO_INTERRUPT_Handler -= OnLabelPulse;
+                SYSTEM_IO.IO_INTERRUPT_Handler += OnLabelPulse;
+
+                // Register the camera frame-acquired callback. When the camera
+                // finishes exposing a frame, OnFrameAcquired fires.
+                _cameraService.StartCapture(0, OnFrameAcquired);
+
+                // Start the reels moving forward
+                _mxClient.StartForward(1);
+            }
+            catch (Exception ex)
+            {
+                AppendInfo($"StartCaptureOnly setup failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Fired when the IO card detects a label passing the sensor
+        /// (PLC pulse on PULSE_INPUT / channel 0).
+        /// </summary>
+        private void OnLabelPulse(int channel, IOEventArgs e)
+        {
+            if (!_captureOnlyActive) return;
+            if (channel != SYSTEM_IO.PULSE_INPUT) return;
+
+            try
+            {
+                // Tell the PLC to hardware-trigger the camera for THIS label
+                _mxClient.WriteToRegister(1, "Capture_Image", 1, 3);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
+                    AppendInfo($"Capture trigger failed: {ex.Message}"));
+            }
+        }
+
+        /// <summary>
+        /// Fired by the camera (NectaCam.cam_RawFrameAcquired) when a frame
+        /// is ready in the buffer. Pulls the bitmap, saves it, displays it.
+        /// </summary>
+        private void OnFrameAcquired()
+        {
+            if (!_captureOnlyActive) return;
+
+            try
+            {
+                var bmp = _cameraService.GetLastCameraImage(0);
+                if (bmp == null) return;
+
+                var fp = new FailRecord("capture", _captureCount);
+                _inspection.InspectLabel(bmp, ref fp);
+
+                var src = BitmapToImageSource(bmp);
+                _captureCount++;
+                int count = _captureCount;
+
+                System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
                 {
-                    try
-                    {
-                        // Trigger capture on the PLC
-                        _mxClient.WriteToRegister(1, "Capture_Image", 1, 3);
+                    LatestImage = src;
+                    if (count % 10 == 0)
+                        AppendInfo($"Captured {count} images");
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
+                    AppendInfo($"Frame-acquired error: {ex.Message}"));
+            }
+        }
 
-                        // Give hardware a moment to capture, then pull the frame
-                        await Task.Delay(200, token);
-
-                        var bmp = _cameraService.GetLastCameraImage(0);
-                        if (bmp != null)
-                        {
-                            var fp = new FailRecord("capture", captured);
-                            _inspection.InspectLabel(bmp, ref fp);
-
-                            // Show the captured image in the UI
-                            var src = BitmapToImageSource(bmp);
-                            System.Windows.Application.Current?.Dispatcher?.Invoke(() => LatestImage = src);
-
-                            captured++;
-
-                            if (captured % 10 == 0)
-                            {
-                                int c = captured;
-                                System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
-                                    AppendInfo($"Captured {c} images"));
-                            }
-                        }
-                    }
-                    catch (OperationCanceledException) { break; }
-                    catch (Exception ex)
-                    {
-                        System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
-                            AppendInfo($"Capture error: {ex.Message}"));
-                    }
-                }
-            }, token);
+        private void StopCaptureOnly()
+        {
+            _captureOnlyActive = false;
+            try { SYSTEM_IO.IO_INTERRUPT_Handler -= OnLabelPulse; } catch { }
+            try { _cameraService.StopCapture(0); } catch { }
+            try { _mxClient.Stop(1); } catch { }
+            try { _mxClient.WriteToRegister(1, "Mode_Inspect", 0, 3); } catch { }
+            SYSTEM_IO.PROCESSING = false;
         }
 
         /// <summary>
@@ -280,13 +320,16 @@ namespace WpfMvvmApp.ViewModels
             IsInspecting = false;
             App.IsInspecting = false;
 
-            // Stop the capture loop if running
-            _captureCts?.Cancel();
-            _captureCts = null;
+            if (_captureOnlyActive)
+            {
+                StopCaptureOnly();
+                AppendInfo("Inspection stopped.");
+                return;
+            }
 
             _mxClient.Stop(1);
 
-            if (App.CaptureOnly || App.IsDummyMode)
+            if (App.IsDummyMode)
             {
                 AppendInfo("Inspection stopped.");
                 return;
