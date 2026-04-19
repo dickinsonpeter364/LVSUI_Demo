@@ -615,26 +615,32 @@ namespace LVS3
 
             public void cam_RawFrameAcquired(object sender, EventArgs e)
             {
+                Log.Logger.Information("[NectaCam] cam_RawFrameAcquired fired. channelMethodCaller={Null}",
+                    channelMethodCaller == null ? "null" : "set");
                 string err = "";
 
-                BufferPtr ptr = null;                
+                BufferPtr ptr = null;
                 try
                 {
                     if (channelMethodCaller == null)
+                    {
+                        Log.Logger.Warning("[NectaCam] cam_RawFrameAcquired dropped: no callback registered");
                         return;
+                    }
                     ptr = m_nectaCam.GetRawDataPtr(false);
                     if (ptr != null)
                     {
                         if (m_CameraImage != null)
                             m_CameraImage.Dispose();
                         m_CameraImage = extractBitmap(ptr);
-                                                
-                        //dataResult = RawDataResult.COMPLETE;
+
+                        Log.Logger.Information("[NectaCam] Frame captured, invoking callback");
                         channelMethodCaller?.Invoke();
                     }
                     else
                     {
                         err = string.Format("{0} : Null/no image returned in buffer", DeviceName);
+                        Log.Logger.Warning("[NectaCam] {Err}", err);
                         SystemMessageEventArgs smea = new SystemMessageEventArgs(err, "Image Acquire", (int)CriticalLevels.Red);
                         CameraManager.SMH(smea);
                     }
@@ -719,7 +725,9 @@ namespace LVS3
                     channelMethodCaller = channelcaller;
                     if (m_CameraImage != null)
                         m_CameraImage.Dispose();
-                    m_CameraImage = null;                    
+                    m_CameraImage = null;
+                    Log.Logger.Information("[NectaCam] GrabCameraImage: callback registered. Acquire={Acq}",
+                        m_nectaCam?.Acquire);
                 }
                 catch (Exception ex)
                 {
