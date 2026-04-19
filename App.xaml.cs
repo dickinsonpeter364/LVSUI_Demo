@@ -183,6 +183,22 @@ public partial class App : Application
             mxClient.InspectionLampOn();
         }
 
+        // Load cameras in production or CaptureOnly mode (dummy mode skips hardware)
+        if (!isDummyMode || CaptureOnly)
+        {
+            try
+            {
+                var cameraService = Services.GetRequiredService<ICameraService>();
+                bool camsOk = cameraService.LoadCameras();
+                Log.Logger.Information("LoadCameras() returned {Ok}, CamerasReady={Ready}",
+                    camsOk, cameraService.CamerasReady);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error(ex, "LoadCameras failed: {Message}", ex.Message);
+            }
+        }
+
         Log.Logger.Information("Initialisation complete{Mode}, showing main window",
             isDummyMode ? " (dummy mode)" : "");
 

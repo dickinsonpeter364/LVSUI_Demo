@@ -147,6 +147,8 @@ namespace LVS3
         {
             get
             {
+                if (NectaCameras == null || NectaCameras.Length == 0)
+                    return false;
                 foreach (CameraNecta cam in NectaCameras)
                 {
                     if (cam == null)
