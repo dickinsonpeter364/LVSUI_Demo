@@ -65,6 +65,12 @@ public partial class App : Application
         BypassSecurity = appSettings.BypassSecurity;
         CaptureOnly = appSettings.CaptureOnly;
 
+        Log.Logger.Information(
+            "Config read: DatabaseType={DB}, MxClient={Mx}, BypassSecurity={Bypass}, CaptureOnly={Cap}, SaveImages={Save}, SavedImagesPath='{Path}'",
+            appSettings.DatabaseType, appSettings.MxClient,
+            appSettings.BypassSecurity, appSettings.CaptureOnly,
+            appSettings.SaveImages, appSettings.SavedImagesPath);
+
         if (!isDummyMode)
         {
             // Production: ensure Oracle credentials are available
@@ -152,7 +158,15 @@ public partial class App : Application
 
             // Initialize Active Directory groups (unless security bypassed)
             if (!BypassSecurity)
+            {
                 AD.Init(dataManager);
+                Log.Logger.Information("AD.Init called. AD.ADGroups count = {Count}",
+                    AD.ADGroups == null ? -1 : AD.ADGroups.Count);
+            }
+            else
+            {
+                Log.Logger.Information("AD.Init skipped because BypassSecurity=true");
+            }
 
             dataManager.SaveAction("Application Start", "LVS3", "", Defaults.UserLoggedIn,
                 "Application", "starting application", "SUCCESS");
