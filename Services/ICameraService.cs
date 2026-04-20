@@ -18,14 +18,28 @@ public interface ICameraService
     LVS3.StatusLevel GetCameraStatus(CameraType cameraType);
 
     /// <summary>
-    /// Starts capturing frames. Callback invoked each time a frame is acquired.
+    /// Starts capturing frames on the Necta inspection camera.
+    /// Callback invoked each time a frame is acquired.
     /// </summary>
     void StartCapture(int cameraIndex, Action onFrameAcquired);
 
     void StopCapture(int cameraIndex);
 
     /// <summary>
-    /// Gets the last captured image as a standard Bitmap.
+    /// Gets the last captured Necta inspection image.
     /// </summary>
     Bitmap? GetLastCameraImage(int cameraIndex);
+
+    /// <summary>
+    /// Starts capturing frames on the Aria backing camera.
+    /// Callback invoked each time a frame is acquired.
+    /// </summary>
+    void StartBackingCapture(int cameraIndex, Action onFrameAcquired);
+
+    void StopBackingCapture(int cameraIndex);
+
+    /// <summary>
+    /// Gets the last captured Aria backing camera image.
+    /// </summary>
+    Bitmap? GetLastBackingImage(int cameraIndex);
 }

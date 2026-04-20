@@ -44,6 +44,13 @@ namespace WpfMvvmApp.ViewModels
             set => SetProperty(ref _latestImage, value);
         }
 
+        private System.Windows.Media.ImageSource? _backingCameraImage;
+        public System.Windows.Media.ImageSource? BackingCameraImage
+        {
+            get => _backingCameraImage;
+            set => SetProperty(ref _backingCameraImage, value);
+        }
+
         private static System.Windows.Media.ImageSource BitmapToImageSource(System.Drawing.Bitmap bmp)
         {
             using var ms = new System.IO.MemoryStream();
@@ -214,7 +221,8 @@ namespace WpfMvvmApp.ViewModels
                 Trace("[4/6] SYSTEM_IO.PROCESSING=true");
 
                 _cameraService.StartCapture(0, OnFrameAcquired);
-                Trace($"[5/6] Camera StartCapture(0) registered. CamerasReady={_cameraService.CamerasReady}");
+                _cameraService.StartBackingCapture(0, OnBackingFrameAcquired);
+                Trace($"[5/6] Camera StartCapture(0) + Backing registered. CamerasReady={_cameraService.CamerasReady}");
 
                 // Arm PLC/camera for the first label. Old GetImageInspection
                 // does this once, then ProcessInspectionImage re-arms on
@@ -280,10 +288,36 @@ namespace WpfMvvmApp.ViewModels
             }
         }
 
+        /// <summary>
+        /// Fired by the Aria backing camera when a frame is ready.
+        /// Only updates the backing-camera display; no saving or PLC arming.
+        /// </summary>
+        private void OnBackingFrameAcquired()
+        {
+            if (!_captureOnlyActive) return;
+
+            try
+            {
+                var bmp = _cameraService.GetLastBackingImage(0);
+                if (bmp == null) return;
+
+                var src = BitmapToImageSource(bmp);
+                System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
+                {
+                    BackingCameraImage = src;
+                });
+            }
+            catch (Exception ex)
+            {
+                _captureLog.Warning("OnBackingFrameAcquired error: {Message}", ex.Message);
+            }
+        }
+
         private void StopCaptureOnly()
         {
             _captureOnlyActive = false;
             try { _cameraService.StopCapture(0); } catch { }
+            try { _cameraService.StopBackingCapture(0); } catch { }
             try { _mxClient.Stop(1); } catch { }
             try { _mxClient.WriteToRegister(1, "Mode_Inspect", 0, 3); } catch { }
             SYSTEM_IO.PROCESSING = false;

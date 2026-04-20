@@ -52,4 +52,32 @@ public class CameraService : ICameraService
         }
         return null;
     }
+
+    public void StartBackingCapture(int cameraIndex, Action onFrameAcquired)
+    {
+        if (CameraManager.AriaCameras != null &&
+            cameraIndex < CameraManager.AriaCameras.Length &&
+            CameraManager.AriaCameras[cameraIndex] != null)
+        {
+            // Aria cameras continuously acquire; 'false' means no software trigger.
+            CameraManager.AriaCameras[cameraIndex].GrabCameraImage(onFrameAcquired, false);
+        }
+    }
+
+    public void StopBackingCapture(int cameraIndex)
+    {
+        // Aria camera keeps running; we just stop delivering to the callback.
+        // Nothing to unsubscribe on the camera itself.
+    }
+
+    public Bitmap? GetLastBackingImage(int cameraIndex)
+    {
+        if (CameraManager.AriaCameras != null &&
+            cameraIndex < CameraManager.AriaCameras.Length &&
+            CameraManager.AriaCameras[cameraIndex] != null)
+        {
+            return CameraManager.AriaCameras[cameraIndex].CameraImage;
+        }
+        return null;
+    }
 }
