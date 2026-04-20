@@ -456,16 +456,31 @@ namespace LVS3
                     for (int i = 0; i < 256; i++) palette.Entries[i] = Color.FromArgb(i, i, i);
                     retVal.Palette = palette;
 
+                    // First pass: read entire image and find min/max pixel values
+                    // so we can auto-stretch contrast to 0-255, matching Halcon's
+                    // HSmartWindowControl display behaviour.
+                    byte[] raw = new byte[width * height];
+                    for (int y = 0; y < height; y++)
+                        Marshal.Copy(ptr.Body() + y * width, raw, y * width, width);
+
+                    byte min = 255, max = 0;
+                    for (int i = 0; i < raw.Length; i++)
+                    {
+                        if (raw[i] < min) min = raw[i];
+                        if (raw[i] > max) max = raw[i];
+                    }
+
+                    // Second pass: stretch min..max -> 0..255 (unless flat image)
+                    if (max > min)
+                    {
+                        int range = max - min;
+                        for (int i = 0; i < raw.Length; i++)
+                            raw[i] = (byte)(((raw[i] - min) * 255) / range);
+                    }
+
                     BitmapData bmpData = retVal.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
                     for (int y = 0; y < height; y++)
-                        Marshal.Copy(ptr.Body() + y * width, new byte[width], 0, width);
-                    // Copy row by row accounting for stride
-                    byte[] rawRow = new byte[width];
-                    for (int y = 0; y < height; y++)
-                    {
-                        Marshal.Copy(ptr.Body() + y * width, rawRow, 0, width);
-                        Marshal.Copy(rawRow, 0, bmpData.Scan0 + y * bmpData.Stride, width);
-                    }
+                        Marshal.Copy(raw, y * width, bmpData.Scan0 + y * bmpData.Stride, width);
                     retVal.UnlockBits(bmpData);
                 }
                 catch (Exception ex)
