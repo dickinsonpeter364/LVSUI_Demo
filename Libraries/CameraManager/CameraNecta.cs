@@ -376,40 +376,29 @@ namespace LVS3
             }
 
             public void cam_Aria_RawFrameAcquired(object sender, EventArgs e)
-            {                
-                //string err = "";
-                //BufferPtr ptr = null;
-                //try
-                //{
-                //    ptr = m_ariaCam.GetImagePtr(false);
-                //    if (ptr != null)
-                //    {
-                //        /* TODO: Replace HOperatorSet.GenEmptyObj */ //out m_CameraImage);
-                //        m_CameraImage = extractBitmap(ptr);
-                //        dataResult = RawDataResult.COMPLETE;
-                //        channelMethodCaller?.Invoke();
-                //    }
-                //    else
-                //    {
-                //        err = string.Format("{0} : Null/no image returned in buffer", DeviceName);
-                //        SystemMessageEventArgs smea = new SystemMessageEventArgs(err, "Image Acquire", (int)CriticalLevels.Red);
-                //        CameraManager.SMH(smea);
-                //    }
-                //}
-                //catch (Exception ex)
-                //{
-                //    int id = m_ariaCam.Camera;
-                //    err = "cam_RawFrameAcquired() err:\n" + ex.Message;
-                //    SystemMessageEventArgs smea = new SystemMessageEventArgs(err, "Image Buffering", (int)CriticalLevels.Red);
-
-                //    if (CameraManager.SMH != null)
-                //        CameraManager.SMH(smea);
-                //}
-                //finally
-                //{
-                //    if (ptr != null)
-                //        ptr.Dispose();
-                //}
+            {
+                BufferPtr ptr = null;
+                try
+                {
+                    ptr = m_ariaCam.GetImagePtr(false);
+                    if (ptr != null)
+                    {
+                        if (m_CameraImage != null)
+                            m_CameraImage.Dispose();
+                        m_CameraImage = extractBitmap(ptr);
+                        dataResult = RawDataResult.COMPLETE;
+                        channelMethodCaller?.Invoke();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Error(ex, "[AriaCam] cam_Aria_RawFrameAcquired err: {Message}", ex.Message);
+                }
+                finally
+                {
+                    if (ptr != null)
+                        ptr.Dispose();
+                }
             }
 
 
