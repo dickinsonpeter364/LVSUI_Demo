@@ -94,6 +94,16 @@ namespace WpfMvvmApp.ViewModels
 
                 // Check AD group membership
                 var userGroups = AD.ADUserGroups(user, domain);
+
+                var userGroupsList = string.Join(", ", userGroups ?? new List<string>());
+                var expectedList = AD.ADGroups == null
+                    ? "(AD.ADGroups is null — AD.Init not run or DB returned no rows)"
+                    : AD.ADGroups.Count == 0
+                        ? "(AD.ADGroups is empty)"
+                        : string.Join(", ", AD.ADGroups.Select(g => g.ADGroupName));
+                Serilog.Log.Information("AD check for user '{User}@{Domain}'\n  userGroups: {UserGroups}\n  expected:   {Expected}",
+                    user, domain, userGroupsList, expectedList);
+
                 bool isMember = false;
                 if (AD.ADGroups != null)
                 {
@@ -109,7 +119,10 @@ namespace WpfMvvmApp.ViewModels
 
                 if (!isMember)
                 {
-                    MessageBox.Show("You are not a member of an authorised group.",
+                    MessageBox.Show(
+                        $"You are not a member of an authorised group.\n\n" +
+                        $"Your groups:\n  {userGroupsList}\n\n" +
+                        $"Expected (any of):\n  {expectedList}",
                         "Access Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
