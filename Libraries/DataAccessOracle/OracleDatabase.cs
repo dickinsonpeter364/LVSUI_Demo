@@ -2498,6 +2498,9 @@ namespace LVS3
             OracleDataAdapter da = new OracleDataAdapter(oCmd);
             DataSet ds = new DataSet();
 
+            Serilog.Log.Information("GetAllGroups: entered. Schema={Schema}, ConnState={State}",
+                Defaults.DB_Schema, m_Conn?.State);
+
             try
             {
                 ErrorDesription = "";
@@ -2511,12 +2514,17 @@ namespace LVS3
                     throw new Exception("Cannot open connection to Database schema: " + Defaults.DB_Schema);
 
                 string sSQL = "SELECT * FROM XX_AD_USER_GROUPS ORDER BY GROUP_LEVEL";
+                Serilog.Log.Information("GetAllGroups: executing SQL: {SQL}", sSQL);
                 oCmd = new OracleCommand(sSQL, m_Conn);
                 oCmd.CommandType = CommandType.Text;
                 da.SelectCommand = oCmd;
                 oCmd.ExecuteNonQuery();
                 da.Fill(ds);
-                if (ds.Tables[0].Rows.Count > 0)
+
+                int rowCount = ds.Tables.Count > 0 ? ds.Tables[0].Rows.Count : 0;
+                Serilog.Log.Information("GetAllGroups: query returned {Rows} rows", rowCount);
+
+                if (rowCount > 0)
                 {
                     foreach (DataRow dr in ds.Tables[0].Rows)
                     {
@@ -2525,6 +2533,8 @@ namespace LVS3
                         agd.ADGroupName = dr["GROUP_NAME"].ToString();
                         agd.ADGroupNameFriendly = dr["GROUP_FRIENDLY_NAME"].ToString();
                         retVal.Add(agd);
+                        Serilog.Log.Information("  row: level={Level}, name='{Name}', friendly='{Friendly}'",
+                            agd.ADGroupLevel, agd.ADGroupName, agd.ADGroupNameFriendly);
                     }
                 }
             }
@@ -2532,8 +2542,10 @@ namespace LVS3
             {
                 retVal.Clear();
                 ErrorDesription = string.Format("GetAllGroups() err:\n{0}", ex.Message);
+                Serilog.Log.Error(ex, "GetAllGroups FAILED: {Message}", ex.Message);
                 notifyError(ErrorDesription, "Data Access", true);
             }
+            Serilog.Log.Information("GetAllGroups: returning {Count} groups", retVal.Count);
             return retVal;
         }
 
