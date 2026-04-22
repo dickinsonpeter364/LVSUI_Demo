@@ -75,10 +75,11 @@ public static class LabelMatcher
             }
 
             // Step 2: CreateAbsoluteMap
-            string json = matcher.CreateAbsoluteMap(
+            string json;
+            bool mapCreated = matcher.CreateAbsoluteMap(
                 imgBytes, w, h, ch,
                 l1PdfPath, l2PdfPath, dpi,
-                false, "");
+                false, "", out json);
 
             var mapResult = ParseJson(json);
             LastMap = mapResult;

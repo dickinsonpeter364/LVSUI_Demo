@@ -175,6 +175,37 @@ EXTERN_C const IID IID_IImageMatcher;
             /* [out] */ LONG *height,
             /* [out] */ LONG *channels) = 0;
         
+        virtual /* [id] */ HRESULT STDMETHODCALLTYPE CreateAbsoluteMap( 
+            /* [in] */ SAFEARRAY * imgData,
+            /* [in] */ LONG width,
+            /* [in] */ LONG height,
+            /* [in] */ LONG channels,
+            /* [in] */ BSTR l1PdfPath,
+            /* [in] */ BSTR l2PdfPath,
+            /* [in] */ DOUBLE dpi,
+            /* [in] */ VARIANT_BOOL markImage,
+            /* [in] */ BSTR imageFilePath,
+            /* [out] */ BSTR *jsonResult,
+            /* [retval][out] */ VARIANT_BOOL *success) = 0;
+        
+        virtual /* [id] */ HRESULT STDMETHODCALLTYPE ComputeContentRect( 
+            /* [in] */ BSTR pdfPath,
+            /* [out] */ DOUBLE *minX,
+            /* [out] */ DOUBLE *minY,
+            /* [out] */ DOUBLE *maxX,
+            /* [out] */ DOUBLE *maxY,
+            /* [retval][out] */ VARIANT_BOOL *success) = 0;
+        
+        virtual /* [id] */ HRESULT STDMETHODCALLTYPE RenderPdfPage( 
+            /* [in] */ BSTR pdfPath,
+            /* [in] */ DOUBLE dpi,
+            /* [in] */ LONG pageIndex,
+            /* [out] */ SAFEARRAY * *pImgData,
+            /* [out] */ LONG *width,
+            /* [out] */ LONG *height,
+            /* [out] */ LONG *channels,
+            /* [retval][out] */ VARIANT_BOOL *success) = 0;
+        
     };
     
     
@@ -340,6 +371,43 @@ EXTERN_C const IID IID_IImageMatcher;
             /* [out] */ LONG *height,
             /* [out] */ LONG *channels);
         
+        DECLSPEC_XFGVIRT(IImageMatcher, CreateAbsoluteMap)
+        /* [id] */ HRESULT ( STDMETHODCALLTYPE *CreateAbsoluteMap )( 
+            IImageMatcher * This,
+            /* [in] */ SAFEARRAY * imgData,
+            /* [in] */ LONG width,
+            /* [in] */ LONG height,
+            /* [in] */ LONG channels,
+            /* [in] */ BSTR l1PdfPath,
+            /* [in] */ BSTR l2PdfPath,
+            /* [in] */ DOUBLE dpi,
+            /* [in] */ VARIANT_BOOL markImage,
+            /* [in] */ BSTR imageFilePath,
+            /* [out] */ BSTR *jsonResult,
+            /* [retval][out] */ VARIANT_BOOL *success);
+        
+        DECLSPEC_XFGVIRT(IImageMatcher, ComputeContentRect)
+        /* [id] */ HRESULT ( STDMETHODCALLTYPE *ComputeContentRect )( 
+            IImageMatcher * This,
+            /* [in] */ BSTR pdfPath,
+            /* [out] */ DOUBLE *minX,
+            /* [out] */ DOUBLE *minY,
+            /* [out] */ DOUBLE *maxX,
+            /* [out] */ DOUBLE *maxY,
+            /* [retval][out] */ VARIANT_BOOL *success);
+        
+        DECLSPEC_XFGVIRT(IImageMatcher, RenderPdfPage)
+        /* [id] */ HRESULT ( STDMETHODCALLTYPE *RenderPdfPage )( 
+            IImageMatcher * This,
+            /* [in] */ BSTR pdfPath,
+            /* [in] */ DOUBLE dpi,
+            /* [in] */ LONG pageIndex,
+            /* [out] */ SAFEARRAY * *pImgData,
+            /* [out] */ LONG *width,
+            /* [out] */ LONG *height,
+            /* [out] */ LONG *channels,
+            /* [retval][out] */ VARIANT_BOOL *success);
+        
         END_INTERFACE
     } IImageMatcherVtbl;
 
@@ -405,6 +473,15 @@ EXTERN_C const IID IID_IImageMatcher;
 
 #define IImageMatcher_RetrieveNormalisedImage(This,pImgData,width,height,channels)	\
     ( (This)->lpVtbl -> RetrieveNormalisedImage(This,pImgData,width,height,channels) ) 
+
+#define IImageMatcher_CreateAbsoluteMap(This,imgData,width,height,channels,l1PdfPath,l2PdfPath,dpi,markImage,imageFilePath,jsonResult,success)	\
+    ( (This)->lpVtbl -> CreateAbsoluteMap(This,imgData,width,height,channels,l1PdfPath,l2PdfPath,dpi,markImage,imageFilePath,jsonResult,success) ) 
+
+#define IImageMatcher_ComputeContentRect(This,pdfPath,minX,minY,maxX,maxY,success)	\
+    ( (This)->lpVtbl -> ComputeContentRect(This,pdfPath,minX,minY,maxX,maxY,success) ) 
+
+#define IImageMatcher_RenderPdfPage(This,pdfPath,dpi,pageIndex,pImgData,width,height,channels,success)	\
+    ( (This)->lpVtbl -> RenderPdfPage(This,pdfPath,dpi,pageIndex,pImgData,width,height,channels,success) ) 
 
 #endif /* COBJMACROS */
 
