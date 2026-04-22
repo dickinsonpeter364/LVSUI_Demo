@@ -14,6 +14,7 @@ namespace WpfMvvmApp.ViewModels
         private string _laf1Path;
         private string _laf2Path;
         private BitmapImage? _laf1Preview;
+        private BitmapImage? _laf2Preview;
         private bool _isProcessing;
 
         public string Laf1Path
@@ -44,10 +45,23 @@ namespace WpfMvvmApp.ViewModels
             private set => SetProperty(ref _isProcessing, value);
         }
 
+        /// <summary>Annotated preview image shown after L2 is selected.</summary>
+        public BitmapImage? Laf2Preview
+        {
+            get => _laf2Preview;
+            private set => SetProperty(ref _laf2Preview, value);
+        }
+
         public string Laf2Path
         {
             get => _laf2Path;
-            set => SetProperty(ref _laf2Path, value);
+            set
+            {
+                if (SetProperty(ref _laf2Path, value))
+                {
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
         }
 
         public ICommand SelectLaf1Command { get; }

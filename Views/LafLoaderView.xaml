@@ -5,90 +5,183 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:WpfMvvmApp.Views"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="800"
+      d:DesignHeight="800" d:DesignWidth="1200"
       Title="LAF Loader">
 
-    <Grid Background="#F0F0F0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <Grid Background="#1A1A2E">
+        <Grid.RowDefinitions>
+            <!-- Selection bar -->
+            <RowDefinition Height="Auto"/>
+            <!-- Qual image panels -->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <!-- Left column: LAF1 preview image -->
-        <Border Grid.Column="0" Background="Black" Margin="20"
-                VerticalAlignment="Stretch" Width="380"
-                Visibility="{Binding Laf1Preview, Converter={StaticResource NullToVis}}">
-            <Grid>
-                <Image Source="{Binding Laf1Preview}"
-                       Stretch="Uniform"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"/>
-                <TextBlock Text="Processing…" Foreground="White" FontSize="18"
-                           HorizontalAlignment="Center" VerticalAlignment="Center"
-                           Visibility="{Binding IsProcessing, Converter={StaticResource BoolToVis}}"/>
-            </Grid>
-        </Border>
-
-        <!-- Right column: file selection + buttons -->
-        <Border Grid.Column="1" Background="White" CornerRadius="10" Padding="30"
-                VerticalAlignment="Center" HorizontalAlignment="Center" Width="500">
+        <!-- ═══ Row 0: File selection panel ═══ -->
+        <Border Grid.Row="0" Background="#FFFFFF" CornerRadius="12"
+                Margin="20,20,20,12" Padding="28,20">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.2"/>
+                <DropShadowEffect BlurRadius="24" ShadowDepth="0" Opacity="0.18" Color="#000000"/>
             </Border.Effect>
 
-            <StackPanel>
-                <TextBlock Text="Load LAF Files" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,30" Foreground="#333"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <!-- LAF 1 label + path box -->
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- spacer -->
+                    <ColumnDefinition Width="32"/>
+                    <!-- LAF 2 label + path box -->
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- spacer -->
+                    <ColumnDefinition Width="32"/>
+                    <!-- Buttons -->
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-                <!-- LAF 1 Selection -->
-                <TextBlock Text="LAF 1" FontSize="16" FontWeight="Bold" Foreground="#444" Margin="0,0,0,5"/>
-                <Grid Margin="0,0,0,20">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBox Text="{Binding Laf1Path}" IsReadOnly="True" FontSize="16" Padding="5" Height="40" VerticalContentAlignment="Center" Background="#FAFAFA"/>
-                    <Button Grid.Column="1" Content="..." Command="{Binding SelectLaf1Command}" Width="50" Height="40" Margin="10,0,0,0" Background="#EEE" Foreground="#333"/>
-                </Grid>
+                <!-- LAF 1 -->
+                <TextBlock Grid.Column="0" Text="LAF 1" FontSize="15" FontWeight="Bold"
+                           Foreground="#333" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox   Grid.Column="1" Text="{Binding Laf1Path}" IsReadOnly="True"
+                           FontSize="14" Padding="8,0" Height="40"
+                           VerticalContentAlignment="Center" Background="#F5F5F5"
+                           BorderBrush="#DDD" BorderThickness="1"/>
+                <Button    Grid.Column="2" Content="…" Command="{Binding SelectLaf1Command}"
+                           Width="46" Height="40" Margin="6,0,0,0"
+                           Background="#EEEEEE" Foreground="#333" BorderThickness="0" FontSize="16">
+                    <Button.Resources>
+                        <Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style>
+                    </Button.Resources>
+                </Button>
 
-                <!-- LAF 2 Selection -->
-                <TextBlock Text="LAF 2" FontSize="16" FontWeight="Bold" Foreground="#444" Margin="0,0,0,5"/>
-                <Grid Margin="0,0,0,40">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBox Text="{Binding Laf2Path}" IsReadOnly="True" FontSize="16" Padding="5" Height="40" VerticalContentAlignment="Center" Background="#FAFAFA"/>
-                    <Button Grid.Column="1" Content="..." Command="{Binding SelectLaf2Command}" Width="50" Height="40" Margin="10,0,0,0" Background="#EEE" Foreground="#333"/>
-                </Grid>
+                <!-- LAF 2 -->
+                <TextBlock Grid.Column="4" Text="LAF 2" FontSize="15" FontWeight="Bold"
+                           Foreground="#333" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox   Grid.Column="5" Text="{Binding Laf2Path}" IsReadOnly="True"
+                           FontSize="14" Padding="8,0" Height="40"
+                           VerticalContentAlignment="Center" Background="#F5F5F5"
+                           BorderBrush="#DDD" BorderThickness="1"/>
+                <Button    Grid.Column="6" Content="…" Command="{Binding SelectLaf2Command}"
+                           Width="46" Height="40" Margin="6,0,0,0"
+                           Background="#EEEEEE" Foreground="#333" BorderThickness="0" FontSize="16">
+                    <Button.Resources>
+                        <Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style>
+                    </Button.Resources>
+                </Button>
 
-                <!-- Buttons -->
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Content="OK" 
-                            IsDefault="True"
-                            Command="{Binding OkCommand}" 
-                            Width="150" Height="50" FontSize="18" FontWeight="SemiBold"
+                <!-- OK / Cancel -->
+                <StackPanel Grid.Column="8" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="OK" IsDefault="True"
+                            Command="{Binding OkCommand}"
+                            Width="110" Height="40" FontSize="15" FontWeight="SemiBold"
                             Background="#007ACC" Foreground="White" BorderThickness="0"
-                            Margin="0,0,20,0">
-                         <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="8"/>
-                            </Style>
+                            Margin="0,0,10,0">
+                        <Button.Resources>
+                            <Style TargetType="Border"><Setter Property="CornerRadius" Value="8"/></Style>
                         </Button.Resources>
                     </Button>
-
-                    <Button Content="Cancel" 
-                            Command="{Binding CancelCommand}" 
-                            Width="150" Height="50" FontSize="18" FontWeight="SemiBold"
+                    <Button Content="Cancel"
+                            Command="{Binding CancelCommand}"
+                            Width="110" Height="40" FontSize="15" FontWeight="SemiBold"
                             Background="#E0E0E0" Foreground="#333" BorderThickness="0">
-                         <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="8"/>
-                            </Style>
+                        <Button.Resources>
+                            <Style TargetType="Border"><Setter Property="CornerRadius" Value="8"/></Style>
                         </Button.Resources>
                     </Button>
                 </StackPanel>
-            </StackPanel>
+            </Grid>
         </Border>
+
+        <!-- ═══ Row 1: Two large qual image panels ═══ -->
+        <Grid Grid.Row="1" Margin="20,0,20,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- LAF 1 Qual Panel -->
+            <Border Grid.Column="0" Background="#0D0D1A" CornerRadius="10">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.4" Color="#000000"/>
+                </Border.Effect>
+                <Grid>
+                    <!-- Panel label -->
+                    <TextBlock Text="LAF 1 — Quality Preview"
+                               Foreground="#607090" FontSize="13" FontWeight="SemiBold"
+                               VerticalAlignment="Top" HorizontalAlignment="Left"
+                               Margin="14,10,0,0"/>
+
+                    <!-- Placeholder when nothing loaded -->
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                                Visibility="{Binding Laf1Preview,
+                                    Converter={StaticResource NullToVis},
+                                    ConverterParameter=inverse}">
+                        <TextBlock Text="📄" FontSize="48" HorizontalAlignment="Center"
+                                   Foreground="#2A3050"/>
+                        <TextBlock Text="Select LAF 1 to load preview"
+                                   Foreground="#3A4560" FontSize="15"
+                                   HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                    </StackPanel>
+
+                    <!-- Annotated PDF image -->
+                    <Image Source="{Binding Laf1Preview}"
+                           Stretch="Uniform"
+                           Margin="10,32,10,10"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Visibility="{Binding Laf1Preview, Converter={StaticResource NullToVis}}"/>
+
+                    <!-- Processing spinner overlay -->
+                    <Border Background="#99000010" CornerRadius="10"
+                            Visibility="{Binding IsProcessing, Converter={StaticResource BoolToVis}}">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="⏳ Processing PDF…"
+                                       Foreground="White" FontSize="20" FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Column spacer -->
+            <Grid Grid.Column="1"/>
+
+            <!-- LAF 2 Qual Panel -->
+            <Border Grid.Column="2" Background="#0D0D1A" CornerRadius="10">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.4" Color="#000000"/>
+                </Border.Effect>
+                <Grid>
+                    <!-- Panel label -->
+                    <TextBlock Text="LAF 2 — Quality Preview"
+                               Foreground="#607090" FontSize="13" FontWeight="SemiBold"
+                               VerticalAlignment="Top" HorizontalAlignment="Left"
+                               Margin="14,10,0,0"/>
+
+                    <!-- Placeholder when nothing loaded -->
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                                Visibility="{Binding Laf2Preview,
+                                    Converter={StaticResource NullToVis},
+                                    ConverterParameter=inverse}">
+                        <TextBlock Text="📄" FontSize="48" HorizontalAlignment="Center"
+                                   Foreground="#2A3050"/>
+                        <TextBlock Text="Select LAF 2 to load preview"
+                                   Foreground="#3A4560" FontSize="15"
+                                   HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                    </StackPanel>
+
+                    <!-- Annotated PDF image -->
+                    <Image Source="{Binding Laf2Preview}"
+                           Stretch="Uniform"
+                           Margin="10,32,10,10"
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch"
+                           Visibility="{Binding Laf2Preview, Converter={StaticResource NullToVis}}"/>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </Page>
-
