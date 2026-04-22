@@ -110,7 +110,7 @@
     </Midl>
     <ResourceCompile>
       <Culture>0x0409</Culture>
-      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IntDir);..\OCRAnalysis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
@@ -143,7 +143,7 @@
     </Midl>
     <ResourceCompile>
       <Culture>0x0409</Culture>
-      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IntDir);..\OCRAnalysis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
@@ -176,7 +176,7 @@
     </Midl>
     <ResourceCompile>
       <Culture>0x0409</Culture>
-      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IntDir);..\OCRAnalysis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
@@ -215,7 +215,7 @@
     </Midl>
     <ResourceCompile>
       <Culture>0x0409</Culture>
-      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(IntDir);..\OCRAnalysis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
@@ -252,6 +252,9 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ImageMatcher.cpp" />
+    <ClCompile Include="OcrMapMethods.cpp" />
+    <ClCompile Include="..\OCRAnalysis\src\OCRAnalysis.cpp" />
+    <ClCompile Include="..\OCRAnalysis\src\create_relative_map.cpp" />
     <ClCompile Include="OpenCVComMatcher.cpp" />
     <ClCompile Include="OpenCVComMatcher_i.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
