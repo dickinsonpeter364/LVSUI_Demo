@@ -1,5 +1,7 @@
 using Microsoft.Win32;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using WpfMvvmApp.Core;
 using WpfMvvmApp.Services;
 using WpfMvvmApp.Views;
@@ -11,6 +13,8 @@ namespace WpfMvvmApp.ViewModels
         private readonly INavigationService _navigationService;
         private string _laf1Path;
         private string _laf2Path;
+        private BitmapImage? _laf1Preview;
+        private bool _isProcessing;
 
         public string Laf1Path
         {
@@ -20,8 +24,24 @@ namespace WpfMvvmApp.ViewModels
                 if (SetProperty(ref _laf1Path, value))
                 {
                     CommandManager.InvalidateRequerySuggested();
+                    if (!string.IsNullOrWhiteSpace(value))
+                        _ = ProcessLaf1Async(value);
                 }
             }
+        }
+
+        /// <summary>Annotated preview image shown after L1 is selected.</summary>
+        public BitmapImage? Laf1Preview
+        {
+            get => _laf1Preview;
+            private set => SetProperty(ref _laf1Preview, value);
+        }
+
+        /// <summary>True while the PDF is being rendered and mapped.</summary>
+        public bool IsProcessing
+        {
+            get => _isProcessing;
+            private set => SetProperty(ref _isProcessing, value);
         }
 
         public string Laf2Path
@@ -73,6 +93,22 @@ namespace WpfMvvmApp.ViewModels
             int lafCount = string.IsNullOrWhiteSpace(Laf2Path) ? 1 : 2;
             // Navigate to Inspection Page with the selected LAF count
             _navigationService.Navigate(new InspectionView(new InspectionViewModel(_navigationService, lafCount)));
+        }
+
+        private async Task ProcessLaf1Async(string l1Path)
+        {
+            IsProcessing = true;
+            Laf1Preview  = null;
+            try
+            {
+                string l2 = Laf2Path ?? "";
+                var preview = await Task.Run(() => LabelMatcher.ProcessLaf1(l1Path, l2));
+                Laf1Preview = preview;
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
         }
 
         private void OnCancel(object? parameter)

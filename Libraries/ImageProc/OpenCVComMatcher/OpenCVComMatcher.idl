@@ -115,7 +115,71 @@ interface IImageMatcher : IDispatch
         [out] LONG* width,
         [out] LONG* height,
         [out] LONG* channels
-    
+    );
+
+    // 11. CreateAbsoluteMap
+    // Extracts PDF elements from l1PdfPath (and optionally l2PdfPath), runs
+    // OCR anchor-matching against the supplied image, and returns element
+    // bounding boxes in absolute pixel coordinates as a JSON string.
+    //
+    // JSON result format:
+    // {
+    //   "success": true,
+    //   "errorMessage": "",
+    //   "imageWidth": 1920, "imageHeight": 1080, "cwRotations": 0,
+    //   "elements": [
+    //     { "type": "TEXT", "text": "LOT 123", "x": 10, "y": 20,
+    //       "width": 100, "height": 30,
+    //       "fontName": "Arial", "fontSize": 12.0,
+    //       "isBold": false, "isItalic": false }
+    //   ]
+    // }
+    //
+    // Pass empty string for l2PdfPath if not using a paired PDF.
+    // Pass empty string for imageFilePath if markImage is false.
+    [id(11)] HRESULT CreateAbsoluteMap(
+        [in] SAFEARRAY(unsigned char) imgData,
+        [in] LONG width,
+        [in] LONG height,
+        [in] LONG channels,
+        [in] BSTR l1PdfPath,
+        [in] BSTR l2PdfPath,
+        [in] DOUBLE dpi,
+        [in] VARIANT_BOOL markImage,
+        [in] BSTR imageFilePath,
+        [out] BSTR* jsonResult,
+        [out, retval] VARIANT_BOOL* success
+    );
+
+    // 12. ComputeContentRect
+    // Extracts PDF elements from pdfPath and computes the content bounding
+    // rectangle using the same L1/L2 logic as OCRAnalysis:
+    //   L1 (filename starts with "L1"): bounding box of rectangles, or images
+    //   L2 (filename starts with "L2"): crop-marks bounding box
+    //
+    // Returns four doubles giving the content rect in PDF point coordinates.
+    [id(12)] HRESULT ComputeContentRect(
+        [in] BSTR pdfPath,
+        [out] DOUBLE* minX,
+        [out] DOUBLE* minY,
+        [out] DOUBLE* maxX,
+        [out] DOUBLE* maxY,
+        [out, retval] VARIANT_BOOL* success
+    );
+
+    // 13. RenderPdfPage
+    // Renders one page of a PDF file to a raw BGR byte array using Poppler
+    // at the specified DPI. pageIndex is 0-based.
+    // Returns the rendered image as a flat byte array (BGR, row-major).
+    [id(13)] HRESULT RenderPdfPage(
+        [in] BSTR pdfPath,
+        [in] DOUBLE dpi,
+        [in] LONG pageIndex,
+        [out] SAFEARRAY(unsigned char)* pImgData,
+        [out] LONG* width,
+        [out] LONG* height,
+        [out] LONG* channels,
+        [out, retval] VARIANT_BOOL* success
     );
 };
 [

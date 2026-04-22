@@ -8,6 +8,7 @@
 #include <vector>
 #include <atlsafe.h> // Helper for SAFEARRAY
 #include <tesseract/baseapi.h>
+#include "../OCRAnalysis/include/OCRAnalysis.hpp"
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
 #error "Single-threaded COM objects are not properly supported on Windows CE platform..."
@@ -164,6 +165,39 @@ public:
         LONG* height,
         LONG* channels
         );
+
+    STDMETHOD(CreateAbsoluteMap)(
+        SAFEARRAY* imgData,
+        LONG width, LONG height, LONG channels,
+        BSTR l1PdfPath,
+        BSTR l2PdfPath,
+        DOUBLE dpi,
+        VARIANT_BOOL markImage,
+        BSTR imageFilePath,
+        BSTR* jsonResult,
+        VARIANT_BOOL* success
+        );
+
+    STDMETHOD(ComputeContentRect)(
+        BSTR pdfPath,
+        DOUBLE* minX,
+        DOUBLE* minY,
+        DOUBLE* maxX,
+        DOUBLE* maxY,
+        VARIANT_BOOL* success
+        );
+
+    STDMETHOD(RenderPdfPage)(
+        BSTR pdfPath,
+        DOUBLE dpi,
+        LONG pageIndex,
+        SAFEARRAY** pImgData,
+        LONG* width,
+        LONG* height,
+        LONG* channels,
+        VARIANT_BOOL* success
+        );
+
     std::string ApplySubstitutions(const std::string& input);
     cv::Mat ClipSourceToLargestObject(cv::Mat& src, int trough = 65);
     void Log(const char* fmt, ...);
