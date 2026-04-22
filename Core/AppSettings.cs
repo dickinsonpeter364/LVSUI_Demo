@@ -11,6 +11,7 @@ public class AppSettings
     public bool DebugMode { get; set; }
     public bool BypassSecurity { get; set; }
     public bool CaptureOnly { get; set; }
+    public bool LafCaptureTest { get; set; }
 }
 
 public class DatabaseSettings

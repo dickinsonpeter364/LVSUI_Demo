@@ -4,7 +4,17 @@
       "Bash(grep -v '//')",
       "Bash(git checkout:*)",
       "Read(//c/Users/pjdic/.claude/**)",
-      "Bash(env)"
+      "Bash(env)",
+      "Bash(find /c/LVSUi -type f -name \"*.cs\" ! -path \"*/obj/*\" ! -path \"*/bin/*\" -exec grep -l \"static.*class FrmInspect\\\\|public.*FrmInspect\\\\|FrmInspect.*=\" {} \\\\;)",
+      "Bash(xargs grep *)",
+      "Bash(find /c/LVSUi -type f \\\\\\( -name \"*.cs\" -o -name \"*.xaml\" -o -name \"*.xaml.cs\" \\\\\\) ! -path \"*/obj/*\" ! -path \"*/bin/*\" -exec grep -l \"class FrmInspect\\\\|struct FrmInspect\" {} \\\\;)",
+      "Bash(find c:/LVSUi/Libraries/Inspection -name \"*.cs\" -exec grep -l \"FrmInspect\" {} \\\\;)",
+      "Bash(find c:/LVSUi/Libraries/Inspection -name \"*.cs\" -exec grep -ln \"class FrmInspect\" {} \\\\;)",
+      "Bash(grep -v \"//\")",
+      "Bash(git commit -m ' *)",
+      "Bash(ls -d */)",
+      "Bash(awk '{print $NF}')",
+      "Bash([ -d \"/c/merge/REWINDER_ANISO/$dir\" ])"
     ]
   }
 }

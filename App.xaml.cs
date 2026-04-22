@@ -20,6 +20,7 @@ public partial class App : Application
     public static bool IsDummyMode { get; private set; }
     public static bool BypassSecurity { get; private set; }
     public static bool CaptureOnly { get; private set; }
+    public static bool LafCaptureTest { get; private set; }
 
     public static IServiceProvider Services { get; private set; } = null!;
 
@@ -64,6 +65,7 @@ public partial class App : Application
         IsDummyMode = isDummyMode;
         BypassSecurity = appSettings.BypassSecurity;
         CaptureOnly = appSettings.CaptureOnly;
+        LafCaptureTest = appSettings.LafCaptureTest;
 
         Log.Logger.Information(
             "Config read: DatabaseType={DB}, MxClient={Mx}, BypassSecurity={Bypass}, CaptureOnly={Cap}, SaveImages={Save}, SavedImagesPath='{Path}'",

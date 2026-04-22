@@ -29,7 +29,12 @@ namespace WpfMvvmApp.Views
                 Interval = TimeSpan.FromMinutes(1)
             };
 
-            if (App.IsDummyMode || App.CaptureOnly)
+            if (App.LafCaptureTest)
+            {
+                // LafCaptureTest: skip login, go straight to LafLoaderView
+                _navigationService.Navigate(new LafLoaderView(new LafLoaderViewModel(_navigationService)));
+            }
+            else if (App.IsDummyMode || App.CaptureOnly)
             {
                 // Dummy/CaptureOnly mode: skip login, go straight to InspectionView
                 _navigationService.Navigate(new InspectionView(new InspectionViewModel(_navigationService)));

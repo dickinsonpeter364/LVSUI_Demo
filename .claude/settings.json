@@ -15,7 +15,22 @@
       "Bash(cp -r \"/c/merge/REWINDER_ANISO/IOClasses\" \"c:/LVS2/Libraries/IOClasses\")",
       "Bash(cp \"/c/merge/REWINDER_ANISO/BASE/IInspection.cs\" \"/c/LVS2/Libraries/Inspection/\")",
       "Bash(cp \"/c/merge/REWINDER_ANISO/BASE/Inspection.cs\" \"/c/LVS2/Libraries/Inspection/\")",
-      "Bash(cp \"/c/merge/REWINDER_ANISO/BASE/DummyInspection.cs\" \"/c/LVS2/Libraries/Inspection/\")"
+      "Bash(cp \"/c/merge/REWINDER_ANISO/BASE/DummyInspection.cs\" \"/c/LVS2/Libraries/Inspection/\")",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Program Files \\(x86\\)/**)",
+      "Read(//c/Windows/**)",
+      "Bash(where.exe BioDaq.dll)",
+      "Read(//c/Users/pjdic/**)",
+      "Bash(taskkill //F //IM LVS.exe)",
+      "Bash(git commit -m ' *)",
+      "Read(//c/merge/**)",
+      "Bash(code --list-extensions)",
+      "Bash(ls Views/Settings*)",
+      "Bash(ls ViewModels/Settings*)",
+      "Read(//c/imageproc4/**)"
+    ],
+    "additionalDirectories": [
+      "C:\\LVSUi"
     ]
   }
 }
