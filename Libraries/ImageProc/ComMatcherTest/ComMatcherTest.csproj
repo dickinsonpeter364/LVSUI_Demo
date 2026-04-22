@@ -1,22 +1,26 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <!-- net10.0-windows required for COM interop APIs -->
+    <TargetFramework>net10.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <!--
+    The Interop.OpenCVComMatcherLib.dll is pre-generated from the registered
+    OpenCVComMatcher.dll (via tlbimp).  It lives in Libraries/References so
+    dotnet build works without needing ResolveComReference / VS MSBuild.
+
+    To regenerate it after changing the COM interface:
+      tlbimp "C:\LVSUi\x64\Release\OpenCVComMatcher.dll" /out:"C:\LVSUi\Libraries\References\Interop.OpenCVComMatcherLib.dll"
+  -->
   <ItemGroup>
-    <COMReference Include="OpenCVComMatcherLib">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>cbf34f07-e40d-4728-5119-8f2d0f4c03a1</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
+    <Reference Include="Interop.OpenCVComMatcherLib">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\References\Interop.OpenCVComMatcherLib.dll</HintPath>
       <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
