@@ -1,6 +1,6 @@
 // OcrMapMethods.cpp
-// Implements CreateAbsoluteMap (id=11) and ComputeContentRect (id=12)
-// for CImageMatcher.
+// Implements CreateAbsoluteMap (id=11), ComputeContentRect (id=12),
+// and RenderPdfPage (id=13) for CImageMatcher.
 
 #include "pch.h"
 #include "ImageMatcher.h"
@@ -227,4 +227,35 @@ STDMETHODIMP CImageMatcher::ComputeContentRect(
     catch (...) {
         return E_FAIL;
     }
+}
+
+// ---------------------------------------------------------------------------
+// 13. RenderPdfPage
+// ---------------------------------------------------------------------------
+STDMETHODIMP CImageMatcher::RenderPdfPage(
+    BSTR pdfPath, DOUBLE dpi, LONG pageIndex,
+    SAFEARRAY** pImgData, LONG* width, LONG* height, LONG* channels,
+    VARIANT_BOOL* success)
+{
+    if (!pImgData || !width || !height || !channels || !success) return E_POINTER;
+    *success = VARIANT_FALSE;
+    *pImgData = nullptr; *width = *height = *channels = 0;
+    try {
+        std::string path = BstrToUtf8(pdfPath);
+        ocr::OCRAnalysis analyzer;
+        auto result = analyzer.extractGraphicsFromPDF(path, dpi);
+        if (!result.success || result.pages.empty()) return S_OK;
+        int idx = (pageIndex >= 0 && pageIndex < (LONG)result.pages.size()) ? (int)pageIndex : 0;
+        cv::Mat page = result.pages[idx].image;
+        if (page.empty()) return S_OK;
+        cv::Mat bgr;
+        if (page.channels() == 1) cv::cvtColor(page, bgr, cv::COLOR_GRAY2BGR);
+        else if (page.channels() == 4) cv::cvtColor(page, bgr, cv::COLOR_BGRA2BGR);
+        else bgr = page;
+        *width = bgr.cols; *height = bgr.rows; *channels = 3;
+        HRESULT hr = MatToSafeArray(bgr, pImgData);
+        if (SUCCEEDED(hr)) *success = VARIANT_TRUE;
+        return hr;
+    }
+    catch (...) { return E_FAIL; }
 }

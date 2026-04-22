@@ -187,6 +187,17 @@ public:
         VARIANT_BOOL* success
         );
 
+    STDMETHOD(RenderPdfPage)(
+        BSTR pdfPath,
+        DOUBLE dpi,
+        LONG pageIndex,
+        SAFEARRAY** pImgData,
+        LONG* width,
+        LONG* height,
+        LONG* channels,
+        VARIANT_BOOL* success
+        );
+
     std::string ApplySubstitutions(const std::string& input);
     cv::Mat ClipSourceToLargestObject(cv::Mat& src, int trough = 65);
     void Log(const char* fmt, ...);

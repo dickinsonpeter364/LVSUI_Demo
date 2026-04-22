@@ -166,6 +166,21 @@ interface IImageMatcher : IDispatch
         [out] DOUBLE* maxY,
         [out, retval] VARIANT_BOOL* success
     );
+
+    // 13. RenderPdfPage
+    // Renders one page of a PDF file to a raw BGR byte array using Poppler
+    // at the specified DPI. pageIndex is 0-based.
+    // Returns the rendered image as a flat byte array (BGR, row-major).
+    [id(13)] HRESULT RenderPdfPage(
+        [in] BSTR pdfPath,
+        [in] DOUBLE dpi,
+        [in] LONG pageIndex,
+        [out] SAFEARRAY(unsigned char)* pImgData,
+        [out] LONG* width,
+        [out] LONG* height,
+        [out] LONG* channels,
+        [out, retval] VARIANT_BOOL* success
+    );
 };
 [
     uuid(CBF34F07-E40D-4728-5119-8F2D0F4C03A1),
