@@ -115,9 +115,20 @@ namespace WpfMvvmApp.ViewModels
             Laf1Preview  = null;
             try
             {
-                string l2 = Laf2Path ?? "";
-                var preview = await Task.Run(() => LabelMatcher.ProcessLaf1(l1Path, l2));
-                Laf1Preview = preview;
+                if (App.LafCaptureTest)
+                {
+                    // Show the clipped content area immediately in the left panel
+                    Laf1Preview = await Task.Run(() => LabelMatcher.CaptureClippedLaf(l1Path));
+                    IsProcessing = false;
+
+                    // Right panel: full annotated map (used downstream by InspectionView)
+                    Laf2Preview = await Task.Run(() => LabelMatcher.ProcessLaf1(l1Path, ""));
+                }
+                else
+                {
+                    string l2 = Laf2Path ?? "";
+                    Laf1Preview = await Task.Run(() => LabelMatcher.ProcessLaf1(l1Path, l2));
+                }
             }
             finally
             {

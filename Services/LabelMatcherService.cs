@@ -141,17 +141,69 @@ public static class LabelMatcher
         }
     }
 
+    /// <summary>
+    /// Renders the PDF at <paramref name="dpi"/>, uses ComputeContentRect to find the label
+    /// content area, clips the rendered image to that region, and returns the clipped BitmapImage.
+    /// Falls back to the full rendered image if ComputeContentRect fails.
+    /// </summary>
+    public static BitmapImage? CaptureClippedLaf(string pdfPath, double dpi = 300.0)
+    {
+        try
+        {
+            dynamic matcher = Activator.CreateInstance(
+                Type.GetTypeFromProgID("OpenCVComMatcherLib.ImageMatcher")
+                ?? throw new InvalidOperationException("OpenCVComMatcherLib not registered."))!;
+
+            byte[] imgBytes;
+            int w, h, ch;
+            bool rendered = matcher.RenderPdfPage(pdfPath, dpi, 0,
+                out imgBytes, out w, out h, out ch);
+            if (!rendered || imgBytes == null)
+            {
+                _log.Warning("CaptureClippedLaf: RenderPdfPage failed for {Path}", pdfPath);
+                return null;
+            }
+
+            double minX, minY, maxX, maxY;
+            bool rectOk = matcher.ComputeContentRect(pdfPath,
+                out minX, out minY, out maxX, out maxY);
+
+            var bmp = RawBytesToBitmap(imgBytes, w, h, ch);
+
+            if (!rectOk || maxX <= minX || maxY <= minY)
+            {
+                _log.Warning("CaptureClippedLaf: ComputeContentRect failed for {Path}, using full image", pdfPath);
+                return BitmapToBitmapImage(bmp);
+            }
+
+            // PDF points → pixels (PDF Y=0 is bottom; pixel Y=0 is top)
+            double scale = dpi / 72.0;
+            int clipX = (int)(minX * scale);
+            int clipY = (int)(h - maxY * scale);
+            int clipW = (int)((maxX - minX) * scale);
+            int clipH = (int)((maxY - minY) * scale);
+
+            clipX = Math.Max(0, Math.Min(clipX, w - 1));
+            clipY = Math.Max(0, Math.Min(clipY, h - 1));
+            clipW = Math.Max(1, Math.Min(clipW, w - clipX));
+            clipH = Math.Max(1, Math.Min(clipH, h - clipY));
+
+            _log.Information("CaptureClippedLaf: clip ({X},{Y},{W},{H}) from {Pw}x{Ph}px",
+                clipX, clipY, clipW, clipH, w, h);
+
+            var cropped = bmp.Clone(new Rectangle(clipX, clipY, clipW, clipH), bmp.PixelFormat);
+            return BitmapToBitmapImage(cropped);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "CaptureClippedLaf failed: {Message}", ex.Message);
+            return null;
+        }
+    }
+
     private static Bitmap DrawBoxes(byte[] raw, int w, int h, int ch, AbsoluteMapResult map)
     {
-        // Reconstruct Bitmap from raw BGR bytes
-        var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-        var bd  = bmp.LockBits(new Rectangle(0, 0, w, h),
-                               ImageLockMode.WriteOnly,
-                               System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-        int stride = Math.Abs(bd.Stride);
-        for (int y = 0; y < h; y++)
-            Marshal.Copy(raw, y * w * ch, bd.Scan0 + y * stride, w * ch);
-        bmp.UnlockBits(bd);
+        var bmp = RawBytesToBitmap(raw, w, h, ch);
 
         using var g = Graphics.FromImage(bmp);
         var greenPen = new System.Drawing.Pen(TextBoxColour, 2);
@@ -174,6 +226,19 @@ public static class LabelMatcher
                 g.DrawRectangle(blackPen, sx, el.Y, sw, el.Height);
             }
         }
+        return bmp;
+    }
+
+    private static Bitmap RawBytesToBitmap(byte[] raw, int w, int h, int ch)
+    {
+        var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+        var bd  = bmp.LockBits(new Rectangle(0, 0, w, h),
+                               ImageLockMode.WriteOnly,
+                               System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+        int stride = Math.Abs(bd.Stride);
+        for (int y = 0; y < h; y++)
+            Marshal.Copy(raw, y * w * ch, bd.Scan0 + y * stride, w * ch);
+        bmp.UnlockBits(bd);
         return bmp;
     }
 
