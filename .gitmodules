@@ -1,0 +1,3 @@
+[submodule "Libraries/ImageProc"]
+	path = Libraries/ImageProc
+	url = https://github.com/dickinsonpeter364/ImageProc_Demo.git

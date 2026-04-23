@@ -1,6 +1,0 @@
-<ItemDefinitionGroup>
-  <Link>
-    <PerUserRedirection>true</PerUserRedirection>
-    <RegisterOutput>false</RegisterOutput>
-  </Link>
-</ItemDefinitionGroup>

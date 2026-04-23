@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "ComMatcherTest": {
-      "commandName": "Project",
-      "nativeDebugging": true
-    }
-  }
-}
