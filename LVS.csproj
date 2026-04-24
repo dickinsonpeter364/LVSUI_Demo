@@ -22,6 +22,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Using the typed IImageMatcher interface avoids a .NET dynamic binder bug
+         with out-SAFEARRAY parameters in the middle of the arg list. We reference
+         the pre-generated Interop DLL directly because <COMReference> is not
+         supported by .NET CLI MSBuild (MSB4803) — only full VS MSBuild supports
+         it. To regenerate this DLL, build ComMatcherTest in VS and copy
+         obj/Debug/net10.0/Interop.OpenCVComMatcherLib.dll here. -->
+    <Reference Include="Interop.OpenCVComMatcherLib">
+      <HintPath>Libraries\References\Interop.OpenCVComMatcherLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.8" />

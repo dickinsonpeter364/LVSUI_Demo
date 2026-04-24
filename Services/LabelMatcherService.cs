@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using OpenCVComMatcherLib;
 using Serilog;
 
 namespace WpfMvvmApp.Services;
@@ -47,17 +48,12 @@ public static class LabelMatcher
     /// <summary>Last result from CreateAbsoluteMap. Set after a successful LAF load.</summary>
     public static AbsoluteMapResult? LastMap { get; private set; }
 
-    // OpenCVComMatcher.ImageMatcher CLSID — see Libraries/ImageProc/OpenCVComMatcher/ImageMatcher.rgs
-    // ProgID lookup can't be used because the .rgs does not declare a ProgID entry.
-    private static readonly Guid ImageMatcherClsid = new Guid("456F81F6-6DCC-4DC9-BE23-55A18E67580B");
-
-    private static dynamic CreateMatcher()
+    private static IImageMatcher CreateMatcher()
     {
-        var type = Type.GetTypeFromCLSID(ImageMatcherClsid)
-            ?? throw new InvalidOperationException(
-                $"OpenCVComMatcherLib CLSID {ImageMatcherClsid:B} not registered. " +
-                "Run elevated-build.ps1 -SkipBuild as Administrator.");
-        return Activator.CreateInstance(type)!;
+        // Activate through the coclass from the tlbimp-generated interop. Goes
+        // through the interop stubs rather than the dynamic binder, so out-SAFEARRAY
+        // parameters marshal correctly.
+        return (IImageMatcher)new ImageMatcher();
     }
 
     // Colours for box drawing
@@ -75,13 +71,15 @@ public static class LabelMatcher
     {
         try
         {
-            dynamic matcher = CreateMatcher();
+            IImageMatcher matcher = CreateMatcher();
 
-            // Step 1: render the PDF to a bitmap
-            byte[] imgBytes;
+            // Step 1: render the PDF to a bitmap. tlbimp exposes the SAFEARRAY
+            // out parameter as System.Array; we convert to byte[] for downstream use.
+            Array imgArray;
             int w, h, ch;
             bool rendered = matcher.RenderPdfPage(l1PdfPath, dpi, 0,
-                out imgBytes, out w, out h, out ch);
+                out imgArray, out w, out h, out ch);
+            byte[] imgBytes = (byte[])imgArray;
             if (!rendered || imgBytes == null)
             {
                 _log.Warning("LabelMatcher.ProcessLaf1: RenderPdfPage returned no image for {Path}", l1PdfPath);
@@ -94,6 +92,7 @@ public static class LabelMatcher
                 imgBytes, w, h, ch,
                 l1PdfPath, l2PdfPath, dpi,
                 false, "", out json);
+            _ = mapCreated;
 
             var mapResult = ParseJson(json);
             LastMap = mapResult;
@@ -129,13 +128,14 @@ public static class LabelMatcher
         try
         {
             _log.Information("CaptureClippedLaf: start {Path} @ {Dpi} dpi", pdfPath, dpi);
-            dynamic matcher = CreateMatcher();
+            IImageMatcher matcher = CreateMatcher();
             _log.Information("CaptureClippedLaf: COM activated, calling RenderPdfPage");
 
-            byte[] imgBytes;
+            Array imgArray;
             int w, h, ch;
             bool rendered = matcher.RenderPdfPage(pdfPath, dpi, 0,
-                out imgBytes, out w, out h, out ch);
+                out imgArray, out w, out h, out ch);
+            byte[]? imgBytes = imgArray as byte[];
             _log.Information("CaptureClippedLaf: RenderPdfPage returned {Ok}, {W}x{H}x{C}, {Bytes} bytes",
                 rendered, w, h, ch, imgBytes?.Length ?? 0);
 
