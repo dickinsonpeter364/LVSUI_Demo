@@ -244,12 +244,31 @@ public static class LabelMatcher
             }
             else
             {
-                int expand = (int)(el.Width * HorizontalExpansion);
-                g.DrawRectangle(blackPen, x - expand, y, el.Width + expand * 2, el.Height);
+                // Extend the box rightward by up to 40% of its width, but cap the
+                // right edge just before any other element that's vertically
+                // overlapping and positioned to the right.
+                int desiredRight = el.X + el.Width + (int)(el.Width * HorizontalExpansion);
+                int actualRight = desiredRight;
+
+                foreach (var neighbour in map.Elements)
+                {
+                    if (ReferenceEquals(neighbour, el)) continue;
+                    // no vertical overlap -> ignore
+                    if (neighbour.Y + neighbour.Height <= el.Y ||
+                        neighbour.Y >= el.Y + el.Height) continue;
+                    // not to the right of el -> ignore
+                    if (neighbour.X < el.X + el.Width) continue;
+
+                    if (neighbour.X < actualRight)
+                        actualRight = neighbour.X;
+                }
+
+                int width = Math.Max(el.Width, actualRight - el.X);
+                g.DrawRectangle(blackPen, x, y, width, el.Height);
                 other++;
             }
         }
-        _log.Information("DrawAnnotations: drew {Text} TEXT (green), {Other} non-TEXT (black, +40%)",
+        _log.Information("DrawAnnotations: drew {Text} TEXT (green), {Other} non-TEXT (black, +40% right, capped at neighbours)",
             text, other);
     }
 
