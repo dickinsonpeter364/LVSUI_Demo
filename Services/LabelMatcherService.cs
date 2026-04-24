@@ -128,23 +128,32 @@ public static class LabelMatcher
     {
         try
         {
+            _log.Information("CaptureClippedLaf: start {Path} @ {Dpi} dpi", pdfPath, dpi);
             dynamic matcher = CreateMatcher();
+            _log.Information("CaptureClippedLaf: COM activated, calling RenderPdfPage");
 
             byte[] imgBytes;
             int w, h, ch;
             bool rendered = matcher.RenderPdfPage(pdfPath, dpi, 0,
                 out imgBytes, out w, out h, out ch);
+            _log.Information("CaptureClippedLaf: RenderPdfPage returned {Ok}, {W}x{H}x{C}, {Bytes} bytes",
+                rendered, w, h, ch, imgBytes?.Length ?? 0);
+
             if (!rendered || imgBytes == null)
             {
                 _log.Warning("CaptureClippedLaf: RenderPdfPage failed for {Path}", pdfPath);
                 return null;
             }
 
+            var bmp = RawBytesToBitmap(imgBytes, w, h, ch);
+            SaveDebugImage(bmp, pdfPath, "raw");
+
+            _log.Information("CaptureClippedLaf: calling ComputeContentRect");
             double minX, minY, maxX, maxY;
             bool rectOk = matcher.ComputeContentRect(pdfPath,
                 out minX, out minY, out maxX, out maxY);
-
-            var bmp = RawBytesToBitmap(imgBytes, w, h, ch);
+            _log.Information("CaptureClippedLaf: ComputeContentRect returned {Ok}, rect=({MinX},{MinY})-({MaxX},{MaxY})",
+                rectOk, minX, minY, maxX, maxY);
 
             if (!rectOk || maxX <= minX || maxY <= minY)
             {
@@ -170,12 +179,35 @@ public static class LabelMatcher
                 clipX, clipY, clipW, clipH, w, h);
 
             var cropped = bmp.Clone(new Rectangle(clipX, clipY, clipW, clipH), bmp.PixelFormat);
+            SaveDebugImage(cropped, pdfPath, "clipped");
             return BitmapToBitmapImage(cropped);
         }
         catch (Exception ex)
         {
             _log.Error(ex, "CaptureClippedLaf failed: {Message}", ex.Message);
             return null;
+        }
+    }
+
+    /// <summary>
+    /// Writes <paramref name="bmp"/> to C:\LVSDEBUG\<pdfname>_<tag>_<timestamp>.png.
+    /// Silent on failure — diagnostic only.
+    /// </summary>
+    private static void SaveDebugImage(Bitmap bmp, string pdfPath, string tag)
+    {
+        try
+        {
+            const string dir = @"C:\LVSDEBUG";
+            System.IO.Directory.CreateDirectory(dir);
+            string stem = System.IO.Path.GetFileNameWithoutExtension(pdfPath);
+            string name = $"{stem}_{tag}_{DateTime.Now:HHmmss_fff}.png";
+            string full = System.IO.Path.Combine(dir, name);
+            bmp.Save(full, ImageFormat.Png);
+            _log.Information("SaveDebugImage: wrote {Path} ({W}x{H})", full, bmp.Width, bmp.Height);
+        }
+        catch (Exception ex)
+        {
+            _log.Warning(ex, "SaveDebugImage failed for tag={Tag}: {Message}", tag, ex.Message);
         }
     }
 
