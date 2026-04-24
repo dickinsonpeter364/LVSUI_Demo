@@ -12,6 +12,17 @@ using Serilog;
 namespace WpfMvvmApp.Services;
 
 /// <summary>
+/// Strategy used by <see cref="LabelMatcher.CaptureClippedLaf"/> to compute
+/// the clip region. L1 LAFs are always clipped by largest rectangle; L2 LAFs
+/// are always clipped by trim lines.
+/// </summary>
+public enum ClipMode
+{
+    LargestRectangle,
+    TrimLines,
+}
+
+/// <summary>
 /// One element returned by CreateAbsoluteMap.
 /// </summary>
 public record AbsoluteElement(
@@ -120,15 +131,17 @@ public static class LabelMatcher
     }
 
     /// <summary>
-    /// Renders the PDF at <paramref name="dpi"/>, uses ComputeContentRect to find the label
-    /// content area, clips the rendered image to that region, and returns the clipped BitmapImage.
-    /// Falls back to the full rendered image if ComputeContentRect fails.
+    /// Renders the PDF at <paramref name="dpi"/>, clips the rendered image to the
+    /// region indicated by <paramref name="mode"/>, and returns the clipped
+    /// BitmapImage. For <see cref="ClipMode.LargestRectangle"/> (L1) the element
+    /// map is also computed and element boxes are drawn. For <see cref="ClipMode.TrimLines"/>
+    /// (L2) the method returns just the clipped preview with no annotations.
     /// </summary>
-    public static BitmapImage? CaptureClippedLaf(string pdfPath, double dpi = 300.0)
+    public static BitmapImage? CaptureClippedLaf(string pdfPath, ClipMode mode = ClipMode.LargestRectangle, double dpi = 300.0)
     {
         try
         {
-            _log.Information("CaptureClippedLaf: start {Path} @ {Dpi} dpi", pdfPath, dpi);
+            _log.Information("CaptureClippedLaf: start {Path} @ {Dpi} dpi, mode={Mode}", pdfPath, dpi, mode);
             IImageMatcher matcher = CreateMatcher();
             _log.Information("CaptureClippedLaf: COM activated, calling RenderPdfPage");
 
@@ -147,18 +160,16 @@ public static class LabelMatcher
             }
 
             var bmp = RawBytesToBitmap(imgBytes, w, h, ch);
-            SaveDebugImage(bmp, pdfPath, "raw");
+            SaveDebugImage(bmp, pdfPath, mode == ClipMode.TrimLines ? "l2_raw" : "raw");
 
-            _log.Information("CaptureClippedLaf: calling ComputeContentRect");
             double minX, minY, maxX, maxY;
-            bool rectOk = matcher.ComputeContentRect(pdfPath,
+            bool rectOk = ComputeClipRect(matcher, pdfPath, mode,
                 out minX, out minY, out maxX, out maxY);
-            _log.Information("CaptureClippedLaf: ComputeContentRect returned {Ok}, rect=({MinX},{MinY})-({MaxX},{MaxY})",
-                rectOk, minX, minY, maxX, maxY);
 
             if (!rectOk || maxX <= minX || maxY <= minY)
             {
-                _log.Warning("CaptureClippedLaf: ComputeContentRect failed for {Path}, using full image", pdfPath);
+                _log.Warning("CaptureClippedLaf: clip rect computation failed for {Path} (mode={Mode}), using full image",
+                    pdfPath, mode);
                 return BitmapToBitmapImage(bmp);
             }
 
@@ -180,10 +191,14 @@ public static class LabelMatcher
                 clipX, clipY, clipW, clipH, w, h);
 
             var cropped = bmp.Clone(new Rectangle(clipX, clipY, clipW, clipH), bmp.PixelFormat);
-            SaveDebugImage(cropped, pdfPath, "clipped");
+            SaveDebugImage(cropped, pdfPath, mode == ClipMode.TrimLines ? "l2_clipped" : "clipped");
 
-            // Run CreateAbsoluteMap against the raw (pre-clip) image to get text
-            // elements via Tesseract, and draw them on the cropped bitmap.
+            // L2 (TrimLines) is a clip-only preview; no element map / annotations.
+            if (mode == ClipMode.TrimLines)
+                return BitmapToBitmapImage(cropped);
+
+            // L1 (LargestRectangle): run CreateAbsoluteMap against the raw (pre-clip)
+            // image to get text elements via Tesseract, and draw them on the cropped bitmap.
             _log.Information("CaptureClippedLaf: calling CreateAbsoluteMap");
             string json = "";
             bool mapOk = matcher.CreateAbsoluteMap(
@@ -211,6 +226,60 @@ public static class LabelMatcher
         {
             _log.Error(ex, "CaptureClippedLaf failed: {Message}", ex.Message);
             return null;
+        }
+    }
+
+    /// <summary>
+    /// Computes the clip rectangle according to <paramref name="mode"/>.
+    /// LargestRectangle -> calls the existing IImageMatcher.ComputeContentRect.
+    /// TrimLines -> attempts to call a ComputeTrimLines method via dynamic
+    /// dispatch; if the C++ side has not yet exposed that method, logs a
+    /// warning and falls back to ComputeContentRect so L2 still renders something.
+    /// </summary>
+    private static bool ComputeClipRect(IImageMatcher matcher, string pdfPath, ClipMode mode,
+        out double minX, out double minY, out double maxX, out double maxY)
+    {
+        if (mode == ClipMode.TrimLines)
+        {
+            if (TryComputeTrimLines(matcher, pdfPath, out minX, out minY, out maxX, out maxY))
+            {
+                _log.Information("CaptureClippedLaf: ComputeTrimLines rect=({MinX},{MinY})-({MaxX},{MaxY})",
+                    minX, minY, maxX, maxY);
+                return true;
+            }
+            _log.Warning("CaptureClippedLaf: ComputeTrimLines unavailable, falling back to ComputeContentRect. " +
+                         "Add a ComputeTrimLines method to IImageMatcher (OpenCVComMatcher.idl) to enable trim-line clipping for L2.");
+        }
+
+        _log.Information("CaptureClippedLaf: calling ComputeContentRect");
+        bool ok = matcher.ComputeContentRect(pdfPath, out minX, out minY, out maxX, out maxY);
+        _log.Information("CaptureClippedLaf: ComputeContentRect returned {Ok}, rect=({MinX},{MinY})-({MaxX},{MaxY})",
+            ok, minX, minY, maxX, maxY);
+        return ok;
+    }
+
+    /// <summary>
+    /// Attempts to call a ComputeTrimLines method on the COM object via dynamic
+    /// dispatch. Returns false if the method does not exist or throws.
+    /// </summary>
+    private static bool TryComputeTrimLines(IImageMatcher matcher, string pdfPath,
+        out double minX, out double minY, out double maxX, out double maxY)
+    {
+        minX = minY = maxX = maxY = 0;
+        try
+        {
+            dynamic dyn = matcher;
+            bool ok = dyn.ComputeTrimLines(pdfPath, out minX, out minY, out maxX, out maxY);
+            return ok;
+        }
+        catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+        {
+            return false;
+        }
+        catch (Exception ex)
+        {
+            _log.Warning(ex, "ComputeTrimLines dynamic call failed: {Message}", ex.Message);
+            return false;
         }
     }
 
