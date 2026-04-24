@@ -98,12 +98,14 @@ if (-not $SkipBuild) {
 }
 
 # ── 6. Force-register COM DLLs ────────────────────────────────────────────────
-# Map of DLL path → friendly name.  Add proxy-stub DLLs here if needed.
+# All C# and C++ outputs are redirected to C:\LVSRun\<Config>\ via
+# Directory.Build.props (C#) and the <OutDir> entries in each vcxproj (C++).
+$RunRoot = 'C:\LVSRun'
 $comDlls = [ordered]@{
-    "$Root\x64\Release\OpenCVComMatcher.dll"   = 'OpenCVComMatcher (Release)'
-    "$Root\x64\Release\ImageProcessorCom.dll"  = 'ImageProcessorCom (Release)'
-    "$Root\x64\Debug\OpenCVComMatcher.dll"     = 'OpenCVComMatcher (Debug)'
-    "$Root\x64\Debug\ImageProcessorCom.dll"    = 'ImageProcessorCom (Debug)'
+    "$RunRoot\Release\OpenCVComMatcher.dll"   = 'OpenCVComMatcher (Release)'
+    "$RunRoot\Release\ImageProcessorCom.dll"  = 'ImageProcessorCom (Release)'
+    "$RunRoot\Debug\OpenCVComMatcher.dll"     = 'OpenCVComMatcher (Debug)'
+    "$RunRoot\Debug\ImageProcessorCom.dll"    = 'ImageProcessorCom (Debug)'
 }
 
 Write-Host ""

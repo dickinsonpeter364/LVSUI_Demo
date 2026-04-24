@@ -60,6 +60,8 @@ namespace WpfMvvmApp.ViewModels
                 if (SetProperty(ref _laf2Path, value))
                 {
                     CommandManager.InvalidateRequerySuggested();
+                    if (App.LafCaptureTest && !string.IsNullOrWhiteSpace(value))
+                        _ = ProcessLaf2Async(value);
                 }
             }
         }
@@ -121,8 +123,10 @@ namespace WpfMvvmApp.ViewModels
                     Laf1Preview = await Task.Run(() => LabelMatcher.CaptureClippedLaf(l1Path));
                     IsProcessing = false;
 
-                    // Right panel: full annotated map (used downstream by InspectionView)
-                    Laf2Preview = await Task.Run(() => LabelMatcher.ProcessLaf1(l1Path, ""));
+                    // Run CreateAbsoluteMap for its side effect: LabelMatcher.LastMap is
+                    // populated with elements + suitability for downstream inspection code.
+                    // The annotated bitmap is discarded — LAF2 panel shows the clipped LAF2.
+                    await Task.Run(() => LabelMatcher.ProcessLaf1(l1Path, ""));
                 }
                 else
                 {
@@ -134,6 +138,12 @@ namespace WpfMvvmApp.ViewModels
             {
                 IsProcessing = false;
             }
+        }
+
+        private async Task ProcessLaf2Async(string l2Path)
+        {
+            Laf2Preview = null;
+            Laf2Preview = await Task.Run(() => LabelMatcher.CaptureClippedLaf(l2Path));
         }
 
         private void OnCancel(object? parameter)

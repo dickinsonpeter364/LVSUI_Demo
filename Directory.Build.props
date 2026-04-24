@@ -1,0 +1,16 @@
+<Project>
+  <!--
+    Redirect all C# build output (LVS.csproj + every Libraries\*.csproj) to
+    C:\LVSRun\Debug\ or C:\LVSRun\Release\. Platform is ignored on purpose:
+    most projects in this solution don't declare <Platforms>AnyCPU;x64</Platforms>,
+    so they silently fall back to AnyCPU even when the solution is built at x64.
+    Conditioning only on Configuration catches both x64 and AnyCPU builds uniformly.
+    Intermediate obj\ stays per-project.
+  -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' OR '$(Configuration)' == 'Release'">
+    <BaseOutputPath>C:\LVSRun\</BaseOutputPath>
+    <OutputPath>C:\LVSRun\$(Configuration)\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+</Project>

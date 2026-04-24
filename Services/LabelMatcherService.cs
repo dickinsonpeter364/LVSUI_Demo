@@ -29,6 +29,9 @@ public class AbsoluteMapResult
     public int ImageWidth { get; set; }
     public int ImageHeight { get; set; }
     public int CwRotations { get; set; }
+    public bool Suitable { get; set; }
+    public double SuitabilityScore { get; set; }
+    public string SuitabilityReason { get; set; } = "";
     public List<AbsoluteElement> Elements { get; set; } = new();
 }
 
@@ -45,8 +48,8 @@ public static class LabelMatcher
     public static AbsoluteMapResult? LastMap { get; private set; }
 
     // Colours for box drawing
-    private static readonly System.Drawing.Color TextBoxColour     = System.Drawing.Color.FromArgb(0, 220, 0);   // green
-    private static readonly System.Drawing.Color SearchBoxColour   = System.Drawing.Color.Black;
+    private static readonly System.Drawing.Color TextBoxColour = System.Drawing.Color.FromArgb(0, 220, 0);   // green
+    private static readonly System.Drawing.Color SearchBoxColour = System.Drawing.Color.Black;
     private const float HorizontalExpansion = 0.40f; // 40 % either side
 
     /// <summary>
@@ -85,6 +88,8 @@ public static class LabelMatcher
             LastMap = mapResult;
             _log.Information("LabelMatcher: CreateAbsoluteMap {Ok}, {N} elements",
                 mapResult.Success, mapResult.Elements.Count);
+            _log.Information("LabelMatcher: Suitable={Suitable} Score={Score:F2} Reason={Reason}",
+                mapResult.Suitable, mapResult.SuitabilityScore, mapResult.SuitabilityReason);
 
             if (!mapResult.Success)
             {
@@ -100,44 +105,6 @@ public static class LabelMatcher
         {
             _log.Error(ex, "LabelMatcher.ProcessLaf1 failed: {Message}", ex.Message);
             return null;
-        }
-    }
-
-    // ── private helpers ──────────────────────────────────────────────────────
-
-    private static AbsoluteMapResult ParseJson(string json)
-    {
-        try
-        {
-            var doc = JsonDocument.Parse(json).RootElement;
-            var result = new AbsoluteMapResult
-            {
-                Success      = doc.GetProperty("success").GetBoolean(),
-                ErrorMessage = doc.GetProperty("errorMessage").GetString() ?? "",
-                ImageWidth   = doc.GetProperty("imageWidth").GetInt32(),
-                ImageHeight  = doc.GetProperty("imageHeight").GetInt32(),
-                CwRotations  = doc.GetProperty("cwRotations").GetInt32(),
-            };
-            foreach (var e in doc.GetProperty("elements").EnumerateArray())
-            {
-                result.Elements.Add(new AbsoluteElement(
-                    Type:     e.GetProperty("type").GetString() ?? "TEXT",
-                    Text:     e.GetProperty("text").GetString() ?? "",
-                    X:        e.GetProperty("x").GetInt32(),
-                    Y:        e.GetProperty("y").GetInt32(),
-                    Width:    e.GetProperty("width").GetInt32(),
-                    Height:   e.GetProperty("height").GetInt32(),
-                    FontName: e.GetProperty("fontName").GetString() ?? "",
-                    FontSize: e.GetProperty("fontSize").GetDouble(),
-                    IsBold:   e.GetProperty("isBold").GetBoolean(),
-                    IsItalic: e.GetProperty("isItalic").GetBoolean()));
-            }
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return new AbsoluteMapResult
-                { Success = false, ErrorMessage = $"JSON parse error: {ex.Message}" };
         }
     }
 
@@ -176,12 +143,14 @@ public static class LabelMatcher
                 return BitmapToBitmapImage(bmp);
             }
 
-            // PDF points → pixels (PDF Y=0 is bottom; pixel Y=0 is top)
+            // ComputeContentRect returns screen-space coords: origin top-left, y increases downward.
+            // Floor the origin so we never clip inside the boundary;
+            // ceil the extents so we never drop a pixel at the right/bottom edge.
             double scale = dpi / 72.0;
-            int clipX = (int)(minX * scale);
-            int clipY = (int)(h - maxY * scale);
-            int clipW = (int)((maxX - minX) * scale);
-            int clipH = (int)((maxY - minY) * scale);
+            int clipX = (int)Math.Floor(minX * scale);
+            int clipY = (int)Math.Floor(minY * scale);
+            int clipW = (int)Math.Ceiling((maxX - minX) * scale);
+            int clipH = (int)Math.Ceiling((maxY - minY) * scale);
 
             clipX = Math.Max(0, Math.Min(clipX, w - 1));
             clipY = Math.Max(0, Math.Min(clipY, h - 1));
@@ -198,6 +167,52 @@ public static class LabelMatcher
         {
             _log.Error(ex, "CaptureClippedLaf failed: {Message}", ex.Message);
             return null;
+        }
+    }
+
+    // ── private helpers ──────────────────────────────────────────────────────
+
+    private static AbsoluteMapResult ParseJson(string json)
+    {
+        try
+        {
+            var doc = JsonDocument.Parse(json).RootElement;
+            var result = new AbsoluteMapResult
+            {
+                Success = doc.GetProperty("success").GetBoolean(),
+                ErrorMessage = doc.GetProperty("errorMessage").GetString() ?? "",
+                ImageWidth = doc.GetProperty("imageWidth").GetInt32(),
+                ImageHeight = doc.GetProperty("imageHeight").GetInt32(),
+                CwRotations = doc.GetProperty("cwRotations").GetInt32(),
+            };
+
+            if (doc.TryGetProperty("suitable", out var suitableProp))
+                result.Suitable = suitableProp.GetBoolean();
+            if (doc.TryGetProperty("suitabilityScore", out var scoreProp))
+                result.SuitabilityScore = scoreProp.GetDouble();
+            if (doc.TryGetProperty("suitabilityReason", out var reasonProp))
+                result.SuitabilityReason = reasonProp.GetString() ?? "";
+
+            foreach (var e in doc.GetProperty("elements").EnumerateArray())
+            {
+                result.Elements.Add(new AbsoluteElement(
+                    Type: e.GetProperty("type").GetString() ?? "TEXT",
+                    Text: e.GetProperty("text").GetString() ?? "",
+                    X: e.GetProperty("x").GetInt32(),
+                    Y: e.GetProperty("y").GetInt32(),
+                    Width: e.GetProperty("width").GetInt32(),
+                    Height: e.GetProperty("height").GetInt32(),
+                    FontName: e.GetProperty("fontName").GetString() ?? "",
+                    FontSize: e.GetProperty("fontSize").GetDouble(),
+                    IsBold: e.GetProperty("isBold").GetBoolean(),
+                    IsItalic: e.GetProperty("isItalic").GetBoolean()));
+            }
+            return result;
+        }
+        catch (Exception ex)
+        {
+            return new AbsoluteMapResult
+            { Success = false, ErrorMessage = $"JSON parse error: {ex.Message}" };
         }
     }
 
@@ -232,7 +247,7 @@ public static class LabelMatcher
     private static Bitmap RawBytesToBitmap(byte[] raw, int w, int h, int ch)
     {
         var bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-        var bd  = bmp.LockBits(new Rectangle(0, 0, w, h),
+        var bd = bmp.LockBits(new Rectangle(0, 0, w, h),
                                ImageLockMode.WriteOnly,
                                System.Drawing.Imaging.PixelFormat.Format24bppRgb);
         int stride = Math.Abs(bd.Stride);
@@ -249,7 +264,7 @@ public static class LabelMatcher
         ms.Position = 0;
         var bi = new BitmapImage();
         bi.BeginInit();
-        bi.CacheOption  = BitmapCacheOption.OnLoad;
+        bi.CacheOption = BitmapCacheOption.OnLoad;
         bi.StreamSource = ms;
         bi.EndInit();
         bi.Freeze();
