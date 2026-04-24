@@ -67,8 +67,11 @@ Write-Host ""
 Write-Host "=== Cleaning orphan CLSID registrations ===" -ForegroundColor Cyan
 $orphans = @('{fd084d21-d1f5-4400-abe4-35035567ede3}')
 foreach ($clsid in $orphans) {
-    foreach ($root in @('HKLM:\SOFTWARE\Classes\CLSID','HKLM:\SOFTWARE\Classes\Wow6432Node\CLSID')) {
-        $path = Join-Path $root $clsid
+    # Use $regRoot here — $Root (capital R) holds C:\LVSUi and PowerShell is
+    # case-insensitive, so reusing $root would silently clobber it and break
+    # the file paths later in the script.
+    foreach ($regRoot in @('HKLM:\SOFTWARE\Classes\CLSID','HKLM:\SOFTWARE\Classes\Wow6432Node\CLSID')) {
+        $path = Join-Path $regRoot $clsid
         if (Test-Path $path) {
             Write-Host "  Removing $path"
             Remove-Item $path -Recurse -Force -ErrorAction SilentlyContinue

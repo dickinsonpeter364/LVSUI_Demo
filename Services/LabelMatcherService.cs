@@ -47,6 +47,19 @@ public static class LabelMatcher
     /// <summary>Last result from CreateAbsoluteMap. Set after a successful LAF load.</summary>
     public static AbsoluteMapResult? LastMap { get; private set; }
 
+    // OpenCVComMatcher.ImageMatcher CLSID — see Libraries/ImageProc/OpenCVComMatcher/ImageMatcher.rgs
+    // ProgID lookup can't be used because the .rgs does not declare a ProgID entry.
+    private static readonly Guid ImageMatcherClsid = new Guid("456F81F6-6DCC-4DC9-BE23-55A18E67580B");
+
+    private static dynamic CreateMatcher()
+    {
+        var type = Type.GetTypeFromCLSID(ImageMatcherClsid)
+            ?? throw new InvalidOperationException(
+                $"OpenCVComMatcherLib CLSID {ImageMatcherClsid:B} not registered. " +
+                "Run elevated-build.ps1 -SkipBuild as Administrator.");
+        return Activator.CreateInstance(type)!;
+    }
+
     // Colours for box drawing
     private static readonly System.Drawing.Color TextBoxColour = System.Drawing.Color.FromArgb(0, 220, 0);   // green
     private static readonly System.Drawing.Color SearchBoxColour = System.Drawing.Color.Black;
@@ -62,9 +75,7 @@ public static class LabelMatcher
     {
         try
         {
-            dynamic matcher = Activator.CreateInstance(
-                Type.GetTypeFromProgID("OpenCVComMatcherLib.ImageMatcher")
-                ?? throw new InvalidOperationException("OpenCVComMatcherLib not registered."))!;
+            dynamic matcher = CreateMatcher();
 
             // Step 1: render the PDF to a bitmap
             byte[] imgBytes;
@@ -117,9 +128,7 @@ public static class LabelMatcher
     {
         try
         {
-            dynamic matcher = Activator.CreateInstance(
-                Type.GetTypeFromProgID("OpenCVComMatcherLib.ImageMatcher")
-                ?? throw new InvalidOperationException("OpenCVComMatcherLib not registered."))!;
+            dynamic matcher = CreateMatcher();
 
             byte[] imgBytes;
             int w, h, ch;
