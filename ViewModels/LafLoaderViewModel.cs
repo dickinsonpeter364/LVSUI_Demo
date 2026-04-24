@@ -119,10 +119,9 @@ namespace WpfMvvmApp.ViewModels
             {
                 if (App.LafCaptureTest)
                 {
-                    // L1 is always clipped by largest rectangle, and runs CreateAbsoluteMap
-                    // + draws element boxes on top.
-                    Laf1Preview = await Task.Run(() =>
-                        LabelMatcher.CaptureClippedLaf(l1Path, ClipMode.LargestRectangle));
+                    // Clip mode is inferred from the filename: L1* -> largest rectangle
+                    // (+ Tesseract element boxes), L2* -> trim lines (clip-only preview).
+                    Laf1Preview = await Task.Run(() => LabelMatcher.CaptureClippedLaf(l1Path));
                 }
                 else
                 {
@@ -138,10 +137,9 @@ namespace WpfMvvmApp.ViewModels
 
         private async Task ProcessLaf2Async(string l2Path)
         {
-            // L2 is always clipped by trim lines — clip-only preview, no element annotations.
+            // Clip mode is inferred from filename (L2* -> trim lines).
             Laf2Preview = null;
-            Laf2Preview = await Task.Run(() =>
-                LabelMatcher.CaptureClippedLaf(l2Path, ClipMode.TrimLines));
+            Laf2Preview = await Task.Run(() => LabelMatcher.CaptureClippedLaf(l2Path));
         }
 
         private void OnCancel(object? parameter)

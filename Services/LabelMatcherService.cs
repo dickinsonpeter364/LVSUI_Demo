@@ -131,17 +131,20 @@ public static class LabelMatcher
     }
 
     /// <summary>
-    /// Renders the PDF at <paramref name="dpi"/>, clips the rendered image to the
-    /// region indicated by <paramref name="mode"/>, and returns the clipped
-    /// BitmapImage. For <see cref="ClipMode.LargestRectangle"/> (L1) the element
-    /// map is also computed and element boxes are drawn. For <see cref="ClipMode.TrimLines"/>
-    /// (L2) the method returns just the clipped preview with no annotations.
+    /// Renders the PDF at <paramref name="dpi"/>, clips the rendered image, and
+    /// returns the clipped BitmapImage. If <paramref name="mode"/> is null (the
+    /// default) the clip strategy is inferred from the file name: names
+    /// starting with "L2" use trim lines, everything else uses the largest
+    /// rectangle. For largest-rectangle mode, element boxes from
+    /// CreateAbsoluteMap are drawn on top; trim-lines mode is clip-only.
     /// </summary>
-    public static BitmapImage? CaptureClippedLaf(string pdfPath, ClipMode mode = ClipMode.LargestRectangle, double dpi = 300.0)
+    public static BitmapImage? CaptureClippedLaf(string pdfPath, ClipMode? mode = null, double dpi = 300.0)
     {
         try
         {
-            _log.Information("CaptureClippedLaf: start {Path} @ {Dpi} dpi, mode={Mode}", pdfPath, dpi, mode);
+            ClipMode effectiveMode = mode ?? InferClipModeFromFilename(pdfPath);
+            _log.Information("CaptureClippedLaf: start {Path} @ {Dpi} dpi, mode={Mode}{Source}",
+                pdfPath, dpi, effectiveMode, mode is null ? " (inferred from filename)" : " (caller override)");
             IImageMatcher matcher = CreateMatcher();
             _log.Information("CaptureClippedLaf: COM activated, calling RenderPdfPage");
 
@@ -160,16 +163,16 @@ public static class LabelMatcher
             }
 
             var bmp = RawBytesToBitmap(imgBytes, w, h, ch);
-            SaveDebugImage(bmp, pdfPath, mode == ClipMode.TrimLines ? "l2_raw" : "raw");
+            SaveDebugImage(bmp, pdfPath, effectiveMode == ClipMode.TrimLines ? "l2_raw" : "raw");
 
             double minX, minY, maxX, maxY;
-            bool rectOk = ComputeClipRect(matcher, pdfPath, mode,
+            bool rectOk = ComputeClipRect(matcher, pdfPath, effectiveMode,
                 out minX, out minY, out maxX, out maxY);
 
             if (!rectOk || maxX <= minX || maxY <= minY)
             {
                 _log.Warning("CaptureClippedLaf: clip rect computation failed for {Path} (mode={Mode}), using full image",
-                    pdfPath, mode);
+                    pdfPath, effectiveMode);
                 return BitmapToBitmapImage(bmp);
             }
 
@@ -191,10 +194,10 @@ public static class LabelMatcher
                 clipX, clipY, clipW, clipH, w, h);
 
             var cropped = bmp.Clone(new Rectangle(clipX, clipY, clipW, clipH), bmp.PixelFormat);
-            SaveDebugImage(cropped, pdfPath, mode == ClipMode.TrimLines ? "l2_clipped" : "clipped");
+            SaveDebugImage(cropped, pdfPath, effectiveMode == ClipMode.TrimLines ? "l2_clipped" : "clipped");
 
             // L2 (TrimLines) is a clip-only preview; no element map / annotations.
-            if (mode == ClipMode.TrimLines)
+            if (effectiveMode == ClipMode.TrimLines)
                 return BitmapToBitmapImage(cropped);
 
             // L1 (LargestRectangle): run CreateAbsoluteMap against the raw (pre-clip)
@@ -227,6 +230,24 @@ public static class LabelMatcher
             _log.Error(ex, "CaptureClippedLaf failed: {Message}", ex.Message);
             return null;
         }
+    }
+
+    /// <summary>
+    /// Infers clip mode from the PDF filename: files beginning with "L2" (case
+    /// insensitive) use trim lines; everything else uses the largest rectangle.
+    /// Whitespace, directory separators and non-alphanumeric characters are
+    /// skipped so "L2_foo.pdf", "l2-bar.pdf" and "  L2baz.pdf" all match.
+    /// </summary>
+    private static ClipMode InferClipModeFromFilename(string pdfPath)
+    {
+        string stem = System.IO.Path.GetFileNameWithoutExtension(pdfPath ?? "").TrimStart();
+        if (stem.Length >= 2 &&
+            (stem[0] == 'L' || stem[0] == 'l') &&
+            stem[1] == '2')
+        {
+            return ClipMode.TrimLines;
+        }
+        return ClipMode.LargestRectangle;
     }
 
     /// <summary>
