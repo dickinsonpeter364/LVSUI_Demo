@@ -268,8 +268,15 @@ public static class LabelMatcher
                     minX, minY, maxX, maxY);
                 return true;
             }
-            _log.Warning("CaptureClippedLaf: ComputeTrimLines unavailable, falling back to ComputeContentRect. " +
-                         "Add a ComputeTrimLines method to IImageMatcher (OpenCVComMatcher.idl) to enable trim-line clipping for L2.");
+            // Do NOT fall back to ComputeContentRect — that returns the content
+            // bounding box which includes colour bleed, i.e. the wrong answer for
+            // TrimLines mode. Let the caller render the full image so the missing
+            // C++ method is visibly unimplemented rather than silently miscropping.
+            _log.Error("CaptureClippedLaf: ComputeTrimLines unavailable — not falling back. " +
+                       "Trim-line clipping requires IImageMatcher.ComputeTrimLines (OpenCVComMatcher.idl) " +
+                       "backed by poppler::page::page_rect(poppler::page::trim_box).");
+            minX = minY = maxX = maxY = 0;
+            return false;
         }
 
         _log.Information("CaptureClippedLaf: calling ComputeContentRect");
