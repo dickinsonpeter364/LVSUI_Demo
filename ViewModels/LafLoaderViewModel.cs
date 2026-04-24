@@ -119,14 +119,9 @@ namespace WpfMvvmApp.ViewModels
             {
                 if (App.LafCaptureTest)
                 {
-                    // Show the clipped content area immediately in the left panel
+                    // CaptureClippedLaf now renders + clips + calls CreateAbsoluteMap
+                    // (populating LabelMatcher.LastMap) + draws element boxes.
                     Laf1Preview = await Task.Run(() => LabelMatcher.CaptureClippedLaf(l1Path));
-                    IsProcessing = false;
-
-                    // Run CreateAbsoluteMap for its side effect: LabelMatcher.LastMap is
-                    // populated with elements + suitability for downstream inspection code.
-                    // The annotated bitmap is discarded — LAF2 panel shows the clipped LAF2.
-                    await Task.Run(() => LabelMatcher.ProcessLaf1(l1Path, ""));
                 }
                 else
                 {

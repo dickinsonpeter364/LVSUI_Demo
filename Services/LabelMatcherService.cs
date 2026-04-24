@@ -107,8 +107,9 @@ public static class LabelMatcher
                 return null;
             }
 
-            // Step 3: draw annotated boxes onto the rendered bitmap
-            var annotated = DrawBoxes(imgBytes, w, h, ch, mapResult);
+            // Step 3: draw annotated boxes onto the full rendered bitmap
+            var annotated = RawBytesToBitmap(imgBytes, w, h, ch);
+            DrawAnnotations(annotated, mapResult, clipX: 0, clipY: 0);
             return BitmapToBitmapImage(annotated);
         }
         catch (Exception ex)
@@ -180,6 +181,30 @@ public static class LabelMatcher
 
             var cropped = bmp.Clone(new Rectangle(clipX, clipY, clipW, clipH), bmp.PixelFormat);
             SaveDebugImage(cropped, pdfPath, "clipped");
+
+            // Run CreateAbsoluteMap against the raw (pre-clip) image to get text
+            // elements via Tesseract, and draw them on the cropped bitmap.
+            _log.Information("CaptureClippedLaf: calling CreateAbsoluteMap");
+            string json = "";
+            bool mapOk = matcher.CreateAbsoluteMap(
+                imgArray, w, h, ch,
+                pdfPath, "", dpi,
+                false, "", out json);
+            _log.Information("CaptureClippedLaf: CreateAbsoluteMap returned {Ok}", mapOk);
+
+            var mapResult = ParseJson(json);
+            LastMap = mapResult;
+            _log.Information("LabelMatcher: CreateAbsoluteMap {Ok}, {N} elements",
+                mapResult.Success, mapResult.Elements.Count);
+            _log.Information("LabelMatcher: Suitable={Suitable} Score={Score:F2} Reason={Reason}",
+                mapResult.Suitable, mapResult.SuitabilityScore, mapResult.SuitabilityReason);
+
+            if (mapResult.Success)
+            {
+                DrawAnnotations(cropped, mapResult, clipX, clipY);
+                SaveDebugImage(cropped, pdfPath, "annotated");
+            }
+
             return BitmapToBitmapImage(cropped);
         }
         catch (Exception ex)
@@ -187,6 +212,45 @@ public static class LabelMatcher
             _log.Error(ex, "CaptureClippedLaf failed: {Message}", ex.Message);
             return null;
         }
+    }
+
+    /// <summary>
+    /// Draws boxes on <paramref name="bmp"/> for elements from <paramref name="map"/>.
+    /// TEXT elements get a green rectangle at their exact bounds. Every other element
+    /// (e.g. IMAGE) gets a black rectangle extended horizontally by 40% on each side.
+    /// Element coordinates are in the full (pre-clip) page, so we offset by the
+    /// clip origin and skip elements that fall wholly outside the bitmap.
+    /// </summary>
+    private static void DrawAnnotations(Bitmap bmp, AbsoluteMapResult map, int clipX, int clipY)
+    {
+        using var g = Graphics.FromImage(bmp);
+        using var greenPen = new System.Drawing.Pen(TextBoxColour, 2);
+        using var blackPen = new System.Drawing.Pen(SearchBoxColour, 2);
+
+        int text = 0, other = 0;
+        foreach (var el in map.Elements)
+        {
+            int x = el.X - clipX;
+            int y = el.Y - clipY;
+
+            if (x + el.Width < 0 || y + el.Height < 0 ||
+                x >= bmp.Width || y >= bmp.Height)
+                continue;
+
+            if (el.Type == "TEXT")
+            {
+                g.DrawRectangle(greenPen, x, y, el.Width, el.Height);
+                text++;
+            }
+            else
+            {
+                int expand = (int)(el.Width * HorizontalExpansion);
+                g.DrawRectangle(blackPen, x - expand, y, el.Width + expand * 2, el.Height);
+                other++;
+            }
+        }
+        _log.Information("DrawAnnotations: drew {Text} TEXT (green), {Other} non-TEXT (black, +40%)",
+            text, other);
     }
 
     /// <summary>
@@ -255,34 +319,6 @@ public static class LabelMatcher
             return new AbsoluteMapResult
             { Success = false, ErrorMessage = $"JSON parse error: {ex.Message}" };
         }
-    }
-
-    private static Bitmap DrawBoxes(byte[] raw, int w, int h, int ch, AbsoluteMapResult map)
-    {
-        var bmp = RawBytesToBitmap(raw, w, h, ch);
-
-        using var g = Graphics.FromImage(bmp);
-        var greenPen = new System.Drawing.Pen(TextBoxColour, 2);
-        var blackPen = new System.Drawing.Pen(SearchBoxColour, 1);
-
-        foreach (var el in map.Elements)
-        {
-            if (el.Type != "TEXT") continue;
-
-            // Green box: exact element bounds for every text element
-            g.DrawRectangle(greenPen, el.X, el.Y, el.Width, el.Height);
-
-            // Black box: horizontally expanded search region, only for
-            // placeholder elements (text contains '<' or '>')
-            if (el.Text.Contains('<') || el.Text.Contains('>'))
-            {
-                int expand = (int)(el.Width * HorizontalExpansion);
-                int sx = el.X - expand;
-                int sw = el.Width + expand * 2;
-                g.DrawRectangle(blackPen, sx, el.Y, sw, el.Height);
-            }
-        }
-        return bmp;
     }
 
     private static Bitmap RawBytesToBitmap(byte[] raw, int w, int h, int ch)
