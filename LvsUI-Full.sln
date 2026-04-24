@@ -1,10 +1,7 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.0.11217.181
 MinimumVisualStudioVersion = 10.0.40219.1
-
-# .NET Projects
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LVS", "LVS.csproj", "{B013C6A4-1E42-4B43-B309-710C865046CE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enums", "Libraries\Enums\Enums.csproj", "{6914FD0E-C39E-4F02-A913-688DA6BEF4C6}"
@@ -39,8 +36,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Security", "Libraries\Secur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComMatcherTest", "Libraries\ImageProc\ComMatcherTest\ComMatcherTest.csproj", "{AB8687AE-D4C8-4189-8E4F-A022DF715B52}"
 EndProject
-
-# C++ Projects (ImageProc)
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageProc", "Libraries\ImageProc\ImageProc\ImageProc.vcxproj", "{7A4D0855-C273-47C4-B01D-277AD1B63E49}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenCVComMatcher", "Libraries\ImageProc\OpenCVComMatcher\OpenCVComMatcher.vcxproj", "{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}"
@@ -50,11 +45,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenCVComMatcherPS", "Libra
 		{E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B} = {E74B5EB4-2EC4-91D4-EF8E-9FE952389A8B}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageProcessorCom", "Libraries\ImageProc\ImageProcessorCom\ImageProcessorCom.vcxproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageProcessorCom", "Libraries\ImageProc\ImageProcessorCom\ImageProcessorCom.vcxproj", "{BA8EA018-FEAE-DC01-F27F-0A25A5D52C88}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Contest", "Libraries\ImageProc\Contest\Contest.vcxproj", "{B2C3D4E5-F6A7-8901-BCDE-F12345678901}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Contest", "Libraries\ImageProc\Contest\Contest.vcxproj", "{D21DD2BE-AEAA-406F-9765-66E7FDDABFC5}"
 EndProject
-
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,7 +57,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		# .NET projects — build on Any CPU and x64
 		{B013C6A4-1E42-4B43-B309-710C865046CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B013C6A4-1E42-4B43-B309-710C865046CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B013C6A4-1E42-4B43-B309-710C865046CE}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -200,7 +193,6 @@ Global
 		{AB8687AE-D4C8-4189-8E4F-A022DF715B52}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AB8687AE-D4C8-4189-8E4F-A022DF715B52}.Release|x64.ActiveCfg = Release|Any CPU
 		{AB8687AE-D4C8-4189-8E4F-A022DF715B52}.Release|x64.Build.0 = Release|Any CPU
-		# C++ projects — build on x64
 		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Debug|Any CPU.Build.0 = Debug|x64
 		{7A4D0855-C273-47C4-B01D-277AD1B63E49}.Debug|x64.ActiveCfg = Debug|x64
@@ -221,22 +213,22 @@ Global
 		{38313F7A-CDFC-F042-8F47-BC19D28E347C}.Debug|x64.ActiveCfg = Debug|x64
 		{38313F7A-CDFC-F042-8F47-BC19D28E347C}.Release|Any CPU.ActiveCfg = Release|x64
 		{38313F7A-CDFC-F042-8F47-BC19D28E347C}.Release|x64.ActiveCfg = Release|x64
-		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.Build.0 = Debug|x64
-		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|x64.ActiveCfg = Debug|x64
-		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|x64.Build.0 = Debug|x64
-		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.ActiveCfg = Release|x64
-		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.Build.0 = Release|x64
-		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|x64.ActiveCfg = Release|x64
-		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|x64.Build.0 = Release|x64
-		{B2C3D4E5-F6A7-8901-BCDE-F12345678901}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{B2C3D4E5-F6A7-8901-BCDE-F12345678901}.Debug|Any CPU.Build.0 = Debug|x64
-		{B2C3D4E5-F6A7-8901-BCDE-F12345678901}.Debug|x64.ActiveCfg = Debug|x64
-		{B2C3D4E5-F6A7-8901-BCDE-F12345678901}.Debug|x64.Build.0 = Debug|x64
-		{B2C3D4E5-F6A7-8901-BCDE-F12345678901}.Release|Any CPU.ActiveCfg = Release|x64
-		{B2C3D4E5-F6A7-8901-BCDE-F12345678901}.Release|Any CPU.Build.0 = Release|x64
-		{B2C3D4E5-F6A7-8901-BCDE-F12345678901}.Release|x64.ActiveCfg = Release|x64
-		{B2C3D4E5-F6A7-8901-BCDE-F12345678901}.Release|x64.Build.0 = Release|x64
+		{BA8EA018-FEAE-DC01-F27F-0A25A5D52C88}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{BA8EA018-FEAE-DC01-F27F-0A25A5D52C88}.Debug|Any CPU.Build.0 = Debug|x64
+		{BA8EA018-FEAE-DC01-F27F-0A25A5D52C88}.Debug|x64.ActiveCfg = Debug|x64
+		{BA8EA018-FEAE-DC01-F27F-0A25A5D52C88}.Debug|x64.Build.0 = Debug|x64
+		{BA8EA018-FEAE-DC01-F27F-0A25A5D52C88}.Release|Any CPU.ActiveCfg = Release|x64
+		{BA8EA018-FEAE-DC01-F27F-0A25A5D52C88}.Release|Any CPU.Build.0 = Release|x64
+		{BA8EA018-FEAE-DC01-F27F-0A25A5D52C88}.Release|x64.ActiveCfg = Release|x64
+		{BA8EA018-FEAE-DC01-F27F-0A25A5D52C88}.Release|x64.Build.0 = Release|x64
+		{D21DD2BE-AEAA-406F-9765-66E7FDDABFC5}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{D21DD2BE-AEAA-406F-9765-66E7FDDABFC5}.Debug|Any CPU.Build.0 = Debug|x64
+		{D21DD2BE-AEAA-406F-9765-66E7FDDABFC5}.Debug|x64.ActiveCfg = Debug|x64
+		{D21DD2BE-AEAA-406F-9765-66E7FDDABFC5}.Debug|x64.Build.0 = Debug|x64
+		{D21DD2BE-AEAA-406F-9765-66E7FDDABFC5}.Release|Any CPU.ActiveCfg = Release|x64
+		{D21DD2BE-AEAA-406F-9765-66E7FDDABFC5}.Release|Any CPU.Build.0 = Release|x64
+		{D21DD2BE-AEAA-406F-9765-66E7FDDABFC5}.Release|x64.ActiveCfg = Release|x64
+		{D21DD2BE-AEAA-406F-9765-66E7FDDABFC5}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

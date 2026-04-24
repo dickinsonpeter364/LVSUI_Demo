@@ -73,7 +73,7 @@ public partial class App : Application
             appSettings.BypassSecurity, appSettings.CaptureOnly,
             appSettings.SaveImages, appSettings.SavedImagesPath);
 
-        if (!isDummyMode)
+        if (!isDummyMode && !LafCaptureTest)
         {
             // Production: ensure Oracle credentials are available
             if (appSettings.DatabaseType.Equals("oracle", StringComparison.OrdinalIgnoreCase)
@@ -105,9 +105,9 @@ public partial class App : Application
         services.AddSingleton<ICameraService, CameraService>();
         services.AddSingleton<IUtilityFunctions, WpfUtilityFunctions>();
 
-        if (isDummyMode)
+        if (isDummyMode || LafCaptureTest)
         {
-            // Dummy mode: no database, no real PLC
+            // Dummy / LafCaptureTest: no database, no real PLC
             services.AddSingleton<IDataManager, DummyDataProvider>();
             services.AddSingleton<ImxClient, DummyPLCClient>();
             services.AddSingleton<IInspection, DummyInspection>();
@@ -139,7 +139,7 @@ public partial class App : Application
         Defaults.UserLoggedIn = Environment.UserName;
         Defaults.UserName = Environment.UserName;
 
-        if (!isDummyMode)
+        if (!isDummyMode && !LafCaptureTest)
         {
             // Production: full initialisation sequence
             var dataManager = Services.GetRequiredService<IDataManager>();
@@ -199,8 +199,8 @@ public partial class App : Application
             mxClient.InspectionLampOn();
         }
 
-        // Load cameras in production or CaptureOnly mode (dummy mode skips hardware)
-        if (!isDummyMode || CaptureOnly)
+        // Load cameras in production or CaptureOnly mode (dummy and LafCaptureTest skip hardware)
+        if ((!isDummyMode || CaptureOnly) && !LafCaptureTest)
         {
             try
             {
