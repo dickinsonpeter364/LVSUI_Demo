@@ -14,7 +14,16 @@
       "Bash(git commit -m ' *)",
       "Bash(ls -d */)",
       "Bash(awk '{print $NF}')",
-      "Bash([ -d \"/c/merge/REWINDER_ANISO/$dir\" ])"
+      "Bash([ -d \"/c/merge/REWINDER_ANISO/$dir\" ])",
+      "Bash(MSBuild.exe Libraries/ImageProc/OpenCVComMatcher/OpenCVComMatcher.vcxproj /p:Configuration=Debug /p:Platform=x64 /v:minimal)",
+      "Bash(\"C:/Program Files/Microsoft Visual Studio/18/Community/MSBuild/Current/Bin/amd64/MSBuild.exe\" Libraries/ImageProc/OpenCVComMatcher/OpenCVComMatcher.vcxproj /p:Configuration=Debug /p:Platform=x64 /v:minimal)",
+      "Bash(cmd.exe /c '\"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\18\\\\Community\\\\MSBuild\\\\Current\\\\Bin\\\\amd64\\\\MSBuild.exe\" Libraries\\\\ImageProc\\\\OpenCVComMatcher\\\\OpenCVComMatcher.vcxproj /p:Configuration=Debug /p:Platform=x64 /v:minimal')",
+      "Bash(git -C C:\\\\LVSUI remote -v)",
+      "Bash(git -C C:\\\\imageProc4 remote -v)",
+      "Read(//c/LVSRun/Debug/**)",
+      "Read(//c/xx/LvsUI/Libraries/ImageProc/OpenCVComMatcher/x64/Release/**)",
+      "Bash(git add *)",
+      "Bash(git push *)"
     ]
   }
 }

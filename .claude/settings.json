@@ -27,7 +27,12 @@
       "Bash(code --list-extensions)",
       "Bash(ls Views/Settings*)",
       "Bash(ls ViewModels/Settings*)",
-      "Read(//c/imageproc4/**)"
+      "Read(//c/imageproc4/**)",
+      "PowerShell(& \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\18\\\\Community\\\\MSBuild\\\\Current\\\\Bin\\\\amd64\\\\MSBuild.exe\" \"Libraries\\\\ImageProc\\\\OpenCVComMatcher\\\\OpenCVComMatcher.vcxproj\" /p:Configuration=Debug /p:Platform=x64 /v:minimal 2>&1)",
+      "PowerShell(& \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\18\\\\Community\\\\MSBuild\\\\Current\\\\Bin\\\\amd64\\\\MSBuild.exe\" \"Libraries\\\\ImageProc\\\\OpenCVComMatcher\\\\OpenCVComMatcher.vcxproj\" /p:Configuration=Debug /p:Platform=x64 /v:minimal 2>&1 | Where-Object { $_ -match \"error\" -or $_ -match \"Build FAILED\" -or $_ -match \"Error\\\\\\(\" })",
+      "PowerShell(& \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\18\\\\Community\\\\MSBuild\\\\Current\\\\Bin\\\\amd64\\\\MSBuild.exe\" \"Libraries\\\\ImageProc\\\\OpenCVComMatcher\\\\OpenCVComMatcher.vcxproj\" /p:Configuration=Debug /p:Platform=x64 /v:minimal /nowarn:4251,4267,4244,4996)",
+      "PowerShell(dotnet build LVS.csproj -c Debug --no-restore -v quiet 2>&1)",
+      "Bash(reg query *)"
     ],
     "additionalDirectories": [
       "C:\\LVSUi"

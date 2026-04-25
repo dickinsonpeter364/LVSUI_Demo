@@ -1,16 +1,35 @@
 {
-    "version": "0.2.0",
-    "configurations": [
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch LVS",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/bin/Debug/net10.0-windows/LVS.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/bin/Debug/net10.0-windows",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": "c:/LVSUi/Libraries/ImageProc/OpenCVComMatcher",
+      "program": "c:/LVSUi/Libraries/ImageProc/OpenCVComMatcher/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
         {
-            "name": "Launch LVS",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/bin/Debug/net10.0-windows/LVS.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/bin/Debug/net10.0-windows",
-            "console": "internalConsole",
-            "stopAtEntry": false
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
         }
-    ]
+      ]
+    }
+  ]
 }
